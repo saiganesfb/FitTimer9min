@@ -5,7 +5,7 @@
 // It stores structured data (like SQL tables) with zero setup.
 
 const DB_NAME = 'FitTimerDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 let db = null;
 
@@ -19,7 +19,15 @@ function openDB() {
             // Users table
             if (!database.objectStoreNames.contains('users')) {
                 const userStore = database.createObjectStore('users', { keyPath: 'id', autoIncrement: true });
-                userStore.createIndex('name', 'name', { unique: true });
+                userStore.createIndex('name', 'name', { unique: false });
+                userStore.createIndex('username', 'username', { unique: true });
+            } else {
+                // Migration from v1: add username index
+                const tx = event.target.transaction;
+                const userStore = tx.objectStore('users');
+                if (!userStore.indexNames.contains('username')) {
+                    userStore.createIndex('username', 'username', { unique: true });
+                }
             }
 
             // Sessions table
@@ -49,9 +57,29 @@ function addUser(user) {
         const tx = db.transaction('users', 'readwrite');
         const store = tx.objectStore('users');
         const request = store.add(user);
-        request.onsuccess = () => resolve(request.result); // returns the new ID
+        request.onsuccess = () => resolve(request.result);
         request.onerror = () => reject(request.error);
     });
+}
+
+function getUserByUsername(username) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction('users', 'readonly');
+        const store = tx.objectStore('users');
+        const index = store.index('username');
+        const request = index.get(username);
+        request.onsuccess = () => resolve(request.result || null);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+// Simple hash for client-side password (not bank-level security, but UX of login)
+async function hashPassword(password) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password + 'fittimer_salt_2026');
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 function getAllUsers() {

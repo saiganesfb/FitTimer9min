@@ -15,46 +15,68 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- PROFILE SELECTOR (shown on launch if multiple users) -->
-    <div id="profileSelector" class="profile-selector hidden">
+    <!-- AUTH: LOGIN -->
+    <div id="authLogin" class="profile-selector hidden">
         <div class="profile-modal">
-            <h2>Who's working out?</h2>
-            <div id="profileList" class="profile-list"></div>
-            <button id="newProfileBtn" class="control-btn new-profile-btn">+ New Profile</button>
+            <h2>Welcome Back!</h2>
+            <p class="setup-subtitle">Login to continue your journey</p>
+            <form id="loginForm" class="profile-form">
+                <div class="form-group">
+                    <label for="loginUsername">Username</label>
+                    <input type="text" id="loginUsername" placeholder="Enter username" required maxlength="20" autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter password" required autocomplete="current-password">
+                </div>
+                <p class="auth-error hidden" id="loginError">Invalid username or password</p>
+                <button type="submit" class="control-btn start-btn">Login</button>
+            </form>
+            <p class="auth-switch">New here? <a href="#" id="showRegister">Create Account</a></p>
         </div>
     </div>
 
-    <!-- PROFILE SETUP (shown for new users) -->
-    <div id="profileSetup" class="profile-setup hidden">
+    <!-- AUTH: REGISTER -->
+    <div id="authRegister" class="profile-selector hidden">
         <div class="profile-modal">
-            <h2>Set Up Your Profile</h2>
-            <p class="setup-subtitle">Quick setup — you can change these later</p>
-            <form id="profileForm" class="profile-form">
+            <h2>Create Account</h2>
+            <p class="setup-subtitle">One-time setup — then just login</p>
+            <form id="registerForm" class="profile-form">
                 <div class="form-group">
-                    <label for="userName">Name *</label>
-                    <input type="text" id="userName" placeholder="Your name" required maxlength="30">
+                    <label for="regUsername">Username *</label>
+                    <input type="text" id="regUsername" placeholder="Pick a username" required maxlength="20" autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Password *</label>
+                    <input type="password" id="regPassword" placeholder="Choose password" required minlength="4" autocomplete="new-password">
+                </div>
+                <div class="form-group">
+                    <label for="regName">Display Name *</label>
+                    <input type="text" id="regName" placeholder="Your name" required maxlength="30">
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="userHeight">Height (cm)</label>
-                        <input type="number" id="userHeight" placeholder="170" min="100" max="250">
+                        <label for="regHeight">Height (cm)</label>
+                        <input type="number" id="regHeight" placeholder="170" min="100" max="250">
                     </div>
                     <div class="form-group">
-                        <label for="userWeight">Weight (kg)</label>
-                        <input type="number" id="userWeight" placeholder="70" min="20" max="300">
+                        <label for="regWeight">Weight (kg)</label>
+                        <input type="number" id="regWeight" placeholder="70" min="20" max="300">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="userGoal">Daily Goal (minutes)</label>
-                    <select id="userGoal">
+                    <label for="regGoal">Daily Goal (minutes)</label>
+                    <select id="regGoal">
                         <option value="9">9 min (minimum effective)</option>
                         <option value="15" selected>15 min (recommended daily)</option>
                         <option value="30">30 min (alternate days)</option>
                         <option value="45">45 min (intense)</option>
                     </select>
                 </div>
-                <button type="submit" class="control-btn start-btn">Let's Go!</button>
+                <p class="auth-error hidden" id="registerError">Username already taken</p>
+                <button type="submit" class="control-btn start-btn">Create Account</button>
             </form>
+            <p class="auth-switch">Already have an account? <a href="#" id="showLogin">Login</a></p>
         </div>
     </div>
 
@@ -68,7 +90,7 @@
             </div>
             <div class="header-right">
                 <span id="currentUser" class="user-badge"></span>
-                <button id="switchUserBtn" class="icon-btn" title="Switch user">&#128100;</button>
+                <button id="switchUserBtn" class="icon-btn" title="Logout">&#128100;</button>
             </div>
         </header>
 

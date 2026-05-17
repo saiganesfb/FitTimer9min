@@ -20,12 +20,9 @@ let previousAchievements = [];
 // --- DOM Elements ---
 const $ = (id) => document.getElementById(id);
 
-const profileSelector = $('profileSelector');
-const profileSetup = $('profileSetup');
+const authLogin = $('authLogin');
+const authRegister = $('authRegister');
 const mainApp = $('mainApp');
-const profileForm = $('profileForm');
-const profileList = $('profileList');
-const newProfileBtn = $('newProfileBtn');
 const switchUserBtn = $('switchUserBtn');
 const currentUserEl = $('currentUser');
 
@@ -60,48 +57,47 @@ const tabBtns = document.querySelectorAll('.tab-btn');
 // --- Initialize ---
 async function init() {
     await openDB();
-    const users = await getAllUsers();
     const lastUserId = localStorage.getItem('fitTimer_lastUser');
 
-    if (users.length === 0) {
-        showProfileSetup();
-    } else if (users.length === 1) {
-        await loginUser(users[0].id);
-    } else if (lastUserId && users.find(u => u.id === Number(lastUserId))) {
-        await loginUser(Number(lastUserId));
-    } else {
-        showProfileSelector(users);
+    if (lastUserId) {
+        const user = await getUser(Number(lastUserId));
+        if (user) {
+            // If old user without username, auto-login (migration)
+            if (!user.username) {
+                await loginUser(user.id);
+                bindEvents();
+                return;
+            }
+            await loginUser(user.id);
+            bindEvents();
+            return;
+        }
     }
 
+    // No remembered user — show login (or register if no users exist)
+    const users = await getAllUsers();
+    if (users.length === 0) {
+        showRegisterScreen();
+    } else {
+        showLoginScreen();
+    }
     bindEvents();
 }
 
-// --- Profile Management ---
+// --- Auth Screens ---
 
-function showProfileSelector(users) {
-    profileSelector.classList.remove('hidden');
-    profileSetup.classList.add('hidden');
+function showLoginScreen() {
+    authLogin.classList.remove('hidden');
+    authRegister.classList.add('hidden');
     mainApp.classList.add('hidden');
-
-    profileList.innerHTML = users.map(u => `
-        <div class="profile-card" data-user-id="${u.id}">
-            <div class="avatar">${u.name.charAt(0).toUpperCase()}</div>
-            <div class="info">
-                <div class="name">${u.name}</div>
-                <div class="meta">${u.goal || 15} min goal</div>
-            </div>
-        </div>
-    `).join('');
-
-    profileList.querySelectorAll('.profile-card').forEach(card => {
-        card.addEventListener('click', () => loginUser(Number(card.dataset.userId)));
-    });
+    $('loginError').classList.add('hidden');
 }
 
-function showProfileSetup() {
-    profileSelector.classList.add('hidden');
-    profileSetup.classList.remove('hidden');
+function showRegisterScreen() {
+    authLogin.classList.add('hidden');
+    authRegister.classList.remove('hidden');
     mainApp.classList.add('hidden');
+    $('registerError').classList.add('hidden');
 }
 
 async function loginUser(userId) {
@@ -119,8 +115,8 @@ async function loginUser(userId) {
     previousLevel = getLevel(previousXP).level;
     previousAchievements = getUnlockedAchievements(sessions).map(a => a.id);
 
-    profileSelector.classList.add('hidden');
-    profileSetup.classList.add('hidden');
+    authLogin.classList.add('hidden');
+    authRegister.classList.add('hidden');
     mainApp.classList.remove('hidden');
 
     currentUserEl.textContent = currentUser.name;
@@ -140,28 +136,64 @@ async function loginUser(userId) {
 // --- Event Binding ---
 
 function bindEvents() {
-    // Profile form
-    profileForm.addEventListener('submit', async (e) => {
+    // Login form
+    $('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const name = $('userName').value.trim();
-        if (!name) return;
+        const username = $('loginUsername').value.trim().toLowerCase();
+        const password = $('loginPassword').value;
+        if (!username || !password) return;
 
+        const user = await getUserByUsername(username);
+        const hash = await hashPassword(password);
+
+        if (!user || user.passwordHash !== hash) {
+            $('loginError').classList.remove('hidden');
+            return;
+        }
+
+        $('loginError').classList.add('hidden');
+        await loginUser(user.id);
+    });
+
+    // Register form
+    $('registerForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = $('regUsername').value.trim().toLowerCase();
+        const password = $('regPassword').value;
+        const name = $('regName').value.trim();
+        if (!username || !password || !name) return;
+
+        // Check if username taken
+        const existing = await getUserByUsername(username);
+        if (existing) {
+            $('registerError').classList.remove('hidden');
+            return;
+        }
+
+        const hash = await hashPassword(password);
         const user = {
+            username: username,
+            passwordHash: hash,
             name: name,
-            height: $('userHeight').value ? Number($('userHeight').value) : null,
-            weight: $('userWeight').value ? Number($('userWeight').value) : null,
-            goal: Number($('userGoal').value),
+            height: $('regHeight').value ? Number($('regHeight').value) : null,
+            weight: $('regWeight').value ? Number($('regWeight').value) : null,
+            goal: Number($('regGoal').value),
             createdAt: new Date().toISOString()
         };
 
         const userId = await addUser(user);
+        $('registerError').classList.add('hidden');
         await loginUser(userId);
     });
 
-    newProfileBtn.addEventListener('click', showProfileSetup);
-    switchUserBtn.addEventListener('click', async () => {
-        const users = await getAllUsers();
-        showProfileSelector(users);
+    // Auth screen toggles
+    $('showRegister').addEventListener('click', (e) => { e.preventDefault(); showRegisterScreen(); });
+    $('showLogin').addEventListener('click', (e) => { e.preventDefault(); showLoginScreen(); });
+
+    // Switch user (logout)
+    switchUserBtn.addEventListener('click', () => {
+        localStorage.removeItem('fitTimer_lastUser');
+        showLoginScreen();
     });
 
     // Tabs
