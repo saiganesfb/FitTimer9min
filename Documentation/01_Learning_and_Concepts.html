@@ -68,6 +68,7 @@
             <li><a href="#architecture">Architecture Overview</a></li>
             <li><a href="#code">Key Code Concepts Explained</a></li>
             <li><a href="#data">Data Model</a></li>
+            <li><a href="#pwa">PWA &mdash; Use as Android/Phone App</a></li>
             <li><a href="#future">Future Enhancement Ideas</a></li>
             <li><a href="#resources">Learning Resources</a></li>
         </ol>
@@ -384,21 +385,108 @@ timerRing.style.background = <span class="key">`conic-gradient(
     </div>
 
     <!-- SECTION 7 -->
-    <h2 class="st" id="future" style="border-color:var(--purple);">7. Future Enhancement Ideas</h2>
+    <h2 class="st" id="pwa" style="border-color:var(--purple);">7. PWA &mdash; Use as Android/Phone App</h2>
+    <div class="card">
+        <p>A <strong>Progressive Web App (PWA)</strong> makes your website behave like a native app on any phone or computer.</p>
+
+        <div class="analogy-box">
+            <strong>&#128241; Analogy: A Restaurant vs Home Cooking</strong><br><br>
+            <strong>Native app (Play Store)</strong> = eating at a restaurant. Someone else built the kitchen, you just walk in.<br>
+            <strong>PWA</strong> = home cooking with a beautiful plating. Same food, YOUR kitchen, no middleman.<br><br>
+            The phone can't tell the difference once it's "installed" &mdash; it gets a home screen icon, full screen, works offline. But YOU control the code.
+        </div>
+
+        <h3>What makes it a PWA? (3 additions)</h3>
+        <table>
+            <thead><tr><th>File</th><th>Purpose</th><th>Layman Explanation</th></tr></thead>
+            <tbody>
+                <tr><td><code>manifest.json</code></td><td>App metadata</td><td>Tells the phone: "I'm an app called FitTimer, use this icon, open full-screen"</td></tr>
+                <tr><td><code>service-worker.js</code></td><td>Offline cache</td><td>Downloads all files once, then works without internet (like saving Netflix for offline)</td></tr>
+                <tr><td><code>&lt;link rel="manifest"&gt;</code></td><td>Connects HTML to manifest</td><td>One line in index.html that says "look, I have an app manifest"</td></tr>
+            </tbody>
+        </table>
+
+        <h3 style="margin-top:20px;">How to install on phone:</h3>
+        <div class="flow">
+            <div class="fb" style="border-color:var(--accent);background:#eff6ff;"><strong>Host on GitHub Pages</strong><small>(free HTTPS)</small></div>
+            <span class="fa">&rarr;</span>
+            <div class="fb" style="border-color:var(--orange);background:#fef3c7;"><strong>Visit URL on phone</strong><small>Chrome browser</small></div>
+            <span class="fa">&rarr;</span>
+            <div class="fb" style="border-color:var(--green);background:#ecfdf5;"><strong>"Install App" banner</strong><small>tap it</small></div>
+            <span class="fa">&rarr;</span>
+            <div class="fb" style="border-color:var(--pink);background:#fef2f2;"><strong>Icon on home screen!</strong><small>works offline</small></div>
+        </div>
+
+        <h3 style="margin-top:20px;">Technical: manifest.json explained</h3>
+        <div class="formula-box">
+{
+    <span class="key">"name"</span>: <span class="val">"FitTimer - Workout Tracker"</span>,    <span class="comment">// Full name</span>
+    <span class="key">"short_name"</span>: <span class="val">"FitTimer"</span>,               <span class="comment">// Under the icon</span>
+    <span class="key">"start_url"</span>: <span class="val">"./index.html"</span>,            <span class="comment">// What opens on tap</span>
+    <span class="key">"display"</span>: <span class="val">"standalone"</span>,               <span class="comment">// No browser bar!</span>
+    <span class="key">"background_color"</span>: <span class="val">"#1a1a2e"</span>,        <span class="comment">// Splash screen bg</span>
+    <span class="key">"theme_color"</span>: <span class="val">"#6c63ff"</span>,             <span class="comment">// Status bar color</span>
+    <span class="key">"icons"</span>: [...]                          <span class="comment">// App icons (192 + 512px)</span>
+}
+        </div>
+
+        <h3>Technical: service-worker.js explained</h3>
+        <div class="formula-box">
+<span class="comment">// 1. INSTALL event: cache all app files</span>
+self.addEventListener(<span class="key">'install'</span>, event => {
+    caches.open(<span class="val">'fittimer-v2'</span>).then(cache => cache.addAll([
+        <span class="val">'./index.html'</span>, <span class="val">'./style.css'</span>, <span class="val">'./db.js'</span>, <span class="val">'./script.js'</span>
+    ]));
+});
+
+<span class="comment">// 2. FETCH event: serve from cache (offline!) or network</span>
+self.addEventListener(<span class="key">'fetch'</span>, event => {
+    event.respondWith(
+        caches.match(event.request)    <span class="comment">// Try cache first</span>
+            .then(cached => cached || fetch(event.request))  <span class="comment">// Else network</span>
+    );
+});
+        </div>
+
+        <div class="insight-box">
+            <strong>&#x1F4A1; Key insight:</strong> The service worker is like a helpful assistant that sits between your app and the internet. First visit: it downloads and caches everything. Next visit: it serves from cache instantly &mdash; even with no WiFi. Your phone thinks it's a native app.
+        </div>
+
+        <div class="g2">
+            <div class="hl green">
+                <strong>PWA vs Native App:</strong><br>
+                &bull; No Play Store needed<br>
+                &bull; No Android Studio<br>
+                &bull; < 100 KB vs 50-200 MB<br>
+                &bull; Instant updates (refresh)<br>
+                &bull; Works on ANY phone/tablet/PC
+            </div>
+            <div class="hl warn">
+                <strong>PWA requirements:</strong><br>
+                &bull; HTTPS (GitHub Pages = free)<br>
+                &bull; manifest.json with icons<br>
+                &bull; Service worker registered<br>
+                &bull; file:// won't work (needs a server)
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 8 -->
+    <h2 class="st" id="future" style="border-color:var(--green);">8. Future Enhancement Ideas</h2>
     <div class="card">
         <div class="g2">
             <div class="hl green">
-                <strong>&#10003; Already Built (v2):</strong><br>
+                <strong>&#10003; Already Built:</strong><br>
                 &bull; Multi-user profiles<br>
                 &bull; Stop early &amp; record partial<br>
                 &bull; Calendar history (month view)<br>
                 &bull; Data export (JSON backup)<br>
-                &bull; Yearly stats &amp; streaks
+                &bull; Yearly stats &amp; streaks<br>
+                &bull; PWA (installable on phone)
             </div>
             <div class="hl">
                 <strong>&#128640; Next Level:</strong><br>
                 &bull; Sound effects (tick, completion cheer)<br>
-                &bull; PWA &mdash; install on phone home screen<br>
                 &bull; Weekly/monthly charts (Chart.js)<br>
                 &bull; Cloud sync (Firebase free tier)<br>
                 &bull; Notifications / reminders<br>
@@ -407,8 +495,8 @@ timerRing.style.background = <span class="key">`conic-gradient(
         </div>
     </div>
 
-    <!-- SECTION 8 -->
-    <h2 class="st" id="resources">8. Learning Resources</h2>
+    <!-- SECTION 9 -->
+    <h2 class="st" id="resources">9. Learning Resources</h2>
     <div class="card">
         <table>
             <thead><tr><th>Topic</th><th>Where to Learn</th></tr></thead>
@@ -420,6 +508,8 @@ timerRing.style.background = <span class="key">`conic-gradient(
                 <tr><td>CSS Animations</td><td>Search "MDN CSS Animations"</td></tr>
                 <tr><td>Flexbox &amp; Grid layout</td><td>Search "CSS Tricks Flexbox Guide"</td></tr>
                 <tr><td>conic-gradient</td><td>Search "MDN conic-gradient"</td></tr>
+                <tr><td>PWA / Service Workers</td><td>Search "MDN Progressive Web Apps" &mdash; how to make installable apps</td></tr>
+                <tr><td>Web App Manifest</td><td>Search "MDN Web App Manifest" &mdash; the manifest.json file</td></tr>
             </tbody>
         </table>
 

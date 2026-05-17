@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head><title>Icon Generator</title></head>
+<body>
+<canvas id="c192" width="192" height="192"></canvas>
+<canvas id="c512" width="512" height="512"></canvas>
+<script>
+function drawIcon(canvas) {
+    const ctx = canvas.getContext('2d');
+    const s = canvas.width;
+    // Background
+    ctx.fillStyle = '#1a1a2e';
+    ctx.beginPath();
+    ctx.roundRect(0, 0, s, s, s * 0.18);
+    ctx.fill();
+    // Timer ring
+    const cx = s/2, cy = s/2, r = s * 0.32;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.strokeStyle = '#2a2a4a';
+    ctx.lineWidth = s * 0.06;
+    ctx.stroke();
+    // Progress arc (75%)
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, -Math.PI/2, -Math.PI/2 + Math.PI * 1.5);
+    ctx.strokeStyle = '#4ecdc4';
+    ctx.lineWidth = s * 0.06;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+    // Text
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `bold ${s * 0.16}px Inter, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('FIT', cx, cy);
+}
+drawIcon(document.getElementById('c192'));
+drawIcon(document.getElementById('c512'));
+
+// Download links
+['c192','c512'].forEach(id => {
+    const canvas = document.getElementById(id);
+    const link = document.createElement('a');
+    link.download = `icon-${canvas.width}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.textContent = `Download ${canvas.width}px`;
+    link.style.display = 'block';
+    link.style.margin = '10px';
+    document.body.appendChild(link);
+});
+</script>
+<p>Right-click each canvas and "Save Image As" into app/icons/, OR click the download links below.</p>
+</body>
+</html>

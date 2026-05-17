@@ -73,6 +73,7 @@
             <li><a href="#data">Check Your Data</a></li>
             <li><a href="#customize">Customization</a></li>
             <li><a href="#transfer">Transfer to Another Computer</a></li>
+            <li><a href="#phone">Install on Android / iPhone</a></li>
             <li><a href="#troubleshoot">Troubleshooting</a></li>
         </ol>
     </div>
@@ -102,6 +103,11 @@
     <span class="file">style.css</span>               <span class="desc">&larr; All visual styling (dark theme)</span>
     <span class="file">db.js</span>                   <span class="desc">&larr; Database layer (IndexedDB)</span>
     <span class="file">script.js</span>               <span class="desc">&larr; All logic (timer, profiles, history)</span>
+    <span class="file">manifest.json</span>           <span class="desc">&larr; PWA: tells phone "I'm an app"</span>
+    <span class="file">service-worker.js</span>       <span class="desc">&larr; PWA: offline caching</span>
+    <span class="folder">icons/</span>                  <span class="desc">&larr; App icons for phone home screen</span>
+      <span class="file">icon-192.png</span>          <span class="desc">&larr; Home screen icon</span>
+      <span class="file">icon-512.png</span>          <span class="desc">&larr; Splash screen icon</span>
   <span class="folder">Documentation/</span>              <span class="desc">&larr; Learning docs (you're reading one)</span>
     <span class="file">01_Learning_and_Concepts.html</span>
     <span class="file">02_Step_by_Step_Guide.html</span>
@@ -434,8 +440,62 @@ request.onupgradeneeded = (event) => {
         </div>
     </div>
 
+    <!-- INSTALL ON PHONE -->
+    <h2 class="st" id="phone" style="border-color:var(--pink);">11. Install on Android / iPhone</h2>
+    <div class="card">
+        <p>The app is a <strong>PWA (Progressive Web App)</strong> &mdash; it can be installed on your phone like a native app from the browser. No Play Store needed!</p>
+
+        <h3>Method 1: GitHub Pages (recommended)</h3>
+        <div class="step-container">
+            <div class="step-box">
+                <h3>Push to GitHub</h3>
+                <p>Create a free GitHub account. Create a new repo. Push your code:<br>
+                <code>git remote add origin https://github.com/YOU/FitnessTracker.git</code><br>
+                <code>git push -u origin master</code></p>
+            </div>
+            <div class="step-box">
+                <h3>Enable GitHub Pages</h3>
+                <p>Repo &rarr; Settings &rarr; Pages &rarr; Source: <strong>master</strong> branch &rarr; Folder: <strong>/app</strong> &rarr; Save.<br>
+                Wait 1-2 minutes. Your URL: <code>https://YOU.github.io/FitnessTracker/</code></p>
+            </div>
+            <div class="step-box">
+                <h3>Open on Phone</h3>
+                <p>Visit the URL in <strong>Chrome</strong> on your Android phone. Chrome shows an "Install app" or "Add to Home Screen" banner at the bottom.</p>
+            </div>
+            <div class="step-box">
+                <h3>Tap Install</h3>
+                <p>The app icon appears on your home screen. Opens full-screen (no browser bar). Works offline!</p>
+            </div>
+        </div>
+
+        <h3 style="margin-top:20px;">Method 2: Local WiFi (no internet hosting)</h3>
+        <div class="hl">
+            <strong>On your PC</strong> (same WiFi as phone):<br>
+            <code>cd FitnessTracker/app</code><br>
+            <code>python -m http.server 8080</code><br><br>
+            <strong>Find your PC IP:</strong> Run <code>ipconfig</code> &rarr; look for <code>192.168.x.x</code><br><br>
+            <strong>On phone browser:</strong> Visit <code>http://192.168.x.x:8080</code><br>
+            Chrome menu (&#8942;) &rarr; "Add to Home Screen"
+        </div>
+
+        <div class="hl warn">
+            <strong>Note:</strong> Method 2 won't register the service worker (needs HTTPS), so offline mode won't work. The app still functions, but only while connected to your PC's server. For full offline + installable behavior, use Method 1 (GitHub Pages gives free HTTPS).
+        </div>
+
+        <h3 style="margin-top:16px;">What are the new files?</h3>
+        <table>
+            <thead><tr><th>File</th><th>Size</th><th>Purpose</th></tr></thead>
+            <tbody>
+                <tr><td><code>manifest.json</code></td><td>~400 bytes</td><td>App name, icon, colors, "standalone" display mode</td></tr>
+                <tr><td><code>service-worker.js</code></td><td>~700 bytes</td><td>Caches all files for offline use</td></tr>
+                <tr><td><code>icons/icon-192.png</code></td><td>~1 KB</td><td>App icon (home screen)</td></tr>
+                <tr><td><code>icons/icon-512.png</code></td><td>~6 KB</td><td>App icon (splash screen)</td></tr>
+            </tbody>
+        </table>
+    </div>
+
     <!-- TROUBLESHOOT -->
-    <h2 class="st" id="troubleshoot">11. Troubleshooting</h2>
+    <h2 class="st" id="troubleshoot">12. Troubleshooting</h2>
     <div class="card">
         <table>
             <thead><tr><th>Problem</th><th>Solution</th></tr></thead>
@@ -444,6 +504,7 @@ request.onupgradeneeded = (event) => {
                 <tr><td>Profile selector is empty</td><td>First time? Click "New Profile". If not first time, check IndexedDB in DevTools.</td></tr>
                 <tr><td>Data disappeared</td><td>Did you clear browser data? IndexedDB gets wiped with "Clear all site data".</td></tr>
                 <tr><td>Calendar shows wrong month</td><td>Click the &larr; &rarr; arrows to navigate. It starts on current month.</td></tr>
+                <tr><td>"Install app" not showing</td><td>Needs HTTPS (use GitHub Pages). Chrome also requires manifest.json + service worker registered.</td></tr>
                 <tr><td>Looks broken on phone</td><td>Ensure <code>&lt;meta name="viewport"&gt;</code> is in HTML head</td></tr>
                 <tr><td>Progress ring not filling</td><td>Check console for errors in the interval function</td></tr>
                 <tr><td>Space bar scrolls page</td><td>Normal browser behavior &mdash; the JS <code>preventDefault()</code> should handle it</td></tr>
