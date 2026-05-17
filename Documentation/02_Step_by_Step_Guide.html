@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitTimer &mdash; Step-by-Step Recreation Guide</title>
+    <style>
+        :root{--navy:#1a1a2e;--steel:#4a6fa5;--accent:#6c63ff;--green:#4ecdc4;--orange:#e67e22;--purple:#7c3aed;--pink:#ff6584;--bg:#f8fafc;--card:#fff;--border:#e2e8f0;--text:#1e293b;--muted:#64748b;}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Segoe UI',Inter,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+        .hdr{background:linear-gradient(135deg,var(--navy),#2d1b69);color:#fff;padding:36px 48px;border-bottom:4px solid var(--green);}
+        .hdr h1{font-size:28px;font-weight:700;margin-bottom:4px;} .hdr .sub{font-size:14px;opacity:.85;}
+        .c{max-width:1100px;margin:0 auto;padding:32px 48px;}
+        .st{font-size:22px;font-weight:700;color:var(--navy);margin:36px 0 16px;padding-bottom:8px;border-bottom:2px solid var(--accent);} .st:first-of-type{margin-top:0;}
+        .card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+        .card h3{font-size:17px;color:var(--navy);margin-bottom:10px;} .card h4{font-size:14px;color:var(--steel);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.4px;}
+        .card p,.card li{font-size:14px;line-height:1.8;} .card ul,.card ol{margin-left:20px;margin-top:6px;} .card li{margin-bottom:6px;}
+        code{background:#f1f5f9;padding:2px 6px;border-radius:3px;font-family:Consolas,'JetBrains Mono',monospace;font-size:13px;color:#7c3aed;}
+        pre{background:#1e293b;color:#e2e8f0;border-radius:8px;padding:18px 22px;font-family:Consolas,'JetBrains Mono',monospace;font-size:13px;margin:14px 0;line-height:1.8;overflow-x:auto;}
+        table{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px;}
+        thead th{background:var(--accent);color:#fff;padding:10px 12px;text-align:left;font-weight:600;text-transform:uppercase;letter-spacing:.3px;font-size:11px;}
+        tbody td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;} tbody tr:hover{background:#f1f5f9;}
+        .hl{background:#eff6ff;border:1px solid #93c5fd;border-radius:6px;padding:16px 20px;margin:14px 0;font-size:14px;}
+        .hl.warn{background:#fffbeb;border-color:#fcd34d;}
+        .hl.green{background:#ecfdf5;border-color:#6ee7b7;}
+        .toc{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:24px;margin-bottom:28px;}
+        .toc h3{font-size:16px;color:var(--navy);margin-bottom:12px;} .toc ol{margin-left:24px;} .toc li{margin-bottom:6px;font-size:14px;}
+        .toc a{color:var(--accent);text-decoration:none;} .toc a:hover{text-decoration:underline;}
+        .step-container{counter-reset:step;}
+        .step-box{background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:20px 24px;margin:16px 0;counter-increment:step;position:relative;padding-left:60px;}
+        .step-box::before{content:counter(step);position:absolute;left:16px;top:18px;background:var(--accent);color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;}
+        .step-box h3{font-size:16px;color:#166534;margin-bottom:8px;}
+        .step-box p{font-size:14px;margin-bottom:8px;}
+        .prereq{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0;}
+        .prereq-item{background:#ecfdf5;border:1px solid #6ee7b7;padding:10px 16px;border-radius:8px;font-size:13px;display:flex;align-items:center;gap:8px;}
+        .prereq-item .icon{font-size:20px;}
+        .flow{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;padding:24px;background:#f0f4f8;border-radius:10px;margin:16px 0;border:1px solid var(--border);}
+        .fb{background:var(--card);border:2px solid var(--steel);border-radius:10px;padding:14px 18px;font-size:12px;font-weight:600;text-align:center;min-width:110px;box-shadow:0 2px 6px rgba(0,0,0,.06);}
+        .fb small{display:block;font-weight:400;color:var(--muted);margin-top:4px;font-size:11px;}
+        .fa{font-size:22px;color:var(--steel);font-weight:700;}
+        .tree{background:#1e293b;border-radius:8px;padding:20px 24px;font-family:Consolas,'JetBrains Mono',monospace;font-size:13px;line-height:2;margin:14px 0;overflow-x:auto;color:#e2e8f0;}
+        .tree .folder{color:#60a5fa;font-weight:700;} .tree .file{color:#34d399;} .tree .desc{color:#94a3b8;font-style:italic;}
+        .insight-box{background:#ecfdf5;border-left:5px solid var(--green);padding:16px 20px;margin:14px 0;border-radius:0 8px 8px 0;font-size:14px;line-height:1.8;}
+        .insight-box strong{color:#065f46;}
+        .file-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin:10px 0;display:flex;align-items:flex-start;gap:14px;transition:box-shadow .2s;}
+        .file-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.08);}
+        .file-card .file-icon{font-size:28px;flex-shrink:0;}
+        .file-card .file-info h4{font-size:14px;color:var(--navy);margin-bottom:4px;}
+        .file-card .file-info p{font-size:12px;color:var(--muted);margin:0;}
+        .footer{margin-top:40px;padding:20px;background:#eef2f7;border-radius:8px;text-align:center;font-size:13px;color:var(--muted);}
+    </style>
+</head>
+<body>
+    <div class="hdr">
+        <h1>FitTimer &mdash; Step-by-Step Recreation Guide</h1>
+        <div class="sub">Follow this guide to recreate the project from scratch on any computer (no Copilot needed)<br>
+        Created: 17 May 2026 &bull; Project: FitnessTracker</div>
+    </div>
+
+    <div class="c">
+
+    <!-- TOC -->
+    <div class="toc">
+        <h3>Contents</h3>
+        <ol>
+            <li><a href="#prereqs">Prerequisites</a></li>
+            <li><a href="#folders">Create the Folder Structure</a></li>
+            <li><a href="#html">Create index.html (The Skeleton)</a></li>
+            <li><a href="#css">Create style.css (The Look)</a></li>
+            <li><a href="#db">Create db.js (The Memory)</a></li>
+            <li><a href="#js">Create script.js (The Brain)</a></li>
+            <li><a href="#run">Open and Use</a></li>
+            <li><a href="#data">Check Your Data</a></li>
+            <li><a href="#customize">Customization</a></li>
+            <li><a href="#transfer">Transfer to Another Computer</a></li>
+            <li><a href="#troubleshoot">Troubleshooting</a></li>
+        </ol>
+    </div>
+
+    <!-- PREREQS -->
+    <h2 class="st" id="prereqs">1. Prerequisites</h2>
+    <div class="card">
+        <p>You need exactly <strong>two things</strong>:</p>
+        <div class="prereq">
+            <div class="prereq-item"><span class="icon">&#127760;</span> Any modern browser (Chrome, Edge, Firefox)</div>
+            <div class="prereq-item"><span class="icon">&#9998;</span> Any text editor (VS Code, Notepad++, or Notepad)</div>
+        </div>
+        <div class="hl green">
+            <strong>That's it!</strong> No Node.js, no Python, no terminal commands, no npm install. Just files + browser.
+        </div>
+    </div>
+
+    <!-- FOLDERS -->
+    <h2 class="st" id="folders">2. Create the Folder Structure</h2>
+    <div class="card">
+        <p>Create a folder called <code>FitnessTracker</code> anywhere on your computer. Inside it, create:</p>
+
+        <div class="tree">
+<span class="folder">FitnessTracker/</span>
+  <span class="folder">app/</span>                        <span class="desc">&larr; The actual app lives here</span>
+    <span class="file">index.html</span>              <span class="desc">&larr; Open this in browser to use</span>
+    <span class="file">style.css</span>               <span class="desc">&larr; All visual styling (dark theme)</span>
+    <span class="file">db.js</span>                   <span class="desc">&larr; Database layer (IndexedDB)</span>
+    <span class="file">script.js</span>               <span class="desc">&larr; All logic (timer, profiles, history)</span>
+  <span class="folder">Documentation/</span>              <span class="desc">&larr; Learning docs (you're reading one)</span>
+    <span class="file">01_Learning_and_Concepts.html</span>
+    <span class="file">02_Step_by_Step_Guide.html</span>
+        </div>
+
+        <h4>What each file does:</h4>
+        <div class="file-card">
+            <span class="file-icon">&#128196;</span>
+            <div class="file-info">
+                <h4>index.html</h4>
+                <p>The skeleton &mdash; defines what elements exist (profile selector, timer, tabs, dialogs). Links to CSS and JS files.</p>
+            </div>
+        </div>
+        <div class="file-card">
+            <span class="file-icon">&#127912;</span>
+            <div class="file-info">
+                <h4>style.css</h4>
+                <p>The look &mdash; dark theme, colors, animations, tab switching, calendar grid, dialog overlays.</p>
+            </div>
+        </div>
+        <div class="file-card">
+            <span class="file-icon">&#128190;</span>
+            <div class="file-info">
+                <h4>db.js</h4>
+                <p>The memory &mdash; IndexedDB wrapper. Opens the database, creates tables (users + sessions), provides functions to add/get data.</p>
+            </div>
+        </div>
+        <div class="file-card">
+            <span class="file-icon">&#9881;</span>
+            <div class="file-info">
+                <h4>script.js</h4>
+                <p>The brain &mdash; timer countdown, profile login, stop dialog, calendar rendering, streak calculation, data export.</p>
+            </div>
+        </div>
+
+        <div class="insight-box">
+            <strong>&#x1F4A1; Why 4 files?</strong><br>
+            Separation of concerns: each file does ONE job. If you want to change colors &rarr; style.css. Fix a bug in the timer &rarr; script.js. Change how data is stored &rarr; db.js. This makes the code easy to maintain.
+        </div>
+    </div>
+
+    <!-- HTML -->
+    <h2 class="st" id="html">3. Create index.html</h2>
+    <div class="card">
+        <p>This is the <strong>structure</strong> of your app &mdash; what elements exist on the page. It has 5 major sections:</p>
+
+        <table>
+            <thead><tr><th>Section</th><th>What it does</th><th>HTML id / class</th></tr></thead>
+            <tbody>
+                <tr><td>Profile Selector</td><td>Pick existing user or "New Profile"</td><td><code>#profileSelector</code></td></tr>
+                <tr><td>Profile Setup</td><td>Form: name, height, weight, goal</td><td><code>#profileSetup</code></td></tr>
+                <tr><td>Main App (3 tabs)</td><td>Timer | History | Profile</td><td><code>#mainApp</code> + <code>.tab-nav</code></td></tr>
+                <tr><td>Stop Dialog</td><td>Record / Discard / Continue</td><td><code>#stopDialog</code></td></tr>
+                <tr><td>Celebration</td><td>Popup on completion</td><td><code>#celebration</code></td></tr>
+            </tbody>
+        </table>
+
+        <h4 style="margin-top:16px;">Tab structure inside Main App:</h4>
+        <table>
+            <thead><tr><th>Tab</th><th>Content</th><th>id</th></tr></thead>
+            <tbody>
+                <tr><td>Timer</td><td>Duration buttons + ring + Start/Pause/Stop + today's sessions</td><td><code>#tab-timer</code></td></tr>
+                <tr><td>History</td><td>Calendar grid (month nav) + yearly stats + streak</td><td><code>#tab-history</code></td></tr>
+                <tr><td>Profile</td><td>User info + edit + export data</td><td><code>#tab-profile</code></td></tr>
+            </tbody>
+        </table>
+
+        <div class="hl">
+            <strong>Key patterns:</strong><br>
+            &bull; <code>.hidden</code> class hides/shows sections (CSS: <code>display:none</code>)<br>
+            &bull; <code>.tab-content.active</code> shows the active tab<br>
+            &bull; Scripts loaded at bottom: <code>&lt;script src="db.js"&gt;</code> then <code>&lt;script src="script.js"&gt;</code> (order matters!)
+        </div>
+
+        <p>Copy the full content from <code>app/index.html</code> in this project.</p>
+    </div>
+
+    <!-- CSS -->
+    <h2 class="st" id="css">4. Create style.css</h2>
+    <div class="card">
+        <p>This controls how everything <strong>looks</strong>. Key techniques used:</p>
+
+        <table>
+            <thead><tr><th>Technique</th><th>What it does</th><th>Example</th></tr></thead>
+            <tbody>
+                <tr><td>CSS Variables</td><td>Define colors once, reuse everywhere</td><td><code>--primary: #6c63ff;</code></td></tr>
+                <tr><td>Flexbox</td><td>Align items in rows/columns</td><td><code>display: flex; gap: 12px;</code></td></tr>
+                <tr><td>Grid</td><td>Calendar layout (7-column grid)</td><td><code>grid-template-columns: repeat(7, 1fr)</code></td></tr>
+                <tr><td>conic-gradient</td><td>Circular progress ring</td><td><code>background: conic-gradient(...)</code></td></tr>
+                <tr><td>@keyframes</td><td>Animations (pulse, bounce)</td><td><code>animation: pulse 2s infinite</code></td></tr>
+                <tr><td>.hidden class</td><td>Show/hide sections (tabs, dialogs)</td><td><code>display: none !important;</code></td></tr>
+                <tr><td>Tab switching</td><td>Only active tab is visible</td><td><code>.tab-content.active { display: block }</code></td></tr>
+            </tbody>
+        </table>
+
+        <p>Copy the full content from <code>app/style.css</code> in this project.</p>
+    </div>
+
+    <!-- DB.JS -->
+    <h2 class="st" id="db" style="border-color:var(--green);">5. Create db.js (The Memory)</h2>
+    <div class="card">
+        <p>This is the <strong>database layer</strong> &mdash; a thin wrapper around the browser's built-in IndexedDB.</p>
+
+        <div class="hl green">
+            <strong>Why a separate file?</strong> IndexedDB has a verbose API (callbacks, events). db.js wraps it into simple <code>async/await</code> functions so the rest of the code stays clean.
+        </div>
+
+        <h4>What db.js provides:</h4>
+        <table>
+            <thead><tr><th>Function</th><th>Purpose</th><th>Returns</th></tr></thead>
+            <tbody>
+                <tr><td><code>openDB()</code></td><td>Open (or create) the database + tables</td><td>Database connection</td></tr>
+                <tr><td><code>addUser(user)</code></td><td>Save a new user profile</td><td>Generated ID</td></tr>
+                <tr><td><code>getAllUsers()</code></td><td>List all profiles (for selector)</td><td>Array of users</td></tr>
+                <tr><td><code>getUser(id)</code></td><td>Load one user's profile</td><td>User object</td></tr>
+                <tr><td><code>updateUser(user)</code></td><td>Edit profile (name, weight, goal)</td><td>&mdash;</td></tr>
+                <tr><td><code>addSession(session)</code></td><td>Record a workout</td><td>Generated ID</td></tr>
+                <tr><td><code>getSessionsByUser(userId)</code></td><td>All workouts for one person</td><td>Array of sessions</td></tr>
+                <tr><td><code>exportUserData(userId)</code></td><td>Bundle user + sessions for backup</td><td>JSON object</td></tr>
+            </tbody>
+        </table>
+
+        <h4 style="margin-top:16px;">How IndexedDB works (the concept):</h4>
+        <pre>// 1. Ask the browser to open a database named 'FitTimerDB'
+const request = indexedDB.open('FitTimerDB', 1);
+
+// 2. If it's the FIRST time, create the tables:
+request.onupgradeneeded = (event) => {
+    const db = event.target.result;
+    db.createObjectStore('users', { keyPath: 'id', autoIncrement: true });
+    db.createObjectStore('sessions', { keyPath: 'id', autoIncrement: true });
+};
+
+// 3. To write data: open a "transaction", get the table, call .add()
+// 4. To read data: open a transaction, get the table, call .getAll()</pre>
+
+        <div class="hl warn">
+            <strong>Layman translation:</strong> IndexedDB is like a filing cabinet built into your browser. Each "object store" (users, sessions) is a drawer. You put records in, you pull records out. The browser handles the filing &mdash; you just call <code>addUser()</code> or <code>getSessionsByUser()</code>.
+        </div>
+
+        <p>Copy the full content from <code>app/db.js</code> in this project.</p>
+    </div>
+
+    <!-- JS -->
+    <h2 class="st" id="js">6. Create script.js</h2>
+    <div class="card">
+        <p>This is the <strong>brain</strong>. It orchestrates everything &mdash; login, timer, recording, history, profiles.</p>
+
+        <h4>Core functions (grouped by what they do):</h4>
+        <table>
+            <thead><tr><th>Function</th><th>Purpose</th><th>Called When</th></tr></thead>
+            <tbody>
+                <tr style="background:#f0fdf4;"><td colspan="3"><strong>Profile Management</strong></td></tr>
+                <tr><td><code>init()</code></td><td>Load DB, show profile selector</td><td>Page loads</td></tr>
+                <tr><td><code>showProfileSelector()</code></td><td>List existing profiles + "New" button</td><td>App start / logout</td></tr>
+                <tr><td><code>showProfileSetup()</code></td><td>Show form for new profile</td><td>Click "New Profile"</td></tr>
+                <tr><td><code>loginUser(userId)</code></td><td>Load user's data, show main app</td><td>Click a profile</td></tr>
+                <tr style="background:#eff6ff;"><td colspan="3"><strong>Timer</strong></td></tr>
+                <tr><td><code>startTimer()</code></td><td>Begin countdown (setInterval)</td><td>Click START or Space</td></tr>
+                <tr><td><code>pauseTimer()</code></td><td>Freeze without losing progress</td><td>Click PAUSE</td></tr>
+                <tr><td><code>showStopDialog()</code></td><td>Pause + show Record/Discard/Continue</td><td>Click STOP</td></tr>
+                <tr><td><code>resetTimer()</code></td><td>Reset to selected duration</td><td>After discard</td></tr>
+                <tr><td><code>completeSession(isPartial)</code></td><td>Save to DB + celebrate</td><td>Timer done or "Record"</td></tr>
+                <tr style="background:#fef3c7;"><td colspan="3"><strong>History &amp; Stats</strong></td></tr>
+                <tr><td><code>renderCalendar()</code></td><td>Draw month grid with colored days</td><td>Tab switch / month nav</td></tr>
+                <tr><td><code>renderHistory()</code></td><td>Yearly totals + session list</td><td>Tab switch</td></tr>
+                <tr><td><code>calculateStreak()</code></td><td>Count consecutive workout days</td><td>After recording</td></tr>
+                <tr><td><code>calculateAllStreaks()</code></td><td>Current + longest streak</td><td>Profile tab</td></tr>
+                <tr style="background:#fef2f2;"><td colspan="3"><strong>Profile Tab</strong></td></tr>
+                <tr><td><code>renderProfile()</code></td><td>Show user info + stats</td><td>Tab switch</td></tr>
+                <tr><td><code>editProfile()</code></td><td>Edit name/weight/goal</td><td>Click "Edit"</td></tr>
+                <tr><td><code>exportData()</code></td><td>Download JSON backup</td><td>Click "Export"</td></tr>
+            </tbody>
+        </table>
+
+        <h4 style="margin-top:20px;">How functions connect (login &rarr; workout &rarr; save):</h4>
+        <div class="flow">
+            <div class="fb" style="border-color:var(--purple);background:#f5f3ff;"><strong>Pick Profile</strong><small>loginUser(id)</small></div>
+            <span class="fa">&rarr;</span>
+            <div class="fb" style="border-color:#166534;background:#f0fdf4;"><strong>START</strong><small>startTimer()</small></div>
+            <span class="fa">&rarr;</span>
+            <div class="fb" style="border-color:#1e40af;background:#eff6ff;"><strong>every 1s</strong><small>seconds-- + ring</small></div>
+            <span class="fa">&rarr;</span>
+            <div class="fb" style="border-color:#92400e;background:#fff7ed;"><strong>Done / Stop</strong><small>completeSession()</small></div>
+            <span class="fa">&rarr;</span>
+            <div class="fb" style="border-color:var(--green);background:#ecfdf5;"><strong>addSession()</strong><small>saved to IndexedDB</small></div>
+            <span class="fa">&rarr;</span>
+            <div class="fb" style="border-color:var(--pink);background:#fef2f2;"><strong>celebrate!</strong><small>popup + confetti</small></div>
+        </div>
+
+        <h4 style="margin-top:16px;">Stop-early flow (new in v2):</h4>
+        <div class="flow" style="background:#fefce8;">
+            <div class="fb" style="border-color:var(--accent);background:#fef2f2;"><strong>STOP</strong><small>showStopDialog()</small></div>
+            <span class="fa">&rarr;</span>
+            <div class="fb" style="border-color:#92400e;background:#fff7ed;"><strong>Dialog</strong><small>"You did X min"</small></div>
+            <span class="fa">&rarr;</span>
+            <div class="fb" style="border-color:var(--green);background:#ecfdf5;"><strong>Record</strong><small>save partial</small></div>
+        </div>
+
+        <div class="insight-box">
+            <strong>&#x1F4A1; Key insight:</strong> Everything after START is automatic. No manual logging, no typing. The chain from timer &rarr; save &rarr; celebrate requires zero user input. That's the whole point &mdash; zero friction fitness tracking.
+        </div>
+
+        <p>Copy the full content from <code>app/script.js</code> in this project.</p>
+    </div>
+
+    <!-- RUN -->
+    <h2 class="st" id="run" style="border-color:var(--green);">7. Open and Use</h2>
+    <div class="card">
+        <p>The entire user journey in one glance:</p>
+        <div class="flow">
+            <div class="fb" style="border-color:var(--accent);background:#eff6ff;"><strong>Double-click</strong><small>index.html</small></div>
+            <span class="fa">&rarr;</span>
+            <div class="fb" style="border-color:var(--purple);background:#f5f3ff;"><strong>Pick Profile</strong><small>or create new</small></div>
+            <span class="fa">&rarr;</span>
+            <div class="fb" style="border-color:var(--orange);background:#fef3c7;"><strong>Pick Time</strong><small>9/15/30/45 min</small></div>
+            <span class="fa">&rarr;</span>
+            <div class="fb" style="border-color:#166534;background:#f0fdf4;"><strong>START</strong><small>click or Space</small></div>
+            <span class="fa">&rarr;</span>
+            <div class="fb" style="border-color:#166534;background:#f0fdf4;"><strong>Work Out</strong><small>ring fills up</small></div>
+            <span class="fa">&rarr;</span>
+            <div class="fb" style="border-color:var(--pink);background:#fef2f2;"><strong>Done!</strong><small>auto-saved</small></div>
+        </div>
+
+        <h4>Detailed steps:</h4>
+        <div class="step-container">
+            <div class="step-box">
+                <h3>Open in Browser</h3>
+                <p>Double-click <code>app/index.html</code> &mdash; it opens in your default browser. No server needed.</p>
+            </div>
+            <div class="step-box">
+                <h3>Create or Pick Profile</h3>
+                <p><strong>First time:</strong> Click "New Profile" &rarr; enter name, height (optional), weight (optional), daily goal.<br>
+                <strong>Returning:</strong> Click your name from the list.</p>
+            </div>
+            <div class="step-box">
+                <h3>Select Duration &amp; START</h3>
+                <p>Click one of: <strong>9 / 15 / 30 / 45 min</strong>. Then hit START (or press <strong>Space</strong>). The ring starts filling.</p>
+            </div>
+            <div class="step-box">
+                <h3>Work Out!</h3>
+                <p>The ring fills as time passes. You can <strong>pause</strong> anytime (Space or Pause button).</p>
+            </div>
+            <div class="step-box">
+                <h3>Finish or Stop Early</h3>
+                <p><strong>Timer finishes:</strong> Celebration popup! Auto-saved.<br>
+                <strong>Need to stop early?</strong> Press STOP &rarr; pick "Record" (saves partial time), "Discard" (throw away), or "Continue" (resume).</p>
+            </div>
+            <div class="step-box">
+                <h3>Check History</h3>
+                <p>Click the <strong>History</strong> tab &rarr; see a calendar with green dots on workout days. Navigate months with arrows. See yearly stats.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- DATA -->
+    <h2 class="st" id="data">8. Check Your Data</h2>
+    <div class="card">
+        <p>Your workout data is stored in the browser's <strong>IndexedDB</strong> (a real database, not just text). To inspect it:</p>
+
+        <div class="step-container">
+            <div class="step-box">
+                <h3>Open DevTools</h3>
+                <p>Press <strong>F12</strong> (or right-click page &rarr; Inspect)</p>
+            </div>
+            <div class="step-box">
+                <h3>Navigate to IndexedDB</h3>
+                <p><strong>Chrome/Edge:</strong> Application tab &rarr; Storage &rarr; IndexedDB &rarr; FitTimerDB<br>
+                   <strong>Firefox:</strong> Storage tab &rarr; Indexed DB &rarr; FitTimerDB</p>
+            </div>
+            <div class="step-box">
+                <h3>Browse Tables</h3>
+                <p>Click <code>users</code> to see profiles. Click <code>sessions</code> to see all workouts.</p>
+            </div>
+        </div>
+
+        <table>
+            <thead><tr><th>Table</th><th>Contains</th><th>Example Record</th></tr></thead>
+            <tbody>
+                <tr><td><code>users</code></td><td>User profiles</td><td><code>{id:1, name:"Sai", height:175, weight:72, goal:15}</code></td></tr>
+                <tr><td><code>sessions</code></td><td>Workout records</td><td><code>{id:1, userId:1, date:"2026-05-17T...", duration:15, completed:true}</code></td></tr>
+            </tbody>
+        </table>
+
+        <div class="hl green">
+            <strong>Easier way:</strong> Use the <strong>Profile tab &rarr; Export Data</strong> button in the app itself. It downloads a JSON file with all your data &mdash; no DevTools needed!
+        </div>
+    </div>
+
+    <!-- CUSTOMIZE -->
+    <h2 class="st" id="customize" style="border-color:var(--purple);">9. Customization</h2>
+    <div class="card">
+        <h3>Change Colors</h3>
+        <p>Edit the <code>:root</code> variables at the top of <code>style.css</code>:</p>
+        <pre>:root {
+    --primary: #6c63ff;     /* Change this to your favorite color */
+    --accent: #ff6584;      /* Secondary accent */
+    --success: #4ecdc4;     /* Timer progress color */
+}</pre>
+
+        <h3>Add More Duration Options</h3>
+        <p>In <code>index.html</code>, add a button inside <code>.duration-selector</code>:</p>
+        <pre>&lt;button class="duration-btn" data-minutes="60"&gt;60 min&lt;/button&gt;</pre>
+        <p>The JavaScript automatically picks up any button with <code>data-minutes</code>.</p>
+
+        <h3>Change Celebration Messages</h3>
+        <p>In <code>script.js</code>, find the <code>messages</code> array inside the celebration function and edit/add your own motivational quotes.</p>
+    </div>
+
+    <!-- TRANSFER -->
+    <h2 class="st" id="transfer" style="border-color:var(--orange);">10. Transfer to Another Computer</h2>
+    <div class="card">
+        <h3>Move the App</h3>
+        <ol>
+            <li>Copy the entire <code>FitnessTracker/app/</code> folder (USB, email, cloud)</li>
+            <li>Open <code>index.html</code> in a browser on the new machine</li>
+            <li>Done! (Starts fresh &mdash; previous data is in the old browser's IndexedDB)</li>
+        </ol>
+
+        <h3>Transfer Workout Data</h3>
+        <div class="hl green">
+            <strong>Easy method (built into the app):</strong><br><br>
+            <strong>On old computer:</strong> Profile tab &rarr; click "Export Data" &rarr; saves a <code>.json</code> file<br><br>
+            <strong>On new computer:</strong> Open the app, create the same profile, then import the JSON (future feature) or manually paste via DevTools console:<br>
+            <code>// In Console (F12): paste the exported sessions into IndexedDB</code>
+        </div>
+
+        <div class="hl warn">
+            <strong>Why data doesn't auto-transfer:</strong> IndexedDB lives inside ONE browser on ONE computer. It's like a diary locked in a desk drawer &mdash; you can photocopy pages (export), but the diary itself stays put. For cross-device sync, you'd need a cloud service (Firebase, Supabase) &mdash; that's a future upgrade.
+        </div>
+    </div>
+
+    <!-- TROUBLESHOOT -->
+    <h2 class="st" id="troubleshoot">11. Troubleshooting</h2>
+    <div class="card">
+        <table>
+            <thead><tr><th>Problem</th><th>Solution</th></tr></thead>
+            <tbody>
+                <tr><td>Timer doesn't start</td><td>Open console (F12) &mdash; check for red errors. Is db.js loaded before script.js?</td></tr>
+                <tr><td>Profile selector is empty</td><td>First time? Click "New Profile". If not first time, check IndexedDB in DevTools.</td></tr>
+                <tr><td>Data disappeared</td><td>Did you clear browser data? IndexedDB gets wiped with "Clear all site data".</td></tr>
+                <tr><td>Calendar shows wrong month</td><td>Click the &larr; &rarr; arrows to navigate. It starts on current month.</td></tr>
+                <tr><td>Looks broken on phone</td><td>Ensure <code>&lt;meta name="viewport"&gt;</code> is in HTML head</td></tr>
+                <tr><td>Progress ring not filling</td><td>Check console for errors in the interval function</td></tr>
+                <tr><td>Space bar scrolls page</td><td>Normal browser behavior &mdash; the JS <code>preventDefault()</code> should handle it</td></tr>
+                <tr><td>"Record" saves 0 minutes</td><td>You stopped immediately. Need at least 1 minute elapsed.</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer">
+        FitTimer &mdash; Step-by-Step Recreation Guide &bull; 17 May 2026<br>
+        See also: <a href="01_Learning_and_Concepts.html" style="color:var(--accent);">Learning &amp; Concepts</a>
+    </div>
+
+    </div>
+</body>
+</html>

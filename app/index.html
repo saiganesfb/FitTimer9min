@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitTimer — Workout Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- PROFILE SELECTOR (shown on launch if multiple users) -->
+    <div id="profileSelector" class="profile-selector hidden">
+        <div class="profile-modal">
+            <h2>Who's working out?</h2>
+            <div id="profileList" class="profile-list"></div>
+            <button id="newProfileBtn" class="control-btn new-profile-btn">+ New Profile</button>
+        </div>
+    </div>
+
+    <!-- PROFILE SETUP (shown for new users) -->
+    <div id="profileSetup" class="profile-setup hidden">
+        <div class="profile-modal">
+            <h2>Set Up Your Profile</h2>
+            <p class="setup-subtitle">Quick setup — you can change these later</p>
+            <form id="profileForm" class="profile-form">
+                <div class="form-group">
+                    <label for="userName">Name *</label>
+                    <input type="text" id="userName" placeholder="Your name" required maxlength="30">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="userHeight">Height (cm)</label>
+                        <input type="number" id="userHeight" placeholder="170" min="100" max="250">
+                    </div>
+                    <div class="form-group">
+                        <label for="userWeight">Weight (kg)</label>
+                        <input type="number" id="userWeight" placeholder="70" min="20" max="300">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="userGoal">Daily Goal (minutes)</label>
+                    <select id="userGoal">
+                        <option value="9">9 min (minimum effective)</option>
+                        <option value="15" selected>15 min (recommended daily)</option>
+                        <option value="30">30 min (alternate days)</option>
+                        <option value="45">45 min (intense)</option>
+                    </select>
+                </div>
+                <button type="submit" class="control-btn start-btn">Let's Go!</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="mainApp" class="app-container hidden">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <h1>FitTimer</h1>
+                <p class="tagline">Just press start. We'll handle the rest.</p>
+            </div>
+            <div class="header-right">
+                <span id="currentUser" class="user-badge"></span>
+                <button id="switchUserBtn" class="icon-btn" title="Switch user">&#128100;</button>
+            </div>
+        </header>
+
+        <!-- Tab Navigation -->
+        <nav class="tab-nav">
+            <button class="tab-btn active" data-tab="timer">Timer</button>
+            <button class="tab-btn" data-tab="history">History</button>
+            <button class="tab-btn" data-tab="profile">Profile</button>
+        </nav>
+
+        <!-- TAB: Timer -->
+        <section id="tabTimer" class="tab-content active">
+            <div class="duration-selector">
+                <button class="duration-btn" data-minutes="9">9 min</button>
+                <button class="duration-btn active" data-minutes="15">15 min</button>
+                <button class="duration-btn" data-minutes="30">30 min</button>
+                <button class="duration-btn" data-minutes="45">45 min</button>
+            </div>
+
+            <div class="timer-ring-container">
+                <div class="timer-ring" id="timerRing">
+                    <div class="timer-inner">
+                        <span class="timer-display" id="timerDisplay">15:00</span>
+                        <span class="timer-label" id="timerLabel">READY</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button id="startBtn" class="control-btn start-btn">&#9654; START</button>
+                <button id="pauseBtn" class="control-btn pause-btn hidden">&#9208; PAUSE</button>
+                <button id="stopBtn" class="control-btn stop-btn hidden">&#9632; STOP</button>
+                <button id="resetBtn" class="control-btn reset-btn hidden">&#8634; RESET</button>
+            </div>
+
+            <div class="stats-section">
+                <div class="stat-card streak-card">
+                    <span class="stat-value" id="streakCount">0</span>
+                    <span class="stat-label">Day Streak</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="weekCount">0</span>
+                    <span class="stat-label">This Week</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="totalCount">0</span>
+                    <span class="stat-label">Total Sessions</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="totalMinutes">0</span>
+                    <span class="stat-label">Total Minutes</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB: History -->
+        <section id="tabHistory" class="tab-content">
+            <div class="history-header">
+                <button id="prevMonth" class="icon-btn">&larr;</button>
+                <h2 id="historyMonth">May 2026</h2>
+                <button id="nextMonth" class="icon-btn">&rarr;</button>
+            </div>
+            <div id="calendarGrid" class="calendar-grid"></div>
+            <div class="history-stats">
+                <div class="stat-card">
+                    <span class="stat-value" id="monthSessions">0</span>
+                    <span class="stat-label">This Month</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="monthMinutes">0</span>
+                    <span class="stat-label">Minutes</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="yearSessions">0</span>
+                    <span class="stat-label">This Year</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="yearMinutes">0</span>
+                    <span class="stat-label">Year Minutes</span>
+                </div>
+            </div>
+            <h3 class="section-title">Recent Sessions</h3>
+            <div id="historyList" class="history-list">
+                <p class="empty-state">No sessions yet. Start your first workout!</p>
+            </div>
+        </section>
+
+        <!-- TAB: Profile -->
+        <section id="tabProfile" class="tab-content">
+            <div class="profile-view">
+                <div class="profile-avatar" id="profileAvatar">?</div>
+                <h2 id="profileDisplayName">—</h2>
+                <div class="profile-details">
+                    <div class="detail-row"><span class="detail-label">Height</span><span class="detail-value" id="profileHeight">—</span></div>
+                    <div class="detail-row"><span class="detail-label">Weight</span><span class="detail-value" id="profileWeight">—</span></div>
+                    <div class="detail-row"><span class="detail-label">Daily Goal</span><span class="detail-value" id="profileGoal">—</span></div>
+                    <div class="detail-row"><span class="detail-label">Member Since</span><span class="detail-value" id="profileSince">—</span></div>
+                    <div class="detail-row"><span class="detail-label">Longest Streak</span><span class="detail-value" id="profileBestStreak">—</span></div>
+                </div>
+                <button id="editProfileBtn" class="control-btn pause-btn">Edit Profile</button>
+                <button id="exportDataBtn" class="control-btn reset-btn" style="margin-top:8px;">Export Data (JSON)</button>
+            </div>
+        </section>
+
+        <footer class="app-footer">
+            <p>9 min/day = maximum health impact. You've got this.</p>
+        </footer>
+    </div>
+
+    <!-- STOP CONFIRM DIALOG -->
+    <div id="stopDialog" class="dialog-overlay hidden">
+        <div class="dialog-box">
+            <h3>Stop Workout?</h3>
+            <p>You've done <strong id="stopDoneTime">0</strong> of <strong id="stopTotalTime">15</strong> minutes.</p>
+            <div class="dialog-actions">
+                <button id="stopRecordBtn" class="control-btn start-btn">Record <span id="stopPartialMin">0</span> min</button>
+                <button id="stopDiscardBtn" class="control-btn reset-btn">Discard</button>
+                <button id="stopCancelBtn" class="control-btn pause-btn">Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CELEBRATION OVERLAY -->
+    <div id="celebration" class="celebration hidden">
+        <div class="celebration-content">
+            <div class="celebration-emoji">&#127881;</div>
+            <h2>WORKOUT DONE!</h2>
+            <p class="celebration-message" id="celebrationMsg">Amazing work!</p>
+            <p class="celebration-stats" id="celebrationStats"></p>
+            <button id="celebrationClose" class="control-btn start-btn">NICE!</button>
+        </div>
+    </div>
+
+    <script src="db.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

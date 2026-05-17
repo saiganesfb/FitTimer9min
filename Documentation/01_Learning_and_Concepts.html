@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitTimer &mdash; Learning &amp; Concepts</title>
+    <style>
+        :root{--navy:#1a1a2e;--steel:#4a6fa5;--accent:#6c63ff;--green:#4ecdc4;--orange:#e67e22;--purple:#7c3aed;--pink:#ff6584;--bg:#f8fafc;--card:#fff;--border:#e2e8f0;--text:#1e293b;--muted:#64748b;}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Segoe UI',Inter,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+        .hdr{background:linear-gradient(135deg,var(--navy),#2d1b69);color:#fff;padding:36px 48px;border-bottom:4px solid var(--accent);}
+        .hdr h1{font-size:28px;font-weight:700;margin-bottom:4px;} .hdr .sub{font-size:14px;opacity:.85;}
+        .c{max-width:1100px;margin:0 auto;padding:32px 48px;}
+        .st{font-size:22px;font-weight:700;color:var(--navy);margin:36px 0 16px;padding-bottom:8px;border-bottom:2px solid var(--accent);} .st:first-of-type{margin-top:0;}
+        .card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+        .card h3{font-size:17px;color:var(--navy);margin-bottom:10px;} .card h4{font-size:14px;color:var(--steel);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.4px;}
+        .card p,.card li{font-size:14px;line-height:1.8;} .card ul,.card ol{margin-left:20px;margin-top:6px;} .card li{margin-bottom:6px;}
+        code{background:#f1f5f9;padding:2px 6px;border-radius:3px;font-family:Consolas,'JetBrains Mono',monospace;font-size:13px;color:#7c3aed;}
+        table{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px;}
+        thead th{background:var(--accent);color:#fff;padding:10px 12px;text-align:left;font-weight:600;text-transform:uppercase;letter-spacing:.3px;font-size:11px;}
+        tbody td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;} tbody tr:hover{background:#f1f5f9;}
+        .hl{background:#eff6ff;border:1px solid #93c5fd;border-radius:6px;padding:16px 20px;margin:14px 0;font-size:14px;}
+        .hl.warn{background:#fffbeb;border-color:#fcd34d;}
+        .hl.green{background:#ecfdf5;border-color:#6ee7b7;}
+        .hl.pink{background:#fef2f2;border-color:#fca5a5;}
+        .toc{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:24px;margin-bottom:28px;}
+        .toc h3{font-size:16px;color:var(--navy);margin-bottom:12px;} .toc ol{margin-left:24px;} .toc li{margin-bottom:6px;font-size:14px;}
+        .toc a{color:var(--accent);text-decoration:none;} .toc a:hover{text-decoration:underline;}
+        .formula-box{background:#1e293b;color:#e2e8f0;border-radius:8px;padding:18px 22px;font-family:Consolas,'JetBrains Mono',monospace;font-size:13px;margin:14px 0;line-height:2;overflow-x:auto;}
+        .formula-box .comment{color:#94a3b8;} .formula-box .highlight{color:#60a5fa;font-weight:700;} .formula-box .val{color:#34d399;} .formula-box .key{color:#fbbf24;}
+        .insight-box{background:#ecfdf5;border-left:5px solid var(--green);padding:16px 20px;margin:14px 0;border-radius:0 8px 8px 0;font-size:14px;line-height:1.8;}
+        .insight-box strong{color:#065f46;}
+        .analogy-box{background:#fef3c7;border-left:5px solid #f59e0b;padding:16px 20px;margin:14px 0;border-radius:0 8px 8px 0;font-size:14px;line-height:1.8;}
+        .why-box{background:#eff6ff;border-left:5px solid var(--accent);padding:16px 20px;margin:14px 0;border-radius:0 8px 8px 0;font-size:14px;line-height:1.8;}
+        .why-box strong{color:#1e40af;}
+        .flow{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;padding:24px;background:#f0f4f8;border-radius:10px;margin:16px 0;border:1px solid var(--border);}
+        .flow.vertical{flex-direction:column;}
+        .fb{background:var(--card);border:2px solid var(--steel);border-radius:10px;padding:14px 18px;font-size:12px;font-weight:600;text-align:center;min-width:120px;box-shadow:0 2px 6px rgba(0,0,0,.06);}
+        .fb small{display:block;font-weight:400;color:var(--muted);margin-top:4px;font-size:11px;}
+        .fa{font-size:22px;color:var(--steel);font-weight:700;}
+        .layer-grid{display:grid;grid-template-columns:1fr;gap:0;margin:16px 0;}
+        .layer-box{padding:20px 24px;border:1px solid var(--border);text-align:center;}
+        .layer-box h4{font-size:14px;margin-bottom:6px;} .layer-box p{font-size:12px;color:var(--muted);margin:0;}
+        .layer-box.ui{background:#eff6ff;border-color:#93c5fd;border-radius:10px 10px 0 0;}
+        .layer-box.logic{background:#fef3c7;border-color:#fcd34d;}
+        .layer-box.storage{background:#ecfdf5;border-color:#6ee7b7;border-radius:0 0 10px 10px;}
+        .layer-connector{text-align:center;font-size:18px;color:var(--muted);padding:4px 0;}
+        .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;} @media(max-width:800px){.g2{grid-template-columns:1fr;}}
+        .footer{margin-top:40px;padding:20px;background:#eef2f7;border-radius:8px;text-align:center;font-size:13px;color:var(--muted);}
+    </style>
+</head>
+<body>
+    <div class="hdr">
+        <h1>FitTimer &mdash; Learning &amp; Concepts</h1>
+        <div class="sub">Understanding the architecture, technology choices, and code behind the app<br>
+        Created: 17 May 2026 &bull; Project: FitnessTracker</div>
+    </div>
+
+    <div class="c">
+
+    <!-- TOC -->
+    <div class="toc">
+        <h3>Contents</h3>
+        <ol>
+            <li><a href="#problem">The Problem We're Solving</a></li>
+            <li><a href="#solution">The Solution: Pomodoro-Style Workout Timer</a></li>
+            <li><a href="#tech">Technology Choices (and Why)</a></li>
+            <li><a href="#architecture">Architecture Overview</a></li>
+            <li><a href="#code">Key Code Concepts Explained</a></li>
+            <li><a href="#data">Data Model</a></li>
+            <li><a href="#future">Future Enhancement Ideas</a></li>
+            <li><a href="#resources">Learning Resources</a></li>
+        </ol>
+    </div>
+
+    <!-- SECTION 1 -->
+    <h2 class="st" id="problem">1. The Problem We're Solving</h2>
+    <div class="card">
+        <p>You want to work out but struggle with consistency. The friction points are:</p>
+        <ul>
+            <li><strong>Too much manual tracking</strong> &mdash; opening apps, logging exercises, sets, reps</li>
+            <li><strong>No fun/reward loop</strong> &mdash; it feels like a chore</li>
+            <li><strong>Overwhelming time goals</strong> &mdash; "1 hour at gym" feels impossible some days</li>
+        </ul>
+
+        <div class="insight-box">
+            <strong>&#x1F4A1; The Research Insight:</strong><br>
+            US research (referenced by Krishashok) shows just <strong>60 min/week</strong> of weight training (&asymp;9 min/day) gives <strong>maximum health impact</strong>. So we're building around 15 min/day or 30 min alternate days.
+        </div>
+    </div>
+
+    <!-- SECTION 2 -->
+    <h2 class="st" id="solution">2. The Solution: Pomodoro-Style Workout Timer</h2>
+    <div class="card">
+        <p>A single-purpose app that:</p>
+        <ol>
+            <li>You set your workout duration (9 / 15 / 30 / 45 min)</li>
+            <li>Click <strong>ONE button</strong> to start</li>
+            <li>Timer runs with visual feedback (progress ring, pulse animation)</li>
+            <li>When timer completes &rarr; <strong>session auto-recorded</strong> (zero additional input)</li>
+            <li>Dashboard shows your streak, history, and stats</li>
+        </ol>
+
+        <div class="why-box">
+            <strong>Key Design Principle:</strong><br>
+            The fewer clicks between "I should work out" and "I'm working out," the more likely you'll do it. Every screen, every form field, every extra tap is a chance to quit.
+        </div>
+    </div>
+
+    <!-- SECTION 3 -->
+    <h2 class="st" id="tech">3. Technology Choices (and Why)</h2>
+    <div class="card">
+        <h3>Why Pure HTML/CSS/JavaScript?</h3>
+        <table>
+            <thead><tr><th>Option</th><th>Pros</th><th>Cons</th></tr></thead>
+            <tbody>
+                <tr><td>React / Vue / Angular</td><td>Component reuse, ecosystem</td><td>Needs Node.js, npm, build step</td></tr>
+                <tr><td>Python + Streamlit</td><td>Quick dashboards</td><td>Needs Python installed, terminal</td></tr>
+                <tr style="background:#ecfdf5;"><td><strong>Plain HTML/JS/CSS</strong></td><td><strong>Zero install, open in browser</strong></td><td>Less "framework-y"</td></tr>
+                <tr><td>Mobile App (Flutter/React Native)</td><td>Native feel</td><td>App store, per-platform builds</td></tr>
+            </tbody>
+        </table>
+
+        <div class="insight-box">
+            <strong>&#x1F4A1; Why this wins:</strong><br>
+            Open <code>index.html</code> in any browser &rarr; it works. No terminal, no installs, no build steps. Copy the folder to any computer &rarr; it works. You're learning web fundamentals (transferable skill).
+        </div>
+
+        <h3>Why IndexedDB?</h3>
+        <p>Your workout data is stored in the browser's <strong>IndexedDB</strong> &mdash; a real database built into every browser:</p>
+
+        <div class="formula-box">
+<span class="comment">// Open (or create) the database</span>
+<span class="highlight">const</span> request = indexedDB.open(<span class="key">'FitTimerDB'</span>, <span class="val">1</span>);
+
+<span class="comment">// Define tables on first run:</span>
+request.onupgradeneeded = (event) => {
+    <span class="highlight">const</span> db = event.target.result;
+    db.createObjectStore(<span class="key">'users'</span>, { keyPath: <span class="val">'id'</span>, autoIncrement: <span class="val">true</span> });
+    db.createObjectStore(<span class="key">'sessions'</span>, { keyPath: <span class="val">'id'</span>, autoIncrement: <span class="val">true</span> });
+};
+        </div>
+
+        <div class="g2">
+            <div class="hl green">
+                <strong>Why IndexedDB wins:</strong><br>
+                &bull; Real database (tables, indexes, queries)<br>
+                &bull; Multi-user support (userId foreign key)<br>
+                &bull; Hundreds of MB storage<br>
+                &bull; Works offline, zero setup<br>
+                &bull; Structured data (not just strings)
+            </div>
+            <div class="hl warn">
+                <strong>Tradeoffs:</strong><br>
+                &bull; Data lives in ONE browser<br>
+                &bull; More complex API than localStorage<br>
+                &bull; Not synced across devices<br>
+                &bull; We add export/import for backup
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 4 -->
+    <h2 class="st" id="architecture">4. Architecture Overview</h2>
+    <div class="card">
+        <p>The app has 4 files across 3 layers, with multi-user support via IndexedDB:</p>
+
+        <!-- Visual Layer Diagram -->
+        <div class="layer-grid">
+            <div class="layer-box ui">
+                <h4 style="color:#1e40af;">&#127912; UI Layer (HTML + CSS)</h4>
+                <p>3 tabs (Timer | History | Profile) &bull; Profile selector &bull; Stop confirm dialog &bull; Celebration popup &bull; Calendar grid</p>
+            </div>
+            <div class="layer-connector">&darr; &uarr;</div>
+            <div class="layer-box logic">
+                <h4 style="color:#92400e;">&#9881; Logic Layer (script.js)</h4>
+                <p>Timer countdown &bull; Session recording &bull; Streak/stats &bull; Calendar rendering &bull; Profile management &bull; Data export</p>
+            </div>
+            <div class="layer-connector">&darr; &uarr;</div>
+            <div class="layer-box storage">
+                <h4 style="color:#065f46;">&#128190; Storage Layer (db.js &mdash; IndexedDB)</h4>
+                <p>Users table (name, height, weight, goal) &bull; Sessions table (userId, date, duration, completed)</p>
+            </div>
+        </div>
+
+        <!-- User Flow Diagram -->
+        <h3 style="margin-top:24px;">User Flow</h3>
+        <div class="flow">
+            <div class="fb" style="border-color:var(--purple);background:#f5f3ff;"><strong>Pick Profile</strong><small>or create new</small></div>
+            <span class="fa">&rarr;</span>
+            <div class="fb" style="border-color:var(--orange);background:#fef3c7;"><strong>Pick Duration</strong><small>9 / 15 / 30 / 45 min</small></div>
+            <span class="fa">&rarr;</span>
+            <div class="fb" style="border-color:var(--green);background:#ecfdf5;"><strong>START</strong><small>One click or Space</small></div>
+            <span class="fa">&rarr;</span>
+            <div class="fb" style="border-color:var(--green);background:#ecfdf5;"><strong>Work Out</strong><small>Ring fills up</small></div>
+            <span class="fa">&rarr;</span>
+            <div class="fb" style="border-color:var(--accent);background:#fef2f2;"><strong>Done / Stop</strong><small>Confirm dialog</small></div>
+            <span class="fa">&rarr;</span>
+            <div class="fb" style="border-color:var(--pink);background:#fef2f2;"><strong>Celebrate!</strong><small>Auto-saved to DB</small></div>
+        </div>
+
+        <!-- Stop Flow -->
+        <h3 style="margin-top:24px;">Stop Early Flow (new!)</h3>
+        <div class="flow" style="background:#fefce8;">
+            <div class="fb" style="border-color:var(--accent);background:#fef2f2;"><strong>STOP button</strong><small>pauses timer</small></div>
+            <span class="fa">&rarr;</span>
+            <div class="fb" style="border-color:#92400e;background:#fff7ed;"><strong>Confirm Dialog</strong><small>"You did X of Y min"</small></div>
+            <span class="fa">&rarr;</span>
+            <div class="fb" style="border-color:var(--green);background:#ecfdf5;"><strong>Record partial</strong><small>saves X min</small></div>
+        </div>
+        <div class="flow" style="background:#fefce8;margin-top:-8px;">
+            <div class="fb" style="border-color:transparent;background:transparent;min-width:auto;padding:0;">&nbsp;</div>
+            <span class="fa" style="visibility:hidden;">&rarr;</span>
+            <div class="fb" style="border-color:transparent;background:transparent;min-width:auto;padding:0;">&nbsp;</div>
+            <span class="fa" style="visibility:hidden;">&rarr;</span>
+            <div class="fb" style="border-color:var(--accent);background:#fef2f2;"><strong>Discard</strong><small>reset timer</small></div>
+            <span class="fa" style="color:var(--green);">or</span>
+            <div class="fb" style="border-color:var(--primary);background:#eff6ff;"><strong>Continue</strong><small>resume workout</small></div>
+        </div>
+
+        <div class="analogy-box">
+            <strong>&#127917; Analogy: A Gym Membership Card</strong><br><br>
+            <strong>Tapping your card at entry</strong> = selecting your profile (the app knows WHO is working out)<br>
+            <strong>The gym clock on the wall</strong> = the timer (counts your session)<br>
+            <strong>The front desk log</strong> = IndexedDB (records every visit, per member)<br>
+            <strong>Your membership card number</strong> = userId (links sessions to the right person)<br><br>
+            Multiple people can use the same gym. Same here &mdash; multiple profiles, each with their own data.
+        </div>
+    </div>
+
+    <!-- SECTION 5 -->
+    <h2 class="st" id="code" style="border-color:var(--green);">5. Key Code Concepts Explained</h2>
+    <div class="card">
+        <h3>The Timer (<code>setInterval</code>)</h3>
+        <p>JavaScript's <code>setInterval</code> calls a function repeatedly at a fixed delay:</p>
+
+        <div class="formula-box">
+<span class="highlight">let</span> timerInterval = <span class="val">null</span>;
+<span class="highlight">let</span> remainingSeconds = <span class="val">15 * 60</span>; <span class="comment">// 15 minutes in seconds</span>
+
+<span class="highlight">function</span> startTimer() {
+    timerInterval = setInterval(() => {
+        remainingSeconds--;
+        updateDisplay();            <span class="comment">// Update the UI every second</span>
+        <span class="highlight">if</span> (remainingSeconds <= <span class="val">0</span>) {
+            clearInterval(timerInterval);  <span class="comment">// Stop the timer</span>
+            recordSession();               <span class="comment">// AUTO-SAVE the workout!</span>
+            celebrate();                   <span class="comment">// Fun animation</span>
+        }
+    }, <span class="val">1000</span>); <span class="comment">// Runs every 1000ms = 1 second</span>
+}
+        </div>
+
+        <div class="insight-box">
+            <strong>&#x1F4A1; How it works:</strong><br>
+            &bull; <code>setInterval</code> calls the arrow function every 1000ms (1 second)<br>
+            &bull; Each call decrements <code>remainingSeconds</code><br>
+            &bull; When it hits 0 &rarr; stop timer, save session, show celebration<br>
+            &bull; <code>clearInterval</code> stops the repeating calls
+        </div>
+
+        <h3>Recording a Session (Auto-Save to IndexedDB)</h3>
+
+        <div class="formula-box">
+<span class="highlight">async function</span> completeSession(isPartial) {
+    <span class="highlight">const</span> session = {
+        userId: currentUserId,                       <span class="comment">// WHO (from profile login)</span>
+        date: <span class="highlight">new</span> Date().toISOString(),              <span class="comment">// WHEN (system clock)</span>
+        duration: isPartial                          <span class="comment">// HOW LONG</span>
+            ? Math.round((totalSeconds - remainingSeconds) / <span class="val">60</span>)
+            : selectedDuration,
+        targetDuration: selectedDuration,            <span class="comment">// What they aimed for</span>
+        completed: !isPartial                        <span class="comment">// Full or stopped early</span>
+    };
+
+    <span class="highlight">await</span> addSession(session);   <span class="comment">// Write to IndexedDB (db.js)</span>
+    celebrate();                  <span class="comment">// Show celebration!</span>
+}
+        </div>
+
+        <div class="why-box">
+            <strong>Why this is powerful:</strong><br>
+            Zero user input needed! The app knows: WHO (login), WHEN (system clock), HOW LONG (timer), and whether they finished (timer reached zero or they stopped early). The user just works out.
+        </div>
+
+        <div class="analogy-box">
+            <strong>&#128218; Analogy: Auto-Checkout at a Library</strong><br><br>
+            When you return a book, the machine scans the barcode and records: who (your card), what (the book), when (timestamp). You don't fill out a form.<br><br>
+            Same here &mdash; your profile = library card, the timer = the book's due date, and IndexedDB = the library computer that logs it all automatically.
+        </div>
+
+        <h3>The Stop Dialog (New! User choice when stopping early)</h3>
+        <div class="formula-box">
+<span class="highlight">function</span> showStopDialog() {
+    pauseTimer();                                    <span class="comment">// Freeze the clock</span>
+    <span class="highlight">const</span> elapsed = Math.round((totalSeconds - remainingSeconds) / <span class="val">60</span>);
+    dialogMsg.textContent = <span class="key">`You did ${elapsed} of ${selectedDuration} min`</span>;
+    stopDialog.classList.remove(<span class="key">'hidden'</span>);           <span class="comment">// Show the 3-option popup</span>
+}
+<span class="comment">// User picks: Record (saves partial) | Discard (reset) | Continue (resume)</span>
+        </div>
+
+        <div class="insight-box">
+            <strong>&#x1F4A1; Design principle:</strong> Never throw away effort. If someone did 8 of 15 minutes and needs to stop, that 8 minutes still counts. The "Record" option saves it with <code>completed: false</code> so history shows what actually happened.
+        </div>
+
+        <h3>Calculating Streaks</h3>
+        <div class="formula-box">
+<span class="highlight">function</span> calculateStreak(sessions) {
+    <span class="comment">// Get unique dates, sorted most recent first</span>
+    <span class="highlight">const</span> uniqueDates = [...<span class="highlight">new</span> Set(
+        sessions.map(s => <span class="highlight">new</span> Date(s.date).toDateString())
+    )].sort((a, b) => <span class="highlight">new</span> Date(b) - <span class="highlight">new</span> Date(a));
+
+    <span class="highlight">let</span> streak = <span class="val">0</span>;
+    <span class="highlight">let</span> checkDate = <span class="highlight">new</span> Date();  <span class="comment">// Start from today</span>
+
+    <span class="highlight">for</span> (<span class="highlight">const</span> dateStr <span class="highlight">of</span> uniqueDates) {
+        <span class="highlight">if</span> (dateStr === checkDate.toDateString()) {
+            streak++;
+            checkDate.setDate(checkDate.getDate() - <span class="val">1</span>); <span class="comment">// Go back 1 day</span>
+        } <span class="highlight">else</span> { <span class="highlight">break</span>; } <span class="comment">// Streak broken</span>
+    }
+    <span class="highlight">return</span> streak;
+}
+        </div>
+
+        <h3>The Progress Ring (CSS <code>conic-gradient</code>)</h3>
+        <div class="formula-box">
+<span class="comment">// JavaScript calculates the angle:</span>
+<span class="highlight">const</span> progress = ((totalSeconds - remainingSeconds) / totalSeconds) * <span class="val">360</span>;
+
+<span class="comment">// Then sets it as a CSS conic-gradient:</span>
+timerRing.style.background = <span class="key">`conic-gradient(
+    #4ecdc4 ${progress}deg,   </span><span class="comment">/* Green = done portion */</span><span class="key">
+    #2a2a4a ${progress}deg    </span><span class="comment">/* Dark = remaining */</span><span class="key">
+)`</span>;
+        </div>
+
+        <div class="analogy-box">
+            <strong>&#127912; Think of it like a pie chart:</strong><br><br>
+            At 0% &rarr; entire circle is grey (no progress)<br>
+            At 50% &rarr; half green, half grey<br>
+            At 100% &rarr; entire circle is green (done!)<br><br>
+            <code>conic-gradient</code> draws colors in a circle like slicing a pie.
+        </div>
+    </div>
+
+    <!-- SECTION 6 -->
+    <h2 class="st" id="data" style="border-color:var(--orange);">6. Data Model</h2>
+    <div class="card">
+        <h3>Database: IndexedDB (two tables)</h3>
+        <table>
+            <thead><tr><th>Table</th><th>Fields</th><th>Purpose</th></tr></thead>
+            <tbody>
+                <tr><td><code>users</code></td><td>id, name, height, weight, goal, createdAt</td><td>User profiles (multi-user)</td></tr>
+                <tr><td><code>sessions</code></td><td>id, userId, date, duration, targetDuration, completed</td><td>Workout records</td></tr>
+            </tbody>
+        </table>
+
+        <h3 style="margin-top:20px;">User Object</h3>
+        <div class="formula-box">
+{
+    <span class="key">"id"</span>: <span class="val">1</span>,                          <span class="comment">// auto-generated</span>
+    <span class="key">"name"</span>: <span class="val">"Sai"</span>,
+    <span class="key">"height"</span>: <span class="val">175</span>,                    <span class="comment">// cm (optional)</span>
+    <span class="key">"weight"</span>: <span class="val">72</span>,                     <span class="comment">// kg (optional)</span>
+    <span class="key">"goal"</span>: <span class="val">15</span>,                       <span class="comment">// daily goal in minutes</span>
+    <span class="key">"createdAt"</span>: <span class="val">"2026-05-17T..."</span>     <span class="comment">// member since</span>
+}
+        </div>
+
+        <h3>Session Object</h3>
+        <div class="formula-box">
+{
+    <span class="key">"id"</span>: <span class="val">1</span>,                          <span class="comment">// auto-generated</span>
+    <span class="key">"userId"</span>: <span class="val">1</span>,                      <span class="comment">// links to user (foreign key)</span>
+    <span class="key">"date"</span>: <span class="val">"2026-05-17T07:30:00Z"</span>,   <span class="comment">// when</span>
+    <span class="key">"duration"</span>: <span class="val">15</span>,                   <span class="comment">// actual minutes done</span>
+    <span class="key">"targetDuration"</span>: <span class="val">15</span>,             <span class="comment">// what they set the timer to</span>
+    <span class="key">"completed"</span>: <span class="val">true</span>                  <span class="comment">// full timer or stopped early</span>
+}
+        </div>
+    </div>
+
+    <!-- SECTION 7 -->
+    <h2 class="st" id="future" style="border-color:var(--purple);">7. Future Enhancement Ideas</h2>
+    <div class="card">
+        <div class="g2">
+            <div class="hl green">
+                <strong>&#10003; Already Built (v2):</strong><br>
+                &bull; Multi-user profiles<br>
+                &bull; Stop early &amp; record partial<br>
+                &bull; Calendar history (month view)<br>
+                &bull; Data export (JSON backup)<br>
+                &bull; Yearly stats &amp; streaks
+            </div>
+            <div class="hl">
+                <strong>&#128640; Next Level:</strong><br>
+                &bull; Sound effects (tick, completion cheer)<br>
+                &bull; PWA &mdash; install on phone home screen<br>
+                &bull; Weekly/monthly charts (Chart.js)<br>
+                &bull; Cloud sync (Firebase free tier)<br>
+                &bull; Notifications / reminders<br>
+                &bull; Workout type selector (cardio, weights, yoga)
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 8 -->
+    <h2 class="st" id="resources">8. Learning Resources</h2>
+    <div class="card">
+        <table>
+            <thead><tr><th>Topic</th><th>Where to Learn</th></tr></thead>
+            <tbody>
+                <tr><td>HTML/CSS/JS fundamentals</td><td>MDN Web Docs (developer.mozilla.org)</td></tr>
+                <tr><td>setInterval / setTimeout</td><td>Search "MDN setInterval"</td></tr>
+                <tr><td>IndexedDB</td><td>Search "MDN IndexedDB API" &mdash; the database used in this app</td></tr>
+                <tr><td>async / await</td><td>Search "MDN async function" &mdash; used for DB operations</td></tr>
+                <tr><td>CSS Animations</td><td>Search "MDN CSS Animations"</td></tr>
+                <tr><td>Flexbox &amp; Grid layout</td><td>Search "CSS Tricks Flexbox Guide"</td></tr>
+                <tr><td>conic-gradient</td><td>Search "MDN conic-gradient"</td></tr>
+            </tbody>
+        </table>
+
+        <div class="analogy-box">
+            <strong>&#127891; Learning Path Analogy:</strong><br><br>
+            Think of building this app like cooking a meal:<br>
+            &bull; <strong>HTML</strong> = the ingredients list (what's on the plate)<br>
+            &bull; <strong>CSS</strong> = the plating &amp; presentation (how it looks)<br>
+            &bull; <strong>JavaScript</strong> = the cooking process (what happens, in what order)<br>
+            &bull; <strong>IndexedDB</strong> = the recipe book (remembers everything for next time)<br><br>
+            You learned one at a time, and now you have the full recipe!
+        </div>
+    </div>
+
+    <div class="footer">
+        FitTimer &mdash; Learning &amp; Concepts &bull; 17 May 2026<br>
+        See also: <a href="02_Step_by_Step_Guide.html" style="color:var(--accent);">Step-by-Step Recreation Guide</a>
+    </div>
+
+    </div>
+</body>
+</html>
