@@ -1,5 +1,5 @@
 // ============================================
-// FitTimer — App Logic (v2)
+// FitTimer — App Logic (v3 — Gamified)
 // ============================================
 
 // --- State ---
@@ -12,7 +12,10 @@ let isPaused = false;
 let currentUserId = null;
 let currentUser = null;
 let sessions = [];
-let viewingMonth = new Date(); // for calendar navigation
+let viewingMonth = new Date();
+let previousXP = 0;
+let previousLevel = 1;
+let previousAchievements = [];
 
 // --- DOM Elements ---
 const $ = (id) => document.getElementById(id);
@@ -111,6 +114,11 @@ async function loginUser(userId) {
     remainingSeconds = selectedDuration * 60;
     totalSeconds = selectedDuration * 60;
 
+    // Initialize gamification state
+    previousXP = calculateXP(sessions);
+    previousLevel = getLevel(previousXP).level;
+    previousAchievements = getUnlockedAchievements(sessions).map(a => a.id);
+
     profileSelector.classList.add('hidden');
     profileSetup.classList.add('hidden');
     mainApp.classList.remove('hidden');
@@ -121,9 +129,12 @@ async function loginUser(userId) {
     updateTimerDisplay();
     updateRingProgress();
     updateStats();
+    updateXPBar();
+    updateDailyChallenge();
     renderCalendar();
     renderHistory();
     renderProfile();
+    renderProgress();
 }
 
 // --- Event Binding ---
@@ -162,6 +173,8 @@ function bindEvents() {
             $('tab' + capitalize(btn.dataset.tab)).classList.add('active');
             if (btn.dataset.tab === 'history') { renderCalendar(); renderHistory(); }
             if (btn.dataset.tab === 'profile') renderProfile();
+            if (btn.dataset.tab === 'progress') renderProgress();
+            playClick();
         });
     });
 
@@ -229,10 +242,16 @@ function startTimer() {
     stopBtn.classList.remove('hidden');
     resetBtn.classList.add('hidden');
 
+    playClick();
+    vibrateShort();
+    startQuoteCarousel();
+
     timerInterval = setInterval(() => {
         remainingSeconds--;
         updateTimerDisplay();
         updateRingProgress();
+        // Subtle tick every 30 seconds
+        if (remainingSeconds > 0 && remainingSeconds % 30 === 0) playTick();
         if (remainingSeconds <= 0) completeSession(false);
     }, 1000);
 }
@@ -249,6 +268,9 @@ function pauseTimer() {
     startBtn.innerHTML = '&#9654; RESUME';
     stopBtn.classList.remove('hidden');
     resetBtn.classList.remove('hidden');
+
+    playClick();
+    stopQuoteCarousel();
 }
 
 function showStopDialog() {
@@ -256,6 +278,7 @@ function showStopDialog() {
     timerInterval = null;
     isRunning = false;
     timerRing.classList.remove('running');
+    stopQuoteCarousel();
 
     const doneSec = totalSeconds - remainingSeconds;
     const doneMin = Math.ceil(doneSec / 60);
@@ -291,6 +314,7 @@ async function completeSession(isPartial) {
     timerInterval = null;
     isRunning = false;
     isPaused = false;
+    stopQuoteCarousel();
 
     const actualMinutes = isPartial
         ? Math.ceil((totalSeconds - remainingSeconds) / 60)
@@ -308,8 +332,36 @@ async function completeSession(isPartial) {
     await addSession(session);
     sessions.push(session);
 
+    // Calculate XP gained
+    const newXP = calculateXP(sessions);
+    const xpGained = newXP - previousXP;
+    const newLevel = getLevel(newXP);
+
+    // Play sounds & haptics
+    playComplete();
+    vibrateDone();
+
     // Show celebration
-    showCelebration(actualMinutes, isPartial);
+    showCelebration(actualMinutes, isPartial, xpGained);
+
+    // Check for level up
+    if (newLevel.level > previousLevel) {
+        setTimeout(() => showLevelUp(newLevel), 1500);
+    }
+
+    // Check for new achievements
+    const newAchievements = getNewAchievements(sessions, previousAchievements);
+    if (newAchievements.length > 0) {
+        const delay = newLevel.level > previousLevel ? 3500 : 1500;
+        newAchievements.forEach((ach, i) => {
+            setTimeout(() => showAchievementPopup(ach), delay + i * 2000);
+        });
+    }
+
+    // Update state
+    previousXP = newXP;
+    previousLevel = newLevel.level;
+    previousAchievements = getUnlockedAchievements(sessions).map(a => a.id);
 
     // Reset UI
     timerLabel.textContent = 'DONE!';
@@ -325,6 +377,7 @@ async function completeSession(isPartial) {
     updateTimerDisplay();
     updateRingProgress();
     updateStats();
+    updateXPBar();
 }
 
 // --- Display ---
@@ -352,7 +405,9 @@ function updateStats() {
     weekStart.setHours(0, 0, 0, 0);
     weekCount.textContent = sessions.filter(s => new Date(s.date) >= weekStart).length;
 
-    streakCount.textContent = calculateStreak();
+    const streak = calculateStreak();
+    streakCount.textContent = streak;
+    $('streakFlame').innerHTML = getStreakFlame(streak);
 }
 
 function calculateStreak() {
@@ -510,7 +565,7 @@ async function exportData() {
 
 // --- Celebration ---
 
-function showCelebration(minutes, isPartial) {
+function showCelebration(minutes, isPartial, xpGained) {
     const messages = [
         "You showed up. That's what matters!",
         "Another one in the bank!",
@@ -518,7 +573,10 @@ function showCelebration(minutes, isPartial) {
         "Your future self thanks you!",
         "Small steps, big results!",
         "That's the compound effect!",
-        "Discipline > Motivation!"
+        "Discipline > Motivation!",
+        "Atomic habit deposited!",
+        "1% better today!",
+        "The streak lives on!"
     ];
 
     celebrationMsg.textContent = isPartial
@@ -530,6 +588,8 @@ function showCelebration(minutes, isPartial) {
         ? `${streak} day streak! Keep it going!`
         : 'First step done. Come back tomorrow!';
 
+    $('celebrationXp').textContent = xpGained > 0 ? `+${xpGained} XP earned!` : '';
+
     celebration.classList.remove('hidden');
 }
 
@@ -537,5 +597,97 @@ function showCelebration(minutes, isPartial) {
 
 function capitalize(str) { return str.charAt(0).toUpperCase() + str.slice(1); }
 
+// --- Gamification UI ---
+
+function updateXPBar() {
+    const xp = calculateXP(sessions);
+    const level = getLevel(xp);
+    const next = getNextLevel(xp);
+    const progress = getLevelProgress(xp);
+
+    $('xpLevelBadge').textContent = `Lvl ${level.level}`;
+    $('xpBarFill').style.width = progress + '%';
+
+    if (next) {
+        $('xpText').textContent = `${xp} / ${next.xp} XP`;
+    } else {
+        $('xpText').textContent = `${xp} XP — MAX LEVEL!`;
+    }
+}
+
+function updateDailyChallenge() {
+    $('dailyChallenge').textContent = getDailyChallenge();
+}
+
+function renderProgress() {
+    const xp = calculateXP(sessions);
+    const level = getLevel(xp);
+    const next = getNextLevel(xp);
+    const progress = getLevelProgress(xp);
+
+    // Character
+    $('characterDisplay').innerHTML = getCharacterSVG(level.level);
+
+    // Level badge
+    $('levelBadge').textContent = `Lvl ${level.level} — ${level.name} ${level.emoji}`;
+    $('progressXpFill').style.width = progress + '%';
+    $('progressXpDetail').textContent = next
+        ? `${xp} XP total • ${next.xp - xp} XP to next level`
+        : `${xp} XP total • MAX LEVEL REACHED!`;
+
+    // Weekly ring
+    const weekData = getWeeklyProgress(sessions, currentUser.goal || 15);
+    const circumference = 2 * Math.PI * 52; // 326.73
+    const offset = circumference - (weekData.percent / 100) * circumference;
+    $('weeklyRingProgress').style.strokeDashoffset = offset;
+    $('weeklyPercent').textContent = weekData.percent + '%';
+    $('weeklyDetail').textContent = `${weekData.totalMin} / ${weekData.weeklyTarget} min`;
+
+    // Weekly days dots
+    const now = new Date();
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - now.getDay());
+    weekStart.setHours(0, 0, 0, 0);
+    const weekSessions = sessions.filter(s => new Date(s.date) >= weekStart);
+    const daysWorkedOut = new Set(weekSessions.map(s => new Date(s.date).getDay()));
+
+    document.querySelectorAll('.week-dot').forEach(dot => {
+        const day = parseInt(dot.dataset.day);
+        dot.classList.toggle('active', daysWorkedOut.has(day));
+        dot.classList.toggle('today', day === now.getDay());
+    });
+
+    // Achievements grid
+    const unlocked = getUnlockedAchievements(sessions);
+    const unlockedIds = unlocked.map(a => a.id);
+    $('achievementsGrid').innerHTML = ACHIEVEMENTS.map(ach => {
+        const isUnlocked = unlockedIds.includes(ach.id);
+        return `<div class="achievement-card ${isUnlocked ? 'unlocked' : 'locked'}">
+            <span class="achievement-emoji">${isUnlocked ? ach.emoji : '🔒'}</span>
+            <span class="achievement-name">${ach.name}</span>
+            <span class="achievement-desc">${ach.desc}</span>
+        </div>`;
+    }).join('');
+}
+
+function showLevelUp(level) {
+    playLevelUp();
+    if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 300]);
+    $('levelUpEmoji').textContent = level.emoji;
+    $('levelUpText').textContent = `You are now Level ${level.level} — ${level.name} ${level.emoji}`;
+    $('levelUpPopup').classList.remove('hidden');
+    setTimeout(() => $('levelUpPopup').classList.add('hidden'), 3000);
+}
+
+function showAchievementPopup(achievement) {
+    playAchievement();
+    vibrateShort();
+    $('achievementPopupEmoji').textContent = achievement.emoji;
+    $('achievementPopupName').textContent = achievement.name;
+    $('achievementPopup').classList.remove('hidden');
+    setTimeout(() => $('achievementPopup').classList.add('hidden'), 2500);
+}
+
 // --- Start ---
+init();
 init();

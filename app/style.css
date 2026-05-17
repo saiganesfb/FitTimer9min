@@ -222,4 +222,318 @@ body {
     .timer-inner { width: 184px; height: 184px; }
     .timer-display { font-size: 2.4rem; }
     .profile-modal { padding: 24px; }
+    .tab-btn { font-size: 0.75rem; padding: 8px 4px; }
 }
+
+/* ============================================
+   GAMIFICATION STYLES
+   ============================================ */
+
+/* ---- Daily Challenge Banner ---- */
+.daily-challenge {
+    background: linear-gradient(135deg, rgba(108, 99, 255, 0.15), rgba(78, 205, 196, 0.1));
+    border: 1px solid rgba(108, 99, 255, 0.3);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-align: center;
+    width: 100%;
+    animation: fadeIn 0.5s ease;
+}
+
+/* ---- Quote Carousel ---- */
+.quote-carousel {
+    font-size: 0.85rem;
+    color: var(--success);
+    text-align: center;
+    font-style: italic;
+    padding: 8px 16px;
+    min-height: 40px;
+    transition: opacity 0.3s ease;
+    width: 100%;
+}
+
+/* ---- XP Bar (Timer tab) ---- */
+.xp-bar-section {
+    width: 100%;
+    padding: 0 4px;
+}
+.xp-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+.xp-level {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 800;
+    font-size: 0.9rem;
+}
+.xp-text {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+.xp-bar-track {
+    width: 100%;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+}
+.xp-bar-track.large {
+    height: 10px;
+    border-radius: 5px;
+}
+.xp-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--success));
+    border-radius: inherit;
+    transition: width 0.6s ease;
+}
+
+/* ---- Streak Flame ---- */
+.streak-flame {
+    display: inline-block;
+    vertical-align: middle;
+}
+.streak-flame-small { font-size: 1rem; animation: flicker 1s ease-in-out infinite; }
+.streak-flame-medium { font-size: 1.3rem; animation: flicker 0.7s ease-in-out infinite; }
+.streak-flame-large { font-size: 1.6rem; animation: flicker 0.4s ease-in-out infinite; }
+
+@keyframes flicker {
+    0%, 100% { transform: scale(1) rotate(-3deg); opacity: 1; }
+    25% { transform: scale(1.1) rotate(2deg); opacity: 0.9; }
+    50% { transform: scale(0.95) rotate(-2deg); opacity: 1; }
+    75% { transform: scale(1.05) rotate(3deg); opacity: 0.85; }
+}
+
+/* ---- Progress Tab ---- */
+
+.section-title-center {
+    font-size: 1rem;
+    color: var(--text-muted);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Weekly Ring */
+.weekly-ring-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+.weekly-ring-container {
+    position: relative;
+    width: 160px;
+    height: 160px;
+}
+.weekly-ring-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(0deg);
+}
+.weekly-ring-svg circle {
+    transition: stroke-dashoffset 0.8s ease;
+}
+.weekly-ring-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.weekly-percent {
+    font-size: 1.8rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--success), var(--primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.weekly-detail {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+/* Weekly Days */
+.weekly-days {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+.week-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    color: var(--text-muted);
+    transition: all 0.3s;
+}
+.week-dot.active {
+    background: var(--success);
+    border-color: var(--success);
+    color: var(--bg);
+}
+.week-dot.today {
+    border-color: var(--primary);
+    box-shadow: 0 0 8px rgba(108, 99, 255, 0.4);
+}
+
+/* Character Section */
+.character-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    width: 100%;
+}
+.character-display {
+    width: 80px;
+    height: 120px;
+    flex-shrink: 0;
+}
+.character-svg {
+    width: 100%;
+    height: 100%;
+}
+.level-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.level-badge {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text);
+}
+.xp-detail {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Achievements Grid */
+.achievements-section {
+    width: 100%;
+}
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 12px;
+}
+.achievement-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 8px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.3s;
+}
+.achievement-card.unlocked {
+    border-color: var(--success);
+    box-shadow: 0 0 12px rgba(78, 205, 196, 0.15);
+}
+.achievement-card.locked {
+    opacity: 0.5;
+}
+.achievement-emoji {
+    font-size: 1.5rem;
+}
+.achievement-name {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text);
+}
+.achievement-desc {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+}
+
+/* ---- Achievement Popup (toast) ---- */
+.achievement-popup {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3000;
+    animation: slideDown 0.4s ease, slideUp 0.4s ease 2.1s;
+}
+.achievement-popup-inner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, var(--bg-card), var(--bg-elevated));
+    border: 2px solid var(--success);
+    border-radius: 50px;
+    padding: 12px 20px;
+    box-shadow: 0 8px 32px rgba(78, 205, 196, 0.3);
+}
+.achievement-popup-emoji { font-size: 1.5rem; }
+.achievement-popup-text { display: flex; flex-direction: column; }
+.achievement-popup-label { font-size: 0.65rem; color: var(--success); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+.achievement-popup-name { font-size: 0.9rem; font-weight: 700; color: var(--text); }
+
+/* ---- Level Up Popup ---- */
+.level-up-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3000;
+    animation: scaleIn 0.4s ease;
+}
+.level-up-inner {
+    text-align: center;
+    background: linear-gradient(135deg, var(--bg-card), var(--bg-elevated));
+    border: 2px solid var(--primary);
+    border-radius: var(--radius);
+    padding: 32px 40px;
+    box-shadow: 0 0 60px rgba(108, 99, 255, 0.4);
+}
+.level-up-emoji { font-size: 3rem; animation: bounce 0.5s ease infinite alternate; }
+.level-up-inner h3 {
+    font-size: 1.5rem;
+    margin: 8px 0;
+    background: linear-gradient(135deg, var(--primary), var(--success));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.level-up-inner p { color: var(--text-muted); font-size: 0.9rem; }
+
+/* ---- Celebration XP ---- */
+.celebration-xp {
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-bottom: 16px;
+}
+
+/* ---- Additional Animations ---- */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideDown { from { opacity: 0; transform: translate(-50%, -40px); } to { opacity: 1; transform: translate(-50%, 0); } }
+@keyframes slideUp { from { opacity: 1; transform: translate(-50%, 0); } to { opacity: 0; transform: translate(-50%, -40px); } }

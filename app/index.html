@@ -75,12 +75,16 @@
         <!-- Tab Navigation -->
         <nav class="tab-nav">
             <button class="tab-btn active" data-tab="timer">Timer</button>
+            <button class="tab-btn" data-tab="progress">Progress</button>
             <button class="tab-btn" data-tab="history">History</button>
             <button class="tab-btn" data-tab="profile">Profile</button>
         </nav>
 
         <!-- TAB: Timer -->
         <section id="tabTimer" class="tab-content active">
+            <!-- Daily Challenge Banner -->
+            <div class="daily-challenge" id="dailyChallenge"></div>
+
             <div class="duration-selector">
                 <button class="duration-btn" data-minutes="9">9 min</button>
                 <button class="duration-btn active" data-minutes="15">15 min</button>
@@ -97,6 +101,9 @@
                 </div>
             </div>
 
+            <!-- Quote Carousel (visible during workout) -->
+            <div class="quote-carousel hidden" id="quoteCarousel"></div>
+
             <div class="controls">
                 <button id="startBtn" class="control-btn start-btn">&#9654; START</button>
                 <button id="pauseBtn" class="control-btn pause-btn hidden">&#9208; PAUSE</button>
@@ -104,10 +111,21 @@
                 <button id="resetBtn" class="control-btn reset-btn hidden">&#8634; RESET</button>
             </div>
 
+            <!-- XP Bar -->
+            <div class="xp-bar-section" id="xpBarSection">
+                <div class="xp-info">
+                    <span class="xp-level" id="xpLevelBadge">Lvl 1</span>
+                    <span class="xp-text" id="xpText">0 / 50 XP</span>
+                </div>
+                <div class="xp-bar-track">
+                    <div class="xp-bar-fill" id="xpBarFill" style="width: 0%"></div>
+                </div>
+            </div>
+
             <div class="stats-section">
                 <div class="stat-card streak-card">
                     <span class="stat-value" id="streakCount">0</span>
-                    <span class="stat-label">Day Streak</span>
+                    <span class="stat-label">Day Streak <span id="streakFlame"></span></span>
                 </div>
                 <div class="stat-card">
                     <span class="stat-value" id="weekCount">0</span>
@@ -121,6 +139,59 @@
                     <span class="stat-value" id="totalMinutes">0</span>
                     <span class="stat-label">Total Minutes</span>
                 </div>
+            </div>
+        </section>
+
+        <!-- TAB: Progress (Gamification) -->
+        <section id="tabProgress" class="tab-content">
+            <!-- Weekly Goal Ring -->
+            <div class="weekly-ring-section">
+                <h3 class="section-title-center">This Week</h3>
+                <div class="weekly-ring-container">
+                    <svg class="weekly-ring-svg" viewBox="0 0 120 120">
+                        <circle cx="60" cy="60" r="52" fill="none" stroke="var(--border)" stroke-width="10"/>
+                        <circle cx="60" cy="60" r="52" fill="none" stroke="url(#weekGrad)" stroke-width="10"
+                            stroke-dasharray="326.73" stroke-dashoffset="326.73" stroke-linecap="round"
+                            id="weeklyRingProgress" transform="rotate(-90 60 60)"/>
+                        <defs>
+                            <linearGradient id="weekGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#4ecdc4"/>
+                                <stop offset="100%" style="stop-color:#6c63ff"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <div class="weekly-ring-center">
+                        <span class="weekly-percent" id="weeklyPercent">0%</span>
+                        <span class="weekly-detail" id="weeklyDetail">0 / 0 min</span>
+                    </div>
+                </div>
+                <div class="weekly-days" id="weeklyDays">
+                    <span class="week-dot" data-day="0">S</span>
+                    <span class="week-dot" data-day="1">M</span>
+                    <span class="week-dot" data-day="2">T</span>
+                    <span class="week-dot" data-day="3">W</span>
+                    <span class="week-dot" data-day="4">T</span>
+                    <span class="week-dot" data-day="5">F</span>
+                    <span class="week-dot" data-day="6">S</span>
+                </div>
+            </div>
+
+            <!-- Character + Level -->
+            <div class="character-section">
+                <div class="character-display" id="characterDisplay"></div>
+                <div class="level-info">
+                    <span class="level-badge" id="levelBadge">Lvl 1 — Couch Potato 🥔</span>
+                    <div class="xp-bar-track large">
+                        <div class="xp-bar-fill" id="progressXpFill" style="width: 0%"></div>
+                    </div>
+                    <span class="xp-detail" id="progressXpDetail">0 XP total</span>
+                </div>
+            </div>
+
+            <!-- Achievements Grid -->
+            <div class="achievements-section">
+                <h3 class="section-title">Achievements</h3>
+                <div class="achievements-grid" id="achievementsGrid"></div>
             </div>
         </section>
 
@@ -198,11 +269,33 @@
             <h2>WORKOUT DONE!</h2>
             <p class="celebration-message" id="celebrationMsg">Amazing work!</p>
             <p class="celebration-stats" id="celebrationStats"></p>
+            <p class="celebration-xp" id="celebrationXp"></p>
             <button id="celebrationClose" class="control-btn start-btn">NICE!</button>
         </div>
     </div>
 
+    <!-- ACHIEVEMENT UNLOCK POPUP -->
+    <div id="achievementPopup" class="achievement-popup hidden">
+        <div class="achievement-popup-inner">
+            <div class="achievement-popup-emoji" id="achievementPopupEmoji">🏆</div>
+            <div class="achievement-popup-text">
+                <span class="achievement-popup-label">Achievement Unlocked!</span>
+                <span class="achievement-popup-name" id="achievementPopupName">—</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- LEVEL UP POPUP -->
+    <div id="levelUpPopup" class="level-up-popup hidden">
+        <div class="level-up-inner">
+            <div class="level-up-emoji" id="levelUpEmoji">⬆️</div>
+            <h3>LEVEL UP!</h3>
+            <p id="levelUpText">You are now Level 2 — Beginner 🌱</p>
+        </div>
+    </div>
+
     <script src="db.js"></script>
+    <script src="gamification.js"></script>
     <script src="script.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
