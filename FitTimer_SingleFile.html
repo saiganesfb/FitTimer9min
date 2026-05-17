@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitTimer — Workout Tracker</title>
+    <meta name="theme-color" content="#6c63ff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+    <style>
+/* ============================================
+   FitTimer — Styles (v2 with tabs, profiles, calendar)
+   ============================================ */
+
+:root {
+    --primary: #6c63ff;
+    --primary-dark: #5a52d5;
+    --accent: #ff6584;
+    --success: #4ecdc4;
+    --success-dark: #3db8b0;
+    --bg: #0f0f1a;
+    --bg-card: #1a1a2e;
+    --bg-elevated: #25254a;
+    --text: #ffffff;
+    --text-muted: #a0a0b8;
+    --border: #2a2a4a;
+    --ring-bg: #2a2a4a;
+    --ring-progress: var(--success);
+    --radius: 16px;
+    --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.hidden { display: none !important; }
+
+/* ---- Profile Selector & Setup ---- */
+
+.profile-selector, .profile-setup {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 2000;
+}
+
+.profile-modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 40px;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+}
+
+.profile-modal h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.setup-subtitle { color: var(--text-muted); margin-bottom: 24px; font-size: 0.9rem; }
+
+.profile-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+
+.profile-card {
+    background: var(--bg-elevated);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 14px;
+    transition: all 0.2s;
+}
+.profile-card:hover { border-color: var(--primary); transform: translateX(4px); }
+.profile-card .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; }
+.profile-card .info { text-align: left; }
+.profile-card .info .name { font-weight: 600; }
+.profile-card .info .meta { font-size: 0.8rem; color: var(--text-muted); }
+
+.new-profile-btn { background: var(--bg-elevated); color: var(--primary); border: 2px dashed var(--border); width: 100%; }
+.new-profile-btn:hover { border-color: var(--primary); }
+
+/* ---- Profile Form ---- */
+
+.profile-form { text-align: left; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
+.form-group input, .form-group select {
+    width: 100%; padding: 12px 14px; background: var(--bg-elevated); border: 1px solid var(--border);
+    border-radius: 10px; color: var(--text); font-size: 0.95rem; font-family: inherit;
+}
+.form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* ---- Layout ---- */
+
+.app-container { max-width: 520px; width: 100%; display: flex; flex-direction: column; gap: 24px; padding-bottom: 40px; }
+
+/* ---- Header ---- */
+
+.app-header { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; }
+.header-left h1 { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.tagline { color: var(--text-muted); font-size: 0.85rem; margin-top: 2px; }
+.header-right { display: flex; align-items: center; gap: 8px; }
+.user-badge { background: var(--bg-elevated); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+.icon-btn { background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.icon-btn:hover { border-color: var(--primary); }
+
+/* ---- Tab Navigation ---- */
+
+.tab-nav { display: flex; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 4px; gap: 4px; }
+.tab-btn { flex: 1; padding: 10px; border: none; border-radius: 10px; background: transparent; color: var(--text-muted); font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+.tab-btn.active { background: var(--primary); color: var(--text); box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3); }
+.tab-btn:hover:not(.active) { color: var(--text); }
+.tab-content { display: none; flex-direction: column; align-items: center; gap: 24px; }
+.tab-content.active { display: flex; }
+
+/* ---- Timer Section ---- */
+
+.duration-selector { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.duration-btn { padding: 10px 20px; border: 2px solid var(--border); border-radius: 50px; background: transparent; color: var(--text-muted); font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+.duration-btn:hover { border-color: var(--primary); color: var(--text); }
+.duration-btn.active { border-color: var(--primary); background: var(--primary); color: var(--text); box-shadow: 0 4px 16px rgba(108, 99, 255, 0.3); }
+
+.timer-ring-container { position: relative; }
+.timer-ring { width: 260px; height: 260px; border-radius: 50%; background: conic-gradient(var(--ring-bg) 0deg, var(--ring-bg) 360deg); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow); transition: background 0.3s; }
+.timer-ring.running { animation: pulse 2s ease-in-out infinite; }
+.timer-inner { width: 220px; height: 220px; border-radius: 50%; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+.timer-display { font-family: 'JetBrains Mono', monospace; font-size: 3rem; font-weight: 700; letter-spacing: 2px; }
+.timer-label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); letter-spacing: 3px; }
+
+/* ---- Controls ---- */
+
+.controls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.control-btn { padding: 14px 28px; border: none; border-radius: 50px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.2s; letter-spacing: 1px; font-family: inherit; }
+.start-btn { background: linear-gradient(135deg, var(--success), var(--success-dark)); color: var(--bg); box-shadow: 0 4px 20px rgba(78, 205, 196, 0.3); }
+.start-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(78, 205, 196, 0.4); }
+.pause-btn { background: var(--bg-elevated); color: var(--text); border: 2px solid var(--border); }
+.pause-btn:hover { border-color: var(--primary); }
+.stop-btn { background: transparent; color: var(--accent); border: 2px solid var(--accent); }
+.stop-btn:hover { background: var(--accent); color: var(--bg); }
+.reset-btn { background: transparent; color: var(--text-muted); border: 2px solid var(--border); }
+.reset-btn:hover { border-color: var(--text-muted); color: var(--text); }
+
+/* ---- Stats ---- */
+
+.stats-section, .history-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; }
+.stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; text-align: center; display: flex; flex-direction: column; gap: 4px; }
+.stat-card.streak-card { border-color: var(--accent); box-shadow: 0 0 20px rgba(255, 101, 132, 0.1); }
+.stat-value { font-size: 1.8rem; font-weight: 800; }
+.streak-card .stat-value { color: var(--accent); }
+.stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+/* ---- History Tab ---- */
+
+.history-header { display: flex; align-items: center; justify-content: center; gap: 16px; width: 100%; }
+.history-header h2 { font-size: 1.1rem; min-width: 140px; text-align: center; }
+.section-title { font-size: 1rem; color: var(--text-muted); width: 100%; text-align: left; }
+
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; width: 100%; }
+.cal-header { font-size: 0.7rem; color: var(--text-muted); text-align: center; padding: 6px 0; font-weight: 600; }
+.cal-day { aspect-ratio: 1; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-muted); }
+.cal-day.today { border-color: var(--primary); color: var(--text); font-weight: 700; }
+.cal-day.has-session { background: var(--success); color: var(--bg); font-weight: 700; border-color: var(--success); }
+.cal-day.empty { background: transparent; border-color: transparent; }
+
+.history-list { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; width: 100%; }
+.history-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--bg-elevated); border-radius: 10px; font-size: 0.85rem; }
+.history-date { color: var(--text-muted); }
+.history-duration { font-weight: 700; color: var(--success); }
+.history-check { color: var(--success); font-size: 1.1rem; }
+.empty-state { color: var(--text-muted); text-align: center; padding: 20px; font-style: italic; width: 100%; }
+
+/* ---- Profile Tab ---- */
+
+.profile-view { display: flex; flex-direction: column; align-items: center; width: 100%; gap: 16px; }
+.profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--accent)); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800; }
+.profile-details { width: 100%; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+.detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.detail-row:last-child { border-bottom: none; }
+.detail-label { color: var(--text-muted); font-size: 0.85rem; }
+.detail-value { font-weight: 600; font-size: 0.9rem; }
+
+/* ---- Dialogs ---- */
+
+.dialog-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 15, 26, 0.9); display: flex; align-items: center; justify-content: center; z-index: 1500; backdrop-filter: blur(4px); }
+.dialog-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px; max-width: 380px; width: 90%; text-align: center; }
+.dialog-box h3 { font-size: 1.3rem; margin-bottom: 8px; }
+.dialog-box p { color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem; }
+.dialog-actions { display: flex; flex-direction: column; gap: 10px; }
+
+/* ---- Celebration ---- */
+
+.celebration { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 15, 26, 0.95); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(8px); }
+.celebration-content { text-align: center; animation: scaleIn 0.4s ease; }
+.celebration-emoji { font-size: 4rem; animation: bounce 0.6s ease infinite alternate; }
+.celebration-content h2 { font-size: 2rem; margin: 16px 0 8px; background: linear-gradient(135deg, var(--success), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.celebration-message { color: var(--text-muted); margin-bottom: 8px; }
+.celebration-stats { color: var(--success); font-weight: 600; font-size: 1.1rem; margin-bottom: 24px; }
+
+/* ---- Footer ---- */
+.app-footer { text-align: center; color: var(--text-muted); font-size: 0.8rem; padding-top: 10px; border-top: 1px solid var(--border); }
+
+/* ---- Animations ---- */
+@keyframes pulse { 0%,100%{box-shadow:0 0 20px rgba(78,205,196,.2);} 50%{box-shadow:0 0 40px rgba(78,205,196,.4);} }
+@keyframes scaleIn { from{transform:scale(.8);opacity:0;} to{transform:scale(1);opacity:1;} }
+@keyframes bounce { from{transform:translateY(0);} to{transform:translateY(-10px);} }
+
+.history-list::-webkit-scrollbar { width: 6px; }
+.history-list::-webkit-scrollbar-track { background: var(--bg); }
+.history-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+@media (max-width: 400px) {
+    .timer-ring { width: 220px; height: 220px; }
+    .timer-inner { width: 184px; height: 184px; }
+    .timer-display { font-size: 2.4rem; }
+    .profile-modal { padding: 24px; }
+}
+    </style>
+</head>
+<body>
+    <!-- PROFILE SELECTOR -->
+    <div id="profileSelector" class="profile-selector hidden">
+        <div class="profile-modal">
+            <h2>Who's working out?</h2>
+            <div id="profileList" class="profile-list"></div>
+            <button id="newProfileBtn" class="control-btn new-profile-btn">+ New Profile</button>
+        </div>
+    </div>
+
+    <!-- PROFILE SETUP -->
+    <div id="profileSetup" class="profile-setup hidden">
+        <div class="profile-modal">
+            <h2>Set Up Your Profile</h2>
+            <p class="setup-subtitle">Quick setup — you can change these later</p>
+            <form id="profileForm" class="profile-form">
+                <div class="form-group">
+                    <label for="userName">Name *</label>
+                    <input type="text" id="userName" placeholder="Your name" required maxlength="30">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="userHeight">Height (cm)</label>
+                        <input type="number" id="userHeight" placeholder="170" min="100" max="250">
+                    </div>
+                    <div class="form-group">
+                        <label for="userWeight">Weight (kg)</label>
+                        <input type="number" id="userWeight" placeholder="70" min="20" max="300">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="userGoal">Daily Goal (minutes)</label>
+                    <select id="userGoal">
+                        <option value="9">9 min (minimum effective)</option>
+                        <option value="15" selected>15 min (recommended daily)</option>
+                        <option value="30">30 min (alternate days)</option>
+                        <option value="45">45 min (intense)</option>
+                    </select>
+                </div>
+                <button type="submit" class="control-btn start-btn">Let's Go!</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="mainApp" class="app-container hidden">
+        <header class="app-header">
+            <div class="header-left">
+                <h1>FitTimer</h1>
+                <p class="tagline">Just press start. We'll handle the rest.</p>
+            </div>
+            <div class="header-right">
+                <span id="currentUser" class="user-badge"></span>
+                <button id="switchUserBtn" class="icon-btn" title="Switch user">&#128100;</button>
+            </div>
+        </header>
+
+        <nav class="tab-nav">
+            <button class="tab-btn active" data-tab="timer">Timer</button>
+            <button class="tab-btn" data-tab="history">History</button>
+            <button class="tab-btn" data-tab="profile">Profile</button>
+        </nav>
+
+        <!-- TAB: Timer -->
+        <section id="tabTimer" class="tab-content active">
+            <div class="duration-selector">
+                <button class="duration-btn" data-minutes="9">9 min</button>
+                <button class="duration-btn active" data-minutes="15">15 min</button>
+                <button class="duration-btn" data-minutes="30">30 min</button>
+                <button class="duration-btn" data-minutes="45">45 min</button>
+            </div>
+            <div class="timer-ring-container">
+                <div class="timer-ring" id="timerRing">
+                    <div class="timer-inner">
+                        <span class="timer-display" id="timerDisplay">15:00</span>
+                        <span class="timer-label" id="timerLabel">READY</span>
+                    </div>
+                </div>
+            </div>
+            <div class="controls">
+                <button id="startBtn" class="control-btn start-btn">&#9654; START</button>
+                <button id="pauseBtn" class="control-btn pause-btn hidden">&#9208; PAUSE</button>
+                <button id="stopBtn" class="control-btn stop-btn hidden">&#9632; STOP</button>
+                <button id="resetBtn" class="control-btn reset-btn hidden">&#8634; RESET</button>
+            </div>
+            <div class="stats-section">
+                <div class="stat-card streak-card"><span class="stat-value" id="streakCount">0</span><span class="stat-label">Day Streak</span></div>
+                <div class="stat-card"><span class="stat-value" id="weekCount">0</span><span class="stat-label">This Week</span></div>
+                <div class="stat-card"><span class="stat-value" id="totalCount">0</span><span class="stat-label">Total Sessions</span></div>
+                <div class="stat-card"><span class="stat-value" id="totalMinutes">0</span><span class="stat-label">Total Minutes</span></div>
+            </div>
+        </section>
+
+        <!-- TAB: History -->
+        <section id="tabHistory" class="tab-content">
+            <div class="history-header">
+                <button id="prevMonth" class="icon-btn">&larr;</button>
+                <h2 id="historyMonth">May 2026</h2>
+                <button id="nextMonth" class="icon-btn">&rarr;</button>
+            </div>
+            <div id="calendarGrid" class="calendar-grid"></div>
+            <div class="history-stats">
+                <div class="stat-card"><span class="stat-value" id="monthSessions">0</span><span class="stat-label">This Month</span></div>
+                <div class="stat-card"><span class="stat-value" id="monthMinutes">0</span><span class="stat-label">Minutes</span></div>
+                <div class="stat-card"><span class="stat-value" id="yearSessions">0</span><span class="stat-label">This Year</span></div>
+                <div class="stat-card"><span class="stat-value" id="yearMinutes">0</span><span class="stat-label">Year Minutes</span></div>
+            </div>
+            <h3 class="section-title">Recent Sessions</h3>
+            <div id="historyList" class="history-list"><p class="empty-state">No sessions yet. Start your first workout!</p></div>
+        </section>
+
+        <!-- TAB: Profile -->
+        <section id="tabProfile" class="tab-content">
+            <div class="profile-view">
+                <div class="profile-avatar" id="profileAvatar">?</div>
+                <h2 id="profileDisplayName">&mdash;</h2>
+                <div class="profile-details">
+                    <div class="detail-row"><span class="detail-label">Height</span><span class="detail-value" id="profileHeight">&mdash;</span></div>
+                    <div class="detail-row"><span class="detail-label">Weight</span><span class="detail-value" id="profileWeight">&mdash;</span></div>
+                    <div class="detail-row"><span class="detail-label">Daily Goal</span><span class="detail-value" id="profileGoal">&mdash;</span></div>
+                    <div class="detail-row"><span class="detail-label">Member Since</span><span class="detail-value" id="profileSince">&mdash;</span></div>
+                    <div class="detail-row"><span class="detail-label">Longest Streak</span><span class="detail-value" id="profileBestStreak">&mdash;</span></div>
+                </div>
+                <button id="editProfileBtn" class="control-btn pause-btn">Edit Profile</button>
+                <button id="exportDataBtn" class="control-btn reset-btn" style="margin-top:8px;">Export Data (JSON)</button>
+            </div>
+        </section>
+
+        <footer class="app-footer"><p>9 min/day = maximum health impact. You've got this.</p></footer>
+    </div>
+
+    <!-- STOP CONFIRM DIALOG -->
+    <div id="stopDialog" class="dialog-overlay hidden">
+        <div class="dialog-box">
+            <h3>Stop Workout?</h3>
+            <p>You've done <strong id="stopDoneTime">0</strong> of <strong id="stopTotalTime">15</strong> minutes.</p>
+            <div class="dialog-actions">
+                <button id="stopRecordBtn" class="control-btn start-btn">Record <span id="stopPartialMin">0</span> min</button>
+                <button id="stopDiscardBtn" class="control-btn reset-btn">Discard</button>
+                <button id="stopCancelBtn" class="control-btn pause-btn">Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CELEBRATION OVERLAY -->
+    <div id="celebration" class="celebration hidden">
+        <div class="celebration-content">
+            <div class="celebration-emoji">&#127881;</div>
+            <h2>WORKOUT DONE!</h2>
+            <p class="celebration-message" id="celebrationMsg">Amazing work!</p>
+            <p class="celebration-stats" id="celebrationStats"></p>
+            <button id="celebrationClose" class="control-btn start-btn">NICE!</button>
+        </div>
+    </div>
+
+    <script>
+// ============================================
+// FitTimer — Database Layer (IndexedDB)
+// ============================================
+
+const DB_NAME = 'FitTimerDB';
+const DB_VERSION = 1;
+
+let db = null;
+
+function openDB() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+        request.onupgradeneeded = (event) => {
+            const database = event.target.result;
+            if (!database.objectStoreNames.contains('users')) {
+                const userStore = database.createObjectStore('users', { keyPath: 'id', autoIncrement: true });
+                userStore.createIndex('name', 'name', { unique: true });
+            }
+            if (!database.objectStoreNames.contains('sessions')) {
+                const sessionStore = database.createObjectStore('sessions', { keyPath: 'id', autoIncrement: true });
+                sessionStore.createIndex('userId', 'userId', { unique: false });
+                sessionStore.createIndex('date', 'date', { unique: false });
+                sessionStore.createIndex('userId_date', ['userId', 'date'], { unique: false });
+            }
+        };
+
+        request.onsuccess = (event) => { db = event.target.result; resolve(db); };
+        request.onerror = (event) => { reject('IndexedDB error: ' + event.target.error); };
+    });
+}
+
+function addUser(user) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction('users', 'readwrite');
+        const store = tx.objectStore('users');
+        const request = store.add(user);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+function getAllUsers() {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction('users', 'readonly');
+        const store = tx.objectStore('users');
+        const request = store.getAll();
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+function getUser(id) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction('users', 'readonly');
+        const store = tx.objectStore('users');
+        const request = store.get(id);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+function updateUser(user) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction('users', 'readwrite');
+        const store = tx.objectStore('users');
+        const request = store.put(user);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+function addSession(session) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction('sessions', 'readwrite');
+        const store = tx.objectStore('sessions');
+        const request = store.add(session);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+function getSessionsByUser(userId) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction('sessions', 'readonly');
+        const store = tx.objectStore('sessions');
+        const index = store.index('userId');
+        const request = index.getAll(userId);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+async function exportUserData(userId) {
+    const user = await getUser(userId);
+    const sessions = await getSessionsByUser(userId);
+    return { user, sessions, exportedAt: new Date().toISOString() };
+}
+
+// ============================================
+// FitTimer — App Logic (v2)
+// ============================================
+
+let timerInterval = null;
+let remainingSeconds = 15 * 60;
+let totalSeconds = 15 * 60;
+let selectedDuration = 15;
+let isRunning = false;
+let isPaused = false;
+let currentUserId = null;
+let currentUser = null;
+let sessions = [];
+let viewingMonth = new Date();
+
+const $ = (id) => document.getElementById(id);
+
+const profileSelector = $('profileSelector');
+const profileSetup = $('profileSetup');
+const mainApp = $('mainApp');
+const profileForm = $('profileForm');
+const profileList = $('profileList');
+const newProfileBtn = $('newProfileBtn');
+const switchUserBtn = $('switchUserBtn');
+const currentUserEl = $('currentUser');
+
+const timerDisplay = $('timerDisplay');
+const timerLabel = $('timerLabel');
+const timerRing = $('timerRing');
+const startBtn = $('startBtn');
+const pauseBtn = $('pauseBtn');
+const stopBtn = $('stopBtn');
+const resetBtn = $('resetBtn');
+
+const streakCount = $('streakCount');
+const weekCount = $('weekCount');
+const totalCount = $('totalCount');
+const totalMinutes = $('totalMinutes');
+
+const stopDialog = $('stopDialog');
+const stopDoneTime = $('stopDoneTime');
+const stopTotalTime = $('stopTotalTime');
+const stopPartialMin = $('stopPartialMin');
+
+const celebration = $('celebration');
+const celebrationMsg = $('celebrationMsg');
+const celebrationStats = $('celebrationStats');
+
+const historyMonth = $('historyMonth');
+const calendarGrid = $('calendarGrid');
+
+const durationBtns = document.querySelectorAll('.duration-btn');
+const tabBtns = document.querySelectorAll('.tab-btn');
+
+async function init() {
+    await openDB();
+    const users = await getAllUsers();
+    const lastUserId = localStorage.getItem('fitTimer_lastUser');
+
+    if (users.length === 0) {
+        showProfileSetup();
+    } else if (users.length === 1) {
+        await loginUser(users[0].id);
+    } else if (lastUserId && users.find(u => u.id === Number(lastUserId))) {
+        await loginUser(Number(lastUserId));
+    } else {
+        showProfileSelector(users);
+    }
+    bindEvents();
+}
+
+function showProfileSelector(users) {
+    profileSelector.classList.remove('hidden');
+    profileSetup.classList.add('hidden');
+    mainApp.classList.add('hidden');
+
+    profileList.innerHTML = users.map(u => `
+        <div class="profile-card" data-user-id="${u.id}">
+            <div class="avatar">${u.name.charAt(0).toUpperCase()}</div>
+            <div class="info">
+                <div class="name">${u.name}</div>
+                <div class="meta">${u.goal || 15} min goal</div>
+            </div>
+        </div>
+    `).join('');
+
+    profileList.querySelectorAll('.profile-card').forEach(card => {
+        card.addEventListener('click', () => loginUser(Number(card.dataset.userId)));
+    });
+}
+
+function showProfileSetup() {
+    profileSelector.classList.add('hidden');
+    profileSetup.classList.remove('hidden');
+    mainApp.classList.add('hidden');
+}
+
+async function loginUser(userId) {
+    currentUserId = userId;
+    currentUser = await getUser(userId);
+    sessions = await getSessionsByUser(userId);
+    localStorage.setItem('fitTimer_lastUser', userId);
+
+    selectedDuration = currentUser.goal || 15;
+    remainingSeconds = selectedDuration * 60;
+    totalSeconds = selectedDuration * 60;
+
+    profileSelector.classList.add('hidden');
+    profileSetup.classList.add('hidden');
+    mainApp.classList.remove('hidden');
+
+    currentUserEl.textContent = currentUser.name;
+    durationBtns.forEach(btn => btn.classList.toggle('active', parseInt(btn.dataset.minutes) === selectedDuration));
+
+    updateTimerDisplay();
+    updateRingProgress();
+    updateStats();
+    renderCalendar();
+    renderHistory();
+    renderProfile();
+}
+
+function bindEvents() {
+    profileForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = $('userName').value.trim();
+        if (!name) return;
+        const user = {
+            name: name,
+            height: $('userHeight').value ? Number($('userHeight').value) : null,
+            weight: $('userWeight').value ? Number($('userWeight').value) : null,
+            goal: Number($('userGoal').value),
+            createdAt: new Date().toISOString()
+        };
+        const userId = await addUser(user);
+        await loginUser(userId);
+    });
+
+    newProfileBtn.addEventListener('click', showProfileSetup);
+    switchUserBtn.addEventListener('click', async () => { const users = await getAllUsers(); showProfileSelector(users); });
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            tabBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            $('tab' + capitalize(btn.dataset.tab)).classList.add('active');
+            if (btn.dataset.tab === 'history') { renderCalendar(); renderHistory(); }
+            if (btn.dataset.tab === 'profile') renderProfile();
+        });
+    });
+
+    durationBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (isRunning) return;
+            durationBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedDuration = parseInt(btn.dataset.minutes);
+            remainingSeconds = selectedDuration * 60;
+            totalSeconds = selectedDuration * 60;
+            updateTimerDisplay();
+            updateRingProgress();
+        });
+    });
+
+    startBtn.addEventListener('click', startTimer);
+    pauseBtn.addEventListener('click', pauseTimer);
+    stopBtn.addEventListener('click', showStopDialog);
+    resetBtn.addEventListener('click', resetTimer);
+
+    $('stopRecordBtn').addEventListener('click', () => { stopDialog.classList.add('hidden'); completeSession(true); });
+    $('stopDiscardBtn').addEventListener('click', () => { stopDialog.classList.add('hidden'); resetTimer(); });
+    $('stopCancelBtn').addEventListener('click', () => { stopDialog.classList.add('hidden'); startTimer(); });
+
+    $('celebrationClose').addEventListener('click', () => celebration.classList.add('hidden'));
+
+    $('prevMonth').addEventListener('click', () => { viewingMonth.setMonth(viewingMonth.getMonth() - 1); renderCalendar(); });
+    $('nextMonth').addEventListener('click', () => { viewingMonth.setMonth(viewingMonth.getMonth() + 1); renderCalendar(); });
+
+    $('editProfileBtn').addEventListener('click', editProfile);
+    $('exportDataBtn').addEventListener('click', exportData);
+
+    document.addEventListener('keydown', (e) => {
+        if (!celebration.classList.contains('hidden')) { if (e.code === 'Space') celebration.classList.add('hidden'); return; }
+        if (!stopDialog.classList.contains('hidden')) return;
+        if (e.code === 'Space' && mainApp.classList.contains('hidden') === false) {
+            e.preventDefault();
+            if (isRunning) pauseTimer(); else startTimer();
+        }
+    });
+}
+
+function startTimer() {
+    if (!isPaused) {
+        remainingSeconds = isPaused ? remainingSeconds : (isRunning ? remainingSeconds : selectedDuration * 60);
+        totalSeconds = selectedDuration * 60;
+    }
+    isPaused = false;
+    isRunning = true;
+    timerLabel.textContent = 'WORKING OUT';
+    timerRing.classList.add('running');
+    startBtn.classList.add('hidden');
+    pauseBtn.classList.remove('hidden');
+    stopBtn.classList.remove('hidden');
+    resetBtn.classList.add('hidden');
+    timerInterval = setInterval(() => {
+        remainingSeconds--;
+        updateTimerDisplay();
+        updateRingProgress();
+        if (remainingSeconds <= 0) completeSession(false);
+    }, 1000);
+}
+
+function pauseTimer() {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    isPaused = true;
+    isRunning = false;
+    timerLabel.textContent = 'PAUSED';
+    timerRing.classList.remove('running');
+    pauseBtn.classList.add('hidden');
+    startBtn.classList.remove('hidden');
+    startBtn.innerHTML = '&#9654; RESUME';
+    stopBtn.classList.remove('hidden');
+    resetBtn.classList.remove('hidden');
+}
+
+function showStopDialog() {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    isRunning = false;
+    timerRing.classList.remove('running');
+    const doneSec = totalSeconds - remainingSeconds;
+    const doneMin = Math.ceil(doneSec / 60);
+    stopDoneTime.textContent = doneMin;
+    stopTotalTime.textContent = selectedDuration;
+    stopPartialMin.textContent = doneMin;
+    stopDialog.classList.remove('hidden');
+}
+
+function resetTimer() {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    isRunning = false;
+    isPaused = false;
+    remainingSeconds = selectedDuration * 60;
+    totalSeconds = selectedDuration * 60;
+    timerLabel.textContent = 'READY';
+    timerRing.classList.remove('running');
+    startBtn.classList.remove('hidden');
+    startBtn.innerHTML = '&#9654; START';
+    pauseBtn.classList.add('hidden');
+    stopBtn.classList.add('hidden');
+    resetBtn.classList.add('hidden');
+    updateTimerDisplay();
+    updateRingProgress();
+}
+
+async function completeSession(isPartial) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    isRunning = false;
+    isPaused = false;
+    const actualMinutes = isPartial ? Math.ceil((totalSeconds - remainingSeconds) / 60) : selectedDuration;
+    const session = { userId: currentUserId, date: new Date().toISOString(), duration: actualMinutes, targetDuration: selectedDuration, completed: !isPartial };
+    await addSession(session);
+    sessions.push(session);
+    showCelebration(actualMinutes, isPartial);
+    timerLabel.textContent = 'DONE!';
+    timerRing.classList.remove('running');
+    startBtn.classList.remove('hidden');
+    startBtn.innerHTML = '&#9654; START';
+    pauseBtn.classList.add('hidden');
+    stopBtn.classList.add('hidden');
+    resetBtn.classList.add('hidden');
+    remainingSeconds = selectedDuration * 60;
+    totalSeconds = selectedDuration * 60;
+    updateTimerDisplay();
+    updateRingProgress();
+    updateStats();
+}
+
+function updateTimerDisplay() {
+    const min = Math.floor(remainingSeconds / 60);
+    const sec = remainingSeconds % 60;
+    timerDisplay.textContent = String(min).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+}
+
+function updateRingProgress() {
+    const progress = ((totalSeconds - remainingSeconds) / totalSeconds) * 360;
+    timerRing.style.background = `conic-gradient(var(--ring-progress) ${progress}deg, var(--ring-bg) ${progress}deg)`;
+}
+
+function updateStats() {
+    totalCount.textContent = sessions.length;
+    totalMinutes.textContent = sessions.reduce((sum, s) => sum + s.duration, 0);
+    const now = new Date();
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - now.getDay());
+    weekStart.setHours(0, 0, 0, 0);
+    weekCount.textContent = sessions.filter(s => new Date(s.date) >= weekStart).length;
+    streakCount.textContent = calculateStreak();
+}
+
+function calculateStreak() {
+    if (sessions.length === 0) return 0;
+    const uniqueDates = [...new Set(sessions.map(s => new Date(s.date).toDateString()))].sort((a, b) => new Date(b) - new Date(a));
+    let streak = 0;
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    let checkDate = new Date(today);
+    if (uniqueDates[0] !== today.toDateString()) {
+        const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+        if (uniqueDates[0] !== yesterday.toDateString()) return 0;
+        checkDate = yesterday;
+    }
+    for (const dateStr of uniqueDates) {
+        if (dateStr === checkDate.toDateString()) { streak++; checkDate.setDate(checkDate.getDate() - 1); }
+        else break;
+    }
+    return streak;
+}
+
+function renderCalendar() {
+    const year = viewingMonth.getFullYear();
+    const month = viewingMonth.getMonth();
+    historyMonth.textContent = viewingMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const today = new Date();
+    const sessionDates = new Set(sessions.filter(s => { const d = new Date(s.date); return d.getFullYear() === year && d.getMonth() === month; }).map(s => new Date(s.date).getDate()));
+    let html = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => `<div class="cal-header">${d}</div>`).join('');
+    for (let i = 0; i < firstDay; i++) html += '<div class="cal-day empty"></div>';
+    for (let day = 1; day <= daysInMonth; day++) {
+        const isToday = (day === today.getDate() && month === today.getMonth() && year === today.getFullYear());
+        const hasSession = sessionDates.has(day);
+        const classes = ['cal-day', isToday ? 'today' : '', hasSession ? 'has-session' : ''].filter(Boolean).join(' ');
+        html += `<div class="${classes}">${day}</div>`;
+    }
+    calendarGrid.innerHTML = html;
+    const monthSess = sessions.filter(s => { const d = new Date(s.date); return d.getFullYear() === year && d.getMonth() === month; });
+    $('monthSessions').textContent = monthSess.length;
+    $('monthMinutes').textContent = monthSess.reduce((sum, s) => sum + s.duration, 0);
+    const yearSess = sessions.filter(s => new Date(s.date).getFullYear() === year);
+    $('yearSessions').textContent = yearSess.length;
+    $('yearMinutes').textContent = yearSess.reduce((sum, s) => sum + s.duration, 0);
+}
+
+function renderHistory() {
+    if (sessions.length === 0) { $('historyList').innerHTML = '<p class="empty-state">No sessions yet. Start your first workout!</p>'; return; }
+    const recent = [...sessions].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 30);
+    $('historyList').innerHTML = recent.map(s => {
+        const d = new Date(s.date);
+        const dateStr = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        const timeStr = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        const icon = s.completed ? '&#10003;' : '&#9679;';
+        const iconClass = s.completed ? 'history-check' : 'history-partial';
+        return `<div class="history-item"><span class="history-date">${dateStr} ${timeStr}</span><span class="history-duration">${s.duration} min</span><span class="${iconClass}">${icon}</span></div>`;
+    }).join('');
+}
+
+function renderProfile() {
+    if (!currentUser) return;
+    $('profileAvatar').textContent = currentUser.name.charAt(0).toUpperCase();
+    $('profileDisplayName').textContent = currentUser.name;
+    $('profileHeight').textContent = currentUser.height ? currentUser.height + ' cm' : '\u2014';
+    $('profileWeight').textContent = currentUser.weight ? currentUser.weight + ' kg' : '\u2014';
+    $('profileGoal').textContent = (currentUser.goal || 15) + ' min/day';
+    $('profileSince').textContent = currentUser.createdAt ? new Date(currentUser.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : '\u2014';
+    $('profileBestStreak').textContent = calculateAllStreaks() + ' days';
+}
+
+function calculateAllStreaks() {
+    if (sessions.length === 0) return 0;
+    const uniqueDates = [...new Set(sessions.map(s => new Date(s.date).toDateString()))].sort((a, b) => new Date(a) - new Date(b));
+    let maxStreak = 1, current = 1;
+    for (let i = 1; i < uniqueDates.length; i++) {
+        const prev = new Date(uniqueDates[i - 1]);
+        const curr = new Date(uniqueDates[i]);
+        const diff = (curr - prev) / (1000 * 60 * 60 * 24);
+        if (diff === 1) { current++; maxStreak = Math.max(maxStreak, current); } else current = 1;
+    }
+    return maxStreak;
+}
+
+function editProfile() {
+    const newName = prompt('Name:', currentUser.name);
+    if (newName === null) return;
+    const newHeight = prompt('Height (cm):', currentUser.height || '');
+    const newWeight = prompt('Weight (kg):', currentUser.weight || '');
+    const newGoal = prompt('Daily goal (minutes: 9, 15, 30, or 45):', currentUser.goal || 15);
+    currentUser.name = newName || currentUser.name;
+    currentUser.height = newHeight ? Number(newHeight) : currentUser.height;
+    currentUser.weight = newWeight ? Number(newWeight) : currentUser.weight;
+    currentUser.goal = newGoal ? Number(newGoal) : currentUser.goal;
+    updateUser(currentUser);
+    currentUserEl.textContent = currentUser.name;
+    renderProfile();
+}
+
+async function exportData() {
+    const data = await exportUserData(currentUserId);
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `FitTimer_${currentUser.name}_${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function showCelebration(minutes, isPartial) {
+    const messages = ["You showed up. That's what matters!", "Another one in the bank!", "Consistency beats intensity!", "Your future self thanks you!", "Small steps, big results!", "That's the compound effect!", "Discipline > Motivation!"];
+    celebrationMsg.textContent = isPartial ? `${minutes} minutes still counts!` : messages[Math.floor(Math.random() * messages.length)];
+    const streak = calculateStreak();
+    celebrationStats.textContent = streak > 1 ? `${streak} day streak! Keep it going!` : 'First step done. Come back tomorrow!';
+    celebration.classList.remove('hidden');
+}
+
+function capitalize(str) { return str.charAt(0).toUpperCase() + str.slice(1); }
+
+init();
+    </script>
+</body>
+</html>

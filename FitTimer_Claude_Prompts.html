@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitTimer — Claude Prompts</title>
+    <style>
+        :root{--navy:#1a1a2e;--accent:#6c63ff;--bg:#f8fafc;--card:#fff;--border:#e2e8f0;--text:#1e293b;--muted:#64748b;}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Segoe UI',Inter,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;padding:20px;}
+        .hdr{background:linear-gradient(135deg,var(--navy),#2d1b69);color:#fff;padding:28px 32px;border-radius:12px;margin-bottom:24px;}
+        .hdr h1{font-size:22px;margin-bottom:4px;} .hdr .sub{font-size:13px;opacity:.8;}
+        .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+        .card h2{font-size:16px;color:var(--navy);margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid var(--accent);}
+        .card h3{font-size:14px;color:var(--accent);margin:12px 0 6px;}
+        .prompt{background:#1e293b;color:#e2e8f0;border-radius:8px;padding:16px 20px;font-family:Consolas,'Courier New',monospace;font-size:12px;line-height:1.8;margin:10px 0;white-space:pre-wrap;word-wrap:break-word;overflow-x:auto;}
+        .note{background:#fffbeb;border-left:4px solid #f59e0b;padding:12px 16px;border-radius:0 8px 8px 0;font-size:13px;margin:12px 0;}
+        .step{background:#ecfdf5;border-left:4px solid #10b981;padding:12px 16px;border-radius:0 8px 8px 0;font-size:13px;margin:12px 0;}
+        ol{margin-left:20px;} li{margin-bottom:6px;font-size:14px;}
+        .copy-hint{font-size:11px;color:var(--muted);text-align:right;margin-top:4px;font-style:italic;}
+    </style>
+</head>
+<body>
+
+<div class="hdr">
+    <h1>FitTimer — Prompts for Claude</h1>
+    <div class="sub">Copy-paste these prompts to Claude (mobile) to recreate the entire app from scratch<br>
+    Created: 17 May 2026 • Use in order: Prompt 1 → 2 → 3 • Prompt 5 = APK for Play Store</div>
+</div>
+
+<!-- INSTRUCTIONS -->
+<div class="card">
+    <h2>How to Use This</h2>
+    <ol>
+        <li>Open Claude on your phone (claude.ai or the app)</li>
+        <li>Copy <strong>Prompt 1</strong> and send it — Claude will generate the complete app code</li>
+        <li>Copy Claude's output into a file called <code>FitTimer.html</code></li>
+        <li>Open that file in Chrome — your app is ready!</li>
+        <li>Use Prompts 2 & 3 only if you want to customize or learn</li>
+        <li>Use <strong>Prompt 5</strong> when you're ready to make it a real Android app (APK)</li>
+    </ol>
+    <div class="note">
+        <strong>Important:</strong> Send ONE prompt at a time. Wait for Claude's full response before sending the next. Each prompt builds on the previous.
+    </div>
+</div>
+
+<!-- PROMPT 1: BUILD THE APP -->
+<div class="card">
+    <h2>Prompt 1: Build the Complete App (Single HTML File)</h2>
+    <p>This creates the entire working app in one go.</p>
+    <div class="prompt">Create a complete fitness Pomodoro timer app in a SINGLE HTML file (all CSS and JS inline). No external dependencies except Google Fonts (Inter + JetBrains Mono).
+
+Requirements:
+
+**Core Features:**
+- Multi-user profiles stored in IndexedDB (browser database)
+- Timer with selectable durations: 9, 15, 30, 45 minutes
+- Circular progress ring that fills as time passes (use CSS conic-gradient)
+- START / PAUSE / STOP / RESET buttons
+- STOP button shows a confirm dialog with 3 options:
+  - "Record X min" (saves partial session)
+  - "Discard" (resets timer, saves nothing)
+  - "Continue" (resumes workout)
+- Auto-saves session to IndexedDB when timer completes
+- Celebration popup with random motivational message on completion
+- Keyboard shortcut: Space to start/pause
+
+**3-Tab Interface:**
+1. Timer tab: duration selector, circular timer ring, controls, stat cards (streak, week, total sessions, total minutes)
+2. History tab: calendar grid showing the month (green dots on workout days), month navigation arrows, monthly + yearly stats, recent sessions list
+3. Profile tab: user info display, longest streak, Edit Profile button, Export Data (downloads JSON)
+
+**Profile System:**
+- First launch → "Set Up Your Profile" form (name*, height, weight, daily goal)
+- Multiple profiles supported → profile selector on launch
+- Switch user button in header
+- Profile stored in IndexedDB "users" table: id, name, height, weight, goal, createdAt
+- Sessions stored in IndexedDB "sessions" table: id, userId, date, duration, targetDuration, completed
+
+**Design:**
+- Dark theme (background: #0f0f1a, cards: #1a1a2e)
+- Gradient text for headings (purple #6c63ff to pink #ff6584)
+- Timer ring: teal progress (#4ecdc4) on dark track (#2a2a4a)
+- Rounded buttons with gradients
+- Mobile-friendly (works on phone screens)
+- Pulsing animation on timer ring while running
+
+**Technical:**
+- Pure vanilla JavaScript (no frameworks)
+- IndexedDB for all data storage (NOT localStorage, except for remembering last user ID)
+- All functions async/await for DB operations
+- Use conic-gradient for the circular progress
+- All in ONE file — inline &lt;style&gt; and inline &lt;script&gt;
+
+Please output the complete HTML file with all CSS and JavaScript included inline. The file should work by simply opening it in a browser — zero setup needed.</div>
+    <div class="copy-hint">Long-press to select all → Copy</div>
+</div>
+
+<!-- PROMPT 2: CUSTOMIZATION -->
+<div class="card">
+    <h2>Prompt 2: Customize (Optional)</h2>
+    <p>Send this after Prompt 1 if you want changes. Edit the items in [brackets] to match what you want.</p>
+    <div class="prompt">Make these changes to the FitTimer app:
+
+1. [Change the color scheme — e.g., "make it blue instead of purple" or "lighter theme"]
+2. [Add/remove duration options — e.g., "add 60 min option" or "remove 9 min"]
+3. [Change celebration messages — e.g., "add Telugu/Hindi motivational quotes"]
+4. [Change the default daily goal — e.g., "default to 9 min instead of 15"]
+5. [Add a feature — e.g., "add a sound when timer finishes" or "add workout type selector (cardio/weights/yoga)"]
+
+Keep everything in a single HTML file. Show me the complete updated file.</div>
+    <div class="copy-hint">Edit the [bracketed] items before sending</div>
+</div>
+
+<!-- PROMPT 3: LEARN -->
+<div class="card">
+    <h2>Prompt 3: Learn How It Works (Optional)</h2>
+    <p>Send this if you want Claude to explain the code so you can build it yourself.</p>
+    <div class="prompt">Explain the FitTimer app code you just created. I want to understand it well enough to build it myself from scratch. Cover:
+
+1. **IndexedDB basics** — How does the database work? How do you create tables, add data, read data? Explain with analogies (I'm not a web developer).
+
+2. **The timer mechanism** — How does setInterval work? How does the countdown update every second? How does conic-gradient create the circular progress?
+
+3. **Multi-user system** — How does userId link sessions to the right person? How does the profile selector work?
+
+4. **The stop dialog** — How do you calculate "X of Y minutes done"? How do the 3 buttons (Record/Discard/Continue) each work differently?
+
+5. **Calendar rendering** — How do you draw a month calendar in HTML? How do you mark days that have sessions?
+
+6. **Streak calculation** — How do you count consecutive days? What's the algorithm?
+
+Use analogies and layman language first, then show the actual code. Explain it like I know basic programming but never built a web app.</div>
+</div>
+
+<!-- PROMPT 4: PWA -->
+<div class="card">
+    <h2>Prompt 4: Make it Installable on Phone (Optional, needs hosting)</h2>
+    <p>Only use this if you host the app somewhere (GitHub Pages, etc.). Not needed if you just open the HTML file directly.</p>
+    <div class="prompt">Convert the FitTimer app into a PWA (Progressive Web App) so it can be installed on a phone's home screen. I need:
+
+1. A manifest.json file (app name: "FitTimer", theme color: #6c63ff, background: #1a1a2e, standalone display, portrait orientation)
+2. A service-worker.js that caches all files for offline use
+3. The modifications needed in index.html (manifest link, meta tags, service worker registration)
+4. Simple app icons (describe what I should create — 192x192 and 512x512 PNG)
+
+Explain how to:
+- Host it on GitHub Pages (free)
+- Install it on Android phone from Chrome
+- What "Add to Home Screen" does
+
+Show me all the files I need to create.</div>
+</div>
+
+<!-- PROMPT 5: APK FOR PLAY STORE -->
+<div class="card">
+    <h2>Prompt 5: Convert to Android APK (for Play Store)</h2>
+    <p>This is the big one. Send this to Claude/ChatGPT to get step-by-step instructions to turn the HTML app into a real Android APK that you can install or publish on Google Play Store.</p>
+    <div class="note">
+        <strong>Prerequisites you'll need to install first:</strong><br>
+        1. <strong>Node.js</strong> — download from nodejs.org (LTS version, ~30MB)<br>
+        2. <strong>Android Studio</strong> — download from developer.android.com (~1GB download, ~3GB installed)<br>
+        3. During Android Studio setup, install "Android SDK" and "Android SDK Build-Tools"<br>
+        4. A Google Play Developer account ($25 one-time fee) — only if publishing to Play Store
+    </div>
+    <div class="prompt">I have a fitness timer web app built as a single HTML file (all CSS and JavaScript inline). I want to convert it into an Android APK that I can:
+1. Install on my phone directly (sideload)
+2. Optionally publish on Google Play Store
+
+The app uses:
+- Pure HTML/CSS/JavaScript (no frameworks)
+- IndexedDB for data storage
+- Google Fonts (Inter + JetBrains Mono) loaded via CDN
+- conic-gradient for circular timer
+- Dark theme, mobile-responsive design
+
+Give me a COMPLETE step-by-step guide using **Capacitor** (by Ionic) to wrap this into a native Android app. I'm on Windows.
+
+**STEP 1: Project Setup**
+- How to create a new Capacitor project from scratch
+- Where to put my HTML/CSS/JS files
+- What the folder structure should look like
+- All npm commands I need to run
+
+**STEP 2: Configuration**
+- capacitor.config.ts settings (app ID like com.myname.fittimer, app name, webDir)
+- How to set the app icon (512x512 PNG) and splash screen
+- How to set the status bar color to match my dark theme (#0f0f1a)
+- Any AndroidManifest.xml changes needed
+
+**STEP 3: Build the APK**
+- Commands to build the web assets
+- Commands to add the Android platform
+- Commands to sync files to native project
+- How to open in Android Studio
+- How to generate a signed APK/AAB (Android App Bundle)
+- Difference between debug APK (for testing) and release AAB (for Play Store)
+
+**STEP 4: Test on Phone**
+- How to enable Developer Mode on Android phone
+- How to enable USB Debugging
+- How to install the debug APK directly on phone via USB or file transfer
+- How to test without a physical device (Android Studio emulator)
+
+**STEP 5: Publish to Google Play Store (optional)**
+- How to create a Google Play Developer account ($25)
+- What assets I need: app icon, feature graphic, screenshots
+- How to create a privacy policy (my app stores data locally only, no server)
+- How to fill in the Store Listing (title, description, category: Health &amp; Fitness)
+- How to upload the AAB file
+- Content rating questionnaire answers for a simple timer app
+- How long review takes (typically 1-3 days)
+
+**STEP 6: App Signing**
+- How to create a keystore file for signing
+- What "Play App Signing" is and whether to use it
+- How to keep my keystore safe (if I lose it, I can't update the app)
+
+**Also tell me:**
+- What's the MINIMUM Android version I should target? (I want max compatibility)
+- Do I need internet permission? (my app works offline except for Google Fonts)
+- How to bundle Google Fonts locally so the app works 100% offline
+- Total estimated size of the final APK
+- Any common errors/gotchas for first-time Android developers
+
+Give me every single command I need to type. Assume I know nothing about Android development but I'm comfortable with command line. I have Node.js and Android Studio already installed.</div>
+    <div class="copy-hint">Long-press to select all → Copy</div>
+    <div class="step">
+        <strong>Alternative (easier but needs hosting):</strong> If you don't want to install Android Studio, host your app on GitHub Pages (free) and use <strong>PWABuilder.com</strong> — it generates an APK from any hosted PWA in 2 clicks. Ask Claude: "How do I host an HTML file on GitHub Pages and then use PWABuilder.com to generate an Android APK?"
+    </div>
+</div>
+
+<!-- BONUS: QUICK FIXES -->
+<div class="card">
+    <h2>Bonus: Quick Fix Prompts</h2>
+    <h3>If the timer doesn't save data:</h3>
+    <div class="prompt">The FitTimer app timer works but sessions aren't being saved. Check the IndexedDB addSession() function and the completeSession() flow. Make sure the database transaction completes before showing the celebration. Show me the fixed code.</div>
+
+    <h3>If you want to reset all data:</h3>
+    <div class="prompt">Add a "Reset All Data" button to the Profile tab of FitTimer. It should:
+1. Show a confirm dialog ("Are you sure? This deletes ALL profiles and sessions")
+2. If confirmed, delete the entire IndexedDB database
+3. Reload the page (shows fresh profile setup)
+Put it at the bottom of the Profile tab with a red/danger style.</div>
+
+    <h3>If you want sound effects:</h3>
+    <div class="prompt">Add sound effects to FitTimer using the Web Audio API (no external files needed):
+1. A soft tick every second while timer is running
+2. A triumphant chime when the timer completes
+3. A subtle click on button presses
+Generate the sounds programmatically using oscillators — no MP3 files needed. Keep everything in the single HTML file.</div>
+
+    <h3>If calendar looks wrong on phone:</h3>
+    <div class="prompt">The FitTimer calendar grid is too small on my phone. Fix the responsive design:
+- Make calendar cells bigger on mobile (at least 36px)
+- Make the font size readable (at least 14px)
+- Add more padding
+- Make sure it doesn't overflow the screen width
+Show me the updated CSS only.</div>
+</div>
+
+<!-- WHAT WE BUILT -->
+<div class="card">
+    <h2>Summary: What This App Does</h2>
+    <ol>
+        <li><strong>Open app</strong> → Pick your profile (or create one: name, height, weight, goal)</li>
+        <li><strong>Pick duration</strong> → 9 / 15 / 30 / 45 minutes</li>
+        <li><strong>Press START</strong> → Circular ring fills up as you work out</li>
+        <li><strong>Timer finishes</strong> → Celebration! Session auto-saved. Zero input needed.</li>
+        <li><strong>Need to stop early?</strong> → STOP button → choose Record (saves partial) / Discard / Continue</li>
+        <li><strong>Check history</strong> → Calendar view with green dots on workout days, monthly/yearly stats</li>
+        <li><strong>Multiple people</strong> → Each person has their own profile and data</li>
+        <li><strong>Export data</strong> → Download JSON backup from Profile tab</li>
+    </ol>
+    <div class="step">
+        <strong>Tech stack:</strong> Pure HTML + CSS + JavaScript. IndexedDB for storage. No server, no installs, no accounts. Just one HTML file opened in a browser.
+    </div>
+</div>
+
+</body>
+</html>
