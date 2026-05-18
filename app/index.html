@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="icon" href="icons/icon-192.png">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
-    <link rel="stylesheet" href="style.css?v=20">
+    <link rel="stylesheet" href="style.css?v=21">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
 </head>
@@ -101,7 +101,6 @@
             <button class="tab-btn" data-tab="routine">Routine</button>
             <button class="tab-btn" data-tab="workout">Workout</button>
             <button class="tab-btn" data-tab="log">Log</button>
-            <button class="tab-btn" data-tab="volume">Volume</button>
             <button class="tab-btn" data-tab="progress">Progress</button>
             <button class="tab-btn" data-tab="history">History</button>
             <button class="tab-btn" data-tab="mindset">Mindset</button>
@@ -118,6 +117,7 @@
                 <button class="duration-btn active" data-minutes="15">15 min</button>
                 <button class="duration-btn" data-minutes="30">30 min</button>
                 <button class="duration-btn" data-minutes="45">45 min</button>
+                <input type="number" id="customMinutes" class="custom-minutes-input" min="1" max="120" placeholder="Custom">
             </div>
 
             <div class="timer-ring-container">
@@ -270,6 +270,21 @@
                 <span class="water-count" id="waterCount">0 / 8 glasses</span>
             </div>
 
+            <!-- Health Check / Blockers -->
+            <div class="log-section">
+                <span class="log-section-label">Health Check</span>
+                <div class="log-options log-multi" id="logHealth">
+                    <button class="log-btn" data-value="gut"><span class="log-icon">🫄</span><span class="log-text">Gut</span></button>
+                    <button class="log-btn" data-value="fatigue"><span class="log-icon">🪫</span><span class="log-text">Fatigue</span></button>
+                    <button class="log-btn" data-value="soreness"><span class="log-icon">🦵</span><span class="log-text">Sore</span></button>
+                    <button class="log-btn" data-value="eyestrain"><span class="log-icon">👁️</span><span class="log-text">Eyes</span></button>
+                    <button class="log-btn" data-value="sleep"><span class="log-icon">😴</span><span class="log-text">Sleepy</span></button>
+                    <button class="log-btn" data-value="headache"><span class="log-icon">🤕</span><span class="log-text">Head</span></button>
+                    <button class="log-btn" data-value="stress"><span class="log-icon">😤</span><span class="log-text">Stress</span></button>
+                    <button class="log-btn" data-value="allgood"><span class="log-icon">✅</span><span class="log-text">All Good</span></button>
+                </div>
+            </div>
+
             <!-- Quick Note -->
             <div class="log-section">
                 <span class="log-section-label">Note</span>
@@ -281,23 +296,7 @@
         </section>
 
         <!-- TAB: Volume (Full Progressive Overload Log) -->
-        <section id="tabVolume" class="tab-content">
-            <h3 class="section-title" style="margin-bottom:12px;">📊 Volume Log</h3>
-            <div class="cal-nav">
-                <button id="calPrev" class="icon-btn">&larr;</button>
-                <span id="calMonthLabel"></span>
-                <button id="calNext" class="icon-btn">&rarr;</button>
-            </div>
-            <div class="cal-legend" id="calLegend"></div>
-            <!-- Week Dots + Chain -->
-            <div class="week-gamify">
-                <div class="week-dots-row" id="weekDotsRow"></div>
-                <div class="chain-links-row" id="chainLinksRow"></div>
-            </div>
-            <div class="cal-grid" id="calGrid"></div>
-            <div id="calDetail"></div>
-            <div id="fullVolumeTable" style="margin-top:20px;"></div>
-        </section>
+
 
         <!-- TAB: Progress (Gamification) -->
         <section id="tabProgress" class="tab-content">
@@ -361,12 +360,16 @@
 
         <!-- TAB: History -->
         <section id="tabHistory" class="tab-content">
-            <div class="history-header">
-                <button id="prevMonth" class="icon-btn">&larr;</button>
-                <h2 id="historyMonth">May 2026</h2>
-                <button id="nextMonth" class="icon-btn">&rarr;</button>
+            <!-- Single Calendar (color-coded by routine day) -->
+            <div class="cal-nav">
+                <button id="calPrev" class="icon-btn">&larr;</button>
+                <span id="calMonthLabel"></span>
+                <button id="calNext" class="icon-btn">&rarr;</button>
             </div>
-            <div id="calendarGrid" class="calendar-grid"></div>
+            <div class="cal-legend" id="calLegend"></div>
+            <div class="cal-grid" id="calGrid"></div>
+            <div id="calDetail"></div>
+            <!-- Stats -->
             <div class="history-stats">
                 <div class="stat-card">
                     <span class="stat-value" id="monthSessions">0</span>
@@ -385,7 +388,15 @@
                     <span class="stat-label">Year Minutes</span>
                 </div>
             </div>
-            <h3 class="section-title">Recent Sessions</h3>
+            <!-- Week Dots + Chain -->
+            <div class="week-gamify">
+                <div class="week-dots-row" id="weekDotsRow"></div>
+                <div class="chain-links-row" id="chainLinksRow"></div>
+            </div>
+            <!-- Volume Table -->
+            <div id="fullVolumeTable" style="margin-top:16px;"></div>
+            <!-- Recent Sessions -->
+            <h3 class="section-title" style="margin-top:16px;">Recent Sessions</h3>
             <div id="historyList" class="history-list">
                 <p class="empty-state">No sessions yet. Start your first workout!</p>
             </div>
@@ -394,7 +405,107 @@
         <!-- TAB: Mindset (Atomic Habits) -->
         <section id="tabMindset" class="tab-content">
             <h3 class="section-title" style="text-align:center;margin-bottom:4px;">🧠 Atomic Habits</h3>
-            <p style="text-align:center;font-size:0.7rem;color:var(--text-muted);margin-bottom:16px;">Tiny changes, remarkable results — James Clear</p>
+            <p style="text-align:center;font-size:0.7rem;color:var(--text-muted);margin-bottom:12px;">Tiny changes, remarkable results — James Clear</p>
+
+            <!-- Sub-tab pill bar -->
+            <div class="ah-subtabs">
+                <button class="ah-subtab active" onclick="switchAhPanel('framework')">🧠 Framework</button>
+                <button class="ah-subtab" onclick="switchAhPanel('playbook')">⚡ Playbook</button>
+                <button class="ah-subtab" onclick="switchAhPanel('system')">🛠️ System</button>
+            </div>
+
+            <!-- PANEL 1: Framework -->
+            <div class="ah-panel active" id="ahFramework">
+
+            <!-- The Habit Loop -->
+            <div class="ah-card ah-core">
+                <div class="ah-card-header">🔄 The Habit Loop</div>
+                <div class="ah-card-body">
+                    <p>Every habit follows 4 stages. Master each one = master your behavior.</p>
+                    <div class="ah-loop">
+                        <div class="ah-loop-step ah-loop-cue"><span class="ah-loop-num">1</span><strong>OBVIOUS</strong><div>Make the cue visible</div></div>
+                        <div class="ah-loop-arrow">→</div>
+                        <div class="ah-loop-step ah-loop-craving"><span class="ah-loop-num">2</span><strong>ATTRACTIVE</strong><div>Make the craving pull</div></div>
+                        <div class="ah-loop-arrow">→</div>
+                        <div class="ah-loop-step ah-loop-response"><span class="ah-loop-num">3</span><strong>EASY</strong><div>Reduce all friction</div></div>
+                        <div class="ah-loop-arrow">→</div>
+                        <div class="ah-loop-step ah-loop-reward"><span class="ah-loop-num">4</span><strong>SATISFYING</strong><div>Instant reward after</div></div>
+                    </div>
+
+                    <!-- Single flow example -->
+                    <div class="ah-loop-example">
+                        <div class="ah-loop-ex-title">🏋️ My Gym Habit — Full Loop</div>
+                        <div class="ah-loop-flow">
+                            <div class="ah-loop-ex-step ah-loop-cue">Gym clothes by bed + shoes ready</div>
+                            <div class="ah-loop-ex-arrow">→</div>
+                            <div class="ah-loop-ex-step ah-loop-craving">"I GET to build my dream body"</div>
+                            <div class="ah-loop-ex-arrow">→</div>
+                            <div class="ah-loop-ex-step ah-loop-response">Just dress up. That's it. Go.</div>
+                            <div class="ah-loop-ex-arrow">→</div>
+                            <div class="ah-loop-ex-step ah-loop-reward">Endorphins + tick mark ✓ + streak</div>
+                        </div>
+                    </div>
+
+                    <!-- Examples table -->
+                    <table class="ah-loop-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th style="color:#42a5f5;">OBVIOUS</th>
+                                <th style="color:#ec407a;">ATTRACTIVE</th>
+                                <th style="color:#66bb6a;">EASY</th>
+                                <th style="color:#ffa726;">SATISFYING</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>🏋️</td>
+                                <td>Clothes + shoes visible</td>
+                                <td>Dream body, gains, girls</td>
+                                <td>Dumbbells in room</td>
+                                <td>Endorphins + ✓ mark</td>
+                            </tr>
+                            <tr>
+                                <td>📚</td>
+                                <td>Book on pillow</td>
+                                <td>"I GET to learn"</td>
+                                <td>Just open it. 2 min.</td>
+                                <td>Knowledge + streak</td>
+                            </tr>
+                            <tr>
+                                <td>🧘</td>
+                                <td>App notification at set time</td>
+                                <td>Focus + emotional stability</td>
+                                <td>Open app, sit 2 min</td>
+                                <td>Calm mind + clarity</td>
+                            </tr>
+                            <tr>
+                                <td>🎸</td>
+                                <td>Guitar on stand (visible)</td>
+                                <td>Want to play that song</td>
+                                <td>Pick up, 5 min only</td>
+                                <td>Progress + fun</td>
+                            </tr>
+                            <tr>
+                                <td>🥗</td>
+                                <td>Prepped meal in fridge</td>
+                                <td>Energy + healthy skin</td>
+                                <td>Just eat what's ready</td>
+                                <td>Feel light & strong</td>
+                            </tr>
+                            <tr>
+                                <td>💪</td>
+                                <td>Dumbbells in room</td>
+                                <td>Quick pump, look good</td>
+                                <td>Pick up, do 1 set</td>
+                                <td>Muscles activated</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="ah-quote">"You do not rise to the level of your goals. You fall to the level of your systems."</div>
+                </div>
+            </div>
 
             <!-- The Core Idea -->
             <div class="ah-card ah-core">
@@ -402,7 +513,7 @@
                 <div class="ah-card-body">
                     <p>If you get <strong>1% better each day</strong>, you'll be <strong>37x better</strong> in one year.</p>
                     <p>If you get 1% worse each day, you'll decline to nearly zero.</p>
-                    <div class="ah-quote">"You do not rise to the level of your goals. You fall to the level of your systems."</div>
+                    <div class="ah-quote">"Habits are the compound interest of self-improvement."</div>
                 </div>
             </div>
 
@@ -477,6 +588,7 @@
                         <div class="ah-new">✅ "I am someone who never misses a workout"</div>
                     </div>
                     <div class="ah-quote">"Every action you take is a vote for the type of person you wish to become."</div>
+                    <p class="ah-tip">📱 <strong>In this app:</strong> Every session logged = one more VOTE for "I am someone who works out." Your History tab is proof of who you're becoming.</p>
                 </div>
             </div>
 
@@ -491,6 +603,7 @@
                         <div class="ah-bar-section ah-bar-results">Results compound<br><span>🚀 Explosion!</span></div>
                     </div>
                     <div class="ah-quote">"Ice doesn't melt at 31°. It melts at 32°. One degree makes the difference."</div>
+                    <p class="ah-tip">📱 <strong>In this app:</strong> The Volume & Progress tabs show you the compound growth over weeks — even when the mirror hasn't caught up yet.</p>
                 </div>
             </div>
 
@@ -517,6 +630,257 @@
                     <div class="ah-mantra">"Be the architect of your habits, not the victim of them."</div>
                     <div class="ah-mantra">"Success is the product of daily habits, not once-in-a-lifetime transformations."</div>
                     <div class="ah-mantra">"Missing once is an accident. Missing twice is the start of a new habit."</div>
+                </div>
+            </div>
+
+            </div><!-- END PANEL 1: Framework -->
+
+            <!-- PANEL 2: Playbook -->
+            <div class="ah-panel" id="ahPlaybook">
+
+            <!-- Self-Knowledge -->
+            <div class="ah-section-title">🪞 Know Yourself — Your Pattern</div>
+
+            <div class="ah-card ah-inversion">
+                <div class="ah-card-header">🚧 What Actually Blocks You</div>
+                <div class="ah-card-body">
+                    <p>The dumbbells are in your room. The app is on your phone. The block is <strong>never</strong> resources — it's these mental traps:</p>
+                    <ul class="ah-list">
+                        <li><strong>Analysis paralysis:</strong> Morning vs evening? Which days? What time exactly? → overthink → do nothing</li>
+                        <li><strong>All-or-nothing:</strong> "If it can't be a proper 1-hour session, why bother?" → skip entirely</li>
+                        <li><strong>Solving everything at once:</strong> Time + routine + exercises + tracking = overwhelming → paralysis</li>
+                        <li><strong>Tiredness excuse:</strong> "I'm tired / legs sore / gut issues" → valid sometimes, but <em>not</em> every day</li>
+                        <li><strong>Waiting for motivation:</strong> "I'll start when I feel like it" → that day never comes</li>
+                    </ul>
+                    <p class="ah-tip">📱 <strong>Right now:</strong> Home gym. Dumbbells in the room. Already dressed. Zero friction. Just PICK THEM UP.</p>
+                </div>
+            </div>
+
+            <div class="ah-card ah-identity">
+                <div class="ah-card-header">💪 Your Strengths (Don't Forget)</div>
+                <div class="ah-card-body">
+                    <ul class="ah-list">
+                        <li><strong>Systems Thinker:</strong> You think like an engineer — identify friction → solve → automate</li>
+                        <li><strong>Self-Aware:</strong> You spotted your own patterns before even reading the book</li>
+                        <li><strong>Discipline EXISTS:</strong> 365 days pushups tracked. The gym block was situational, NOT character-based.</li>
+                        <li><strong>Already applying it:</strong> Self-cleaning blender, clothes organizers, night prep — you were reducing friction instinctively</li>
+                    </ul>
+                    <div class="ah-tip">💡 You don't lack discipline. You lack a frictionless trigger. The setup is DONE. Just move.</div>
+                </div>
+            </div>
+
+            <div class="ah-card ah-law2">
+                <div class="ah-card-header">🔥 Your WHY — Read This When Lazy</div>
+                <div class="ah-card-body">
+                    <ul class="ah-list">
+                        <li>🎯 Dream body / gains — the version of you that turns heads</li>
+                        <li>🧲 Attraction & confidence — feeling magnetic, not invisible</li>
+                        <li>🌄 Travel & trek comfortably — not dying on a hike</li>
+                        <li>📸 That Instagram post with a good body + "I Ain't Worried"</li>
+                        <li>✨ Nice skin, health, energy — glowing from the inside</li>
+                        <li>🗣️ Compliments from people — validation that the work shows</li>
+                        <li>🪞 Feeling good in your own skin — not avoiding mirrors</li>
+                    </ul>
+                    <div class="ah-quote">"These aren't shallow. They're about identity, confidence, and becoming the person you see in your head. You want to BECOME him, not just imagine him."</div>
+                </div>
+            </div>
+
+            <div class="ah-card ah-core">
+                <div class="ah-card-header">⚡ Your Current Setup — Zero Excuses</div>
+                <div class="ah-card-body">
+                    <p>Your environment is already optimized. There's literally nothing between you and a workout:</p>
+                    <ul class="ah-list">
+                        <li>🏠 Home gym — dumbbells RIGHT THERE in your room</li>
+                        <li>👕 Already dressed — no "getting ready" friction</li>
+                        <li>🧘 Gym mat ready — just step on it</li>
+                        <li>⏱️ 9 minutes is all this app asks</li>
+                        <li>📱 Timer + routine already loaded — tap START</li>
+                    </ul>
+                    <div class="ah-tip">💡 Every excuse is gone. What's left? <strong>Just pick up the dumbbells.</strong></div>
+                </div>
+            </div>
+
+            <!-- Personal Techniques from Notes -->
+            <div class="ah-section-title">Personal Playbook — From Your Notes</div>
+
+            <div class="ah-card ah-law3">
+                <div class="ah-card-header">👟 First Step = The Entire Goal</div>
+                <div class="ah-card-body">
+                    <p>Your brain thinks the WHOLE habit is the goal. <strong>Trick it:</strong></p>
+                    <ul class="ah-list">
+                        <li>Gym goal = Just PUT ON gym clothes. That's it.</li>
+                        <li>Reading goal = Just OPEN the book. That's it.</li>
+                        <li>Meditation = Just OPEN the app. That's it.</li>
+                        <li>Pushups = Just get into pushup POSITION. That's it.</li>
+                        <li>Video shooting = Just ARRANGE the lighting. That's it.</li>
+                    </ul>
+                    <div class="ah-quote">"Once you open the book, you'll automatically read. Once you dress for gym, you'll automatically go. MOMENTUM creates itself."</div>
+                    <p class="ah-tip">✅ Tested: Dressed up at 10:30 → went to gym → ideas flowed → clarity came → schedule sorted itself. Just because I DRESSED UP.</p>
+                    <p class="ah-tip">📱 <strong>In this app:</strong> Just press START. That's your first step. 9 minutes is all it takes.</p>
+                </div>
+            </div>
+
+            <div class="ah-card ah-law3">
+                <div class="ah-card-header">⏱️ The Two-Minute Rule</div>
+                <div class="ah-card-body">
+                    <p>Scale ANY habit down to <strong>2 minutes</strong>. Then do it EVERY DAY:</p>
+                    <ul class="ah-list">
+                        <li>Want to read daily? Just read 2 minutes.</li>
+                        <li>Want to meditate? Just 2 minutes. Every day.</li>
+                        <li>Want to go to gym? Just go ONCE a week. (1x/week = 52 times/year >>> 0)</li>
+                        <li>Guitar? 5-10 min daily. In 1 year = amazing skills.</li>
+                    </ul>
+                    <p><strong>After 1 month:</strong> 2 min → 5 min easily. After 2 months: 5 → 10 min. It SCALES.</p>
+                    <div class="ah-quote">"LESS TIME + CONSISTENT + SUSTAINABLE > Long sessions that you'll skip. 10-15 min gym is ENOUGH sometimes."</div>
+                    <p class="ah-tip">📱 <strong>In this app:</strong> The 9-min timer IS the two-minute rule. Short enough to never skip, long enough to count.</p>
+                </div>
+            </div>
+
+            <div class="ah-card ah-law2">
+                <div class="ah-card-header">🙏 "I GET TO DO THAT"</div>
+                <div class="ah-card-body">
+                    <p>Not "I <em>have</em> to work out" → <strong>"I GET to build my body"</strong></p>
+                    <p>A handicapped person CAN'T exercise. You CAN. You GET to reap fitness, dream body, gains, feeling good. Be <strong>GRATEFUL</strong>.</p>
+                    <div class="ah-quote">"Every GOOD HABIT — think about it with this mindset shift. I GET TO DO THAT. Not everyone can."</div>
+                    <p class="ah-tip">✅ Applied to study: "Not everyone is clever enough or has the opportunity. I GET to do it." Applied to meditation: "I GET focus and emotional stability from this."</p>
+                </div>
+            </div>
+
+            <div class="ah-card ah-law2">
+                <div class="ah-card-header">☕ Motivational Rituals</div>
+                <div class="ah-card-body">
+                    <p>A habit that <strong>triggers</strong> another habit through association:</p>
+                    <ul class="ah-list">
+                        <li>Coffee before reading → coffee alone creates craving to read</li>
+                        <li>Relaxing song before meditation → song alone triggers calm</li>
+                        <li>Playlist at gym → music creates craving to lift</li>
+                    </ul>
+                    <div class="ah-quote">"Pair a ritual with a habit. After some days, the ritual alone creates the craving."</div>
+                </div>
+            </div>
+
+            <div class="ah-card ah-law2">
+                <div class="ah-card-header">👁️ Visualize Consequences</div>
+                <div class="ah-card-body">
+                    <p><strong>Make bad habits ugly</strong> by seeing their end result clearly:</p>
+                    <ul class="ah-list">
+                        <li>Junk food → sluggish, bloated, low energy</li>
+                        <li>TV binge → wasted time, terrible feeling after</li>
+                        <li>Skipping gym → weak, low confidence</li>
+                    </ul>
+                    <p><strong>Make good habits attractive</strong> by visualizing the outcome:</p>
+                    <ul class="ah-list">
+                        <li>Gym → dream body, attraction, confidence</li>
+                        <li>Clean eating → healthy skin, energy, good mood</li>
+                    </ul>
+                    <div class="ah-tip">💡 Travel, explore hospitals, watch documentaries — the more real-world data, the better you visualize.</div>
+                </div>
+            </div>
+
+            <div class="ah-card ah-law4">
+                <div class="ah-card-header">🏦 Instant Gratification Hacks</div>
+                <div class="ah-card-body">
+                    <p>Good habits have <strong>delayed rewards</strong>. Trick your brain with something <strong>instant</strong>:</p>
+                    <ul class="ah-list">
+                        <li>✓ mark after workout → "Don't break the chain" feeling</li>
+                        <li>Habit Garden grows a new leaf 🌱 → visual progress</li>
+                        <li>Streak flame 🔥 gets bigger → loss aversion kicks in</li>
+                        <li>Progress ring fills up 🟣 → completion satisfaction</li>
+                        <li>Level up + XP after each session → game reward dopamine</li>
+                    </ul>
+                    <div class="ah-quote">"Your brain needs SOMETHING immediate. That's why this app gamifies the reward — so the habit loop closes every single time."</div>
+                </div>
+            </div>
+
+            <div class="ah-card ah-core">
+                <div class="ah-card-header">🔁 Frequency > Duration</div>
+                <div class="ah-card-body">
+                    <p>Habit formation depends on <strong>how many TIMES</strong> you perform it, NOT how many days pass.</p>
+                    <ul class="ah-list">
+                        <li>3x/day builds habit FASTER than 1x/day</li>
+                        <li>10 min daily >>> 1 hour twice a week</li>
+                        <li>Guitar 5 min/day = amazing in 1 year</li>
+                    </ul>
+                    <div class="ah-tip">💡 Don't ask "when will this become automatic?" — just keep PERFORMING it. It'll click.</div>
+                    <p class="ah-tip">📱 <strong>In this app:</strong> Week Dots track FREQUENCY, not duration. 5 dots filled > one long session. Total Sessions count goes up every time.</p>
+                </div>
+            </div>
+
+            <div class="ah-card ah-core">
+                <div class="ah-card-header">🚫 Don't Solve Step 2 Before Step 1</div>
+                <div class="ah-card-body">
+                    <p>You're trying to solve the gym routine, timing, exercises (Step 2) without FIRST going (Step 1).</p>
+                    <p><strong>JUST GO.</strong> Solutions appear when you're in the action ground.</p>
+                    <div class="ah-quote">"You'll not get any solutions if you just sit at home and not enter the action at all."</div>
+                    <p class="ah-tip">✅ Stop planning endlessly. Do ONCE → observe → decide → lock in.</p>
+                    <p class="ah-tip">📱 <strong>In this app:</strong> No setup needed. No routine to plan. Just open → START → move. The Routine tab helps AFTER you've started.</p>
+                </div>
+            </div>
+
+            <div class="ah-card ah-law4">
+                <div class="ah-card-header">🔒 Commitment Devices</div>
+                <div class="ah-card-body">
+                    <p>Set something up NOW that makes future bad behavior <strong>hard</strong>:</p>
+                    <ul class="ah-list">
+                        <li>WiFi timer → auto-off at 10 PM → sleep on time</li>
+                        <li>Sign up for offline classes → forced to attend</li>
+                        <li>Phone timer apps → social media auto-closes</li>
+                        <li>Tell friends your goal → social cost of failing</li>
+                    </ul>
+                    <div class="ah-tip">💡 Your present self is making decisions for your future self. Make quitting HARDER than continuing.</div>
+                    <p class="ah-tip">📱 <strong>In this app:</strong> Your streak IS a commitment device. Breaking a 30-day streak hurts more than skipping one workout. The app makes quitting costly.</p>
+                </div>
+            </div>
+
+            </div><!-- END PANEL 2: Playbook -->
+
+            <!-- PANEL 3: System -->
+            <div class="ah-panel" id="ahSystem">
+
+            <!-- System Design Toolkit -->
+            <div class="ah-section-title">System Design Toolkit</div>
+
+            <div class="ah-card ah-law1">
+                <div class="ah-card-header">📋 Implementation Intention</div>
+                <div class="ah-card-body">
+                    <p>Decide in advance: <strong>"I will [EXERCISE] at [TIME] in [PLACE]"</strong></p>
+                    <ul class="ah-list">
+                        <li>"I will do <strong>dumbbell curls</strong> at <strong>7:00 AM</strong> in <strong>my room</strong>"</li>
+                        <li>"I will do <strong>push-ups</strong> at <strong>6:45 PM</strong> on <strong>the gym mat</strong>"</li>
+                        <li>"I will <strong>stretch</strong> at <strong>10:30 PM</strong> in <strong>the bedroom</strong>"</li>
+                    </ul>
+                    <p>Think through WHEN, WHERE, WHAT, HOW, HOW MUCH — all decided beforehand. <strong>No willpower needed</strong> in the moment.</p>
+                    <div class="ah-tip">💡 Vague: "I'll work out tomorrow." → Specific: "I'll do 9-min dumbbells at 7 AM in my room." The specific one happens.</div>
+                    <p class="ah-tip">📱 <strong>In this app:</strong> The Routine tab = your implementation intention saved permanently. No deciding in the moment.</p>
+                </div>
+            </div>
+
+            <div class="ah-card ah-law1">
+                <div class="ah-card-header">🔗 Habit Stacking</div>
+                <div class="ah-card-body">
+                    <p><strong>"After I [CURRENT HABIT], I will [NEW HABIT]"</strong></p>
+                    <ul class="ah-list">
+                        <li>"After I <strong>wake up and brush</strong>, I will <strong>pick up dumbbells</strong>"</li>
+                        <li>"After I <strong>make coffee</strong>, I will <strong>do 10 push-ups</strong> while it brews"</li>
+                        <li>"After I <strong>close my laptop for the day</strong>, I will <strong>do a 9-min session</strong>"</li>
+                        <li>"After I <strong>put on my playlist</strong>, I will <strong>step on the mat</strong>"</li>
+                    </ul>
+                    <p>Chain habits together so one triggers the next. Morning routine becomes autopilot.</p>
+                    <p class="ah-tip">📱 <strong>In this app:</strong> "After I wake up → open FitTimer → press START" becomes your anchor stack.</p>
+                </div>
+            </div>
+
+            <div class="ah-card ah-law1">
+                <div class="ah-card-header">🏠 Environment Design</div>
+                <div class="ah-card-body">
+                    <p>Make the CUE <strong>VISIBLE</strong> without thinking:</p>
+                    <ul class="ah-list">
+                        <li>Gym clothes next to bed, shoes with socks ready</li>
+                        <li>Dumbbells visible in the room — zero friction</li>
+                        <li>Blender prepped night before, coffee flask ready</li>
+                        <li>Yoga mat rolled out = you'll stretch</li>
+                    </ul>
+                    <div class="ah-quote">"Your environment is more powerful than your motivation. Don't fight willpower — design the space."</div>
                 </div>
             </div>
 
@@ -651,6 +1015,8 @@
                 </div>
             </div>
 
+            </div><!-- END PANEL 3: System -->
+
         </section>
 
         <!-- TAB: Profile -->
@@ -666,6 +1032,16 @@
                     <div class="detail-row"><span class="detail-label">Longest Streak</span><span class="detail-value" id="profileBestStreak">—</span></div>
                 </div>
                 <button id="editProfileBtn" class="control-btn pause-btn">Edit Profile</button>
+                <div id="editProfileForm" class="edit-profile-form hidden">
+                    <div class="edit-field"><label>Name</label><input type="text" id="editName" placeholder="Your name"></div>
+                    <div class="edit-field"><label>Height (cm)</label><input type="number" id="editHeight" placeholder="168"></div>
+                    <div class="edit-field"><label>Weight (kg)</label><input type="number" id="editWeight" placeholder="65"></div>
+                    <div class="edit-field"><label>Daily Goal (min)</label><input type="number" id="editGoal" min="1" max="120" placeholder="15"></div>
+                    <div class="edit-actions">
+                        <button id="saveProfileBtn" class="control-btn start-btn">Save</button>
+                        <button id="cancelEditBtn" class="control-btn reset-btn">Cancel</button>
+                    </div>
+                </div>
                 <button id="exportDataBtn" class="control-btn reset-btn" style="margin-top:8px;">Export Data (JSON)</button>
                 <button id="importDataBtn" class="control-btn reset-btn" style="margin-top:8px;">Import Data (JSON)</button>
                 <input type="file" id="importFileInput" accept=".json" style="display:none;">
@@ -773,8 +1149,8 @@
     </div>
 
     <script src="db.js"></script>
-    <script src="gamification.js?v=20"></script>
-    <script src="script.js?v=20"></script>
+    <script src="gamification.js?v=21"></script>
+    <script src="script.js?v=21"></script>
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./service-worker.js');

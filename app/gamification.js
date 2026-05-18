@@ -122,44 +122,80 @@ function getNewAchievements(sessions, previouslyUnlocked) {
 
 // --- DAILY CHALLENGE ---
 
-const DAILY_CHALLENGES = [
-    "💡 Between sets: 10 pushups",
-    "💡 Hold a plank for 30 seconds mid-session",
-    "💡 Try working out without any music today",
-    "💡 Do 20 jumping jacks before starting",
-    "💡 Focus on breathing: 4 in, 4 hold, 4 out",
-    "💡 Try a new exercise you've never done",
-    "💡 Do 15 squats between every 5-minute mark",
-    "💡 Keep your phone face-down during workout",
-    "💡 Stretch for 2 minutes after you finish",
-    "💡 Add 5 burpees at the halfway point",
-    "💡 Try to beat yesterday's intensity",
-    "💡 Workout with your eyes closed for 30 sec",
-    "💡 Do 10 lunges for every pause you take",
-    "💡 Smile while you exercise (it actually helps!)",
-    "💡 Try a 1-minute wall sit at the end",
-    "💡 Count your heartbeats after the session",
-    "💡 Tell someone about your workout today",
-    "💡 Dance for 30 seconds to celebrate finishing",
-    "💡 Hold your water bottle as a weight",
-    "💡 Take a before & after selfie 📸",
-    "💡 Do the entire workout standing today",
-    "💡 Challenge: Zero rest between exercises",
-    "💡 Pick your least favorite exercise — do it first",
-    "💡 Post-workout: Write one thing you're grateful for",
-    "💡 Time yourself: How many pushups in 30 sec?",
-    "💡 Bonus round: Add 1 extra minute today",
-    "💡 Mindfulness: Name 5 things you see mid-workout",
-    "💡 Try a slower pace — focus on form today",
-    "💡 Reward: Pick a healthy snack post-workout",
-    "💡 End goal: 1% better than yesterday"
+// Exercise tips — PPL-aware, with context/reason
+const EXERCISE_TIPS = [
+    "🏋️ Squeeze at the top of every rep — holds peak contraction, recruits more fibers",
+    "🏋️ Slow the eccentric (lowering) to 3 sec — more time under tension = more growth",
+    "🏋️ Retract shoulder blades on all presses — protects rotator cuff, better chest activation",
+    "🏋️ Breathe out on exertion — stabilizes core, prevents blood pressure spikes",
+    "🏋️ Brace your core like you're about to get punched — protects spine on every compound lift",
+    "🏋️ Mind-muscle connection: look at the working muscle — studies show 12% more activation",
+    "🏋️ Full ROM > heavier weight — partial reps build partial muscles",
+    "🏋️ Don't lock out joints at the top — keeps tension on muscle, saves joint cartilage",
+    "🏋️ Control the negative — that's where most muscle damage (growth stimulus) happens",
+    "🏋️ 2 warm-up sets before working weight — primes the joint, prevents cold-start injuries",
+    "🏋️ Stretch the muscle you just trained between sets — fascia stretch = room to grow",
+    "🏋️ Push day: keep wrists neutral on presses — bent wrists leak force and cause pain",
+    "🏋️ Leg day: drive through heels on squats — shifts load from knees to glutes/hams",
+    "🏋️ Pull day: initiate rows with elbows, not hands — ensures back does the work, not biceps",
+    "🏋️ Deadlifts: chest up, chin tucked — neutral spine is non-negotiable for heavy pulls",
+    "🏋️ Rest 90-120s between sets for hypertrophy — shorter = not recovered, longer = cooling off",
+    "🏋️ Log your weights today — can't progressively overload if you don't know last week's numbers",
+    "🏋️ Record one set on your phone — you'll catch form issues you can't feel",
+    "🏋️ Push day: try drop sets on last exercise — pushes past failure when you're already fatigued",
+    "🏋️ If a joint hurts (not muscle burn), STOP — pain ≠ gain, that's an injury warning",
+    "🏋️ Grip the bar hard — neural irradiation makes the whole chain stronger",
+    "🏋️ Keep neck neutral on every lift — craning forward compresses cervical discs",
+    "🏋️ Try a 1-sec pause at the bottom — eliminates momentum, makes the muscle do all the work",
+    "🏋️ 2-min stretch after your session — reduces next-day soreness by 20-30%",
+    "🏋️ Sip water between sets — even 2% dehydration drops strength output noticeably",
+    "🏋️ Pull day: try single-arm rows — fixes left-right imbalances your barbell hides",
+    "🏋️ Leg day: pause squats once a month — builds confidence and strength out of the hole",
+    "🏋️ Push day: incline before flat — prioritizes upper chest while you're freshest",
+    "🏋️ Tempo matters: 2 sec up, 1 sec hold, 3 sec down — that's a quality rep",
+    "🏋️ Protein within 1-2 hours post-workout — the anabolic window is real, just wider than bro-science says"
+];
+
+// Habit tips — Atomic Habits principles applied to fitness
+const HABIT_TIPS = [
+    "🧠 You don't rise to your goals — you fall to your systems",
+    "🧠 \"I GET to work out\" — not everyone physically can. Be grateful",
+    "🧠 Reduce friction: lay out gym clothes tonight for tomorrow",
+    "🧠 Just put on your shoes. Momentum creates itself after that",
+    "🧠 Two-Minute Rule: Can't do full workout? Just do 2 minutes",
+    "🧠 Never miss twice. One bad day is fine. Two breaks the chain",
+    "🧠 Habit stacking: After I [morning coffee], I will [stretch]",
+    "🧠 Frequency > Duration. 15 min daily beats 2 hrs once a week",
+    "🧠 Environment design: keep your mat visible, gym bag by the door",
+    "🧠 Temptation bundle: favorite podcast ONLY during workouts",
+    "🧠 Don't solve Step 2 before Step 1. Just GO. Solutions appear",
+    "🧠 Track only 2-3 habits max. Tracking 20 is exhausting",
+    "🧠 Identity shift: \"I am someone who doesn't miss workouts\"",
+    "🧠 The goal isn't the workout — it's becoming the TYPE of person who trains",
+    "🧠 Delayed gratification: results take months. Trust the process",
+    "🧠 Your brain wants instant reward — that's what this streak counter is for",
+    "🧠 Make bad habits hard: uninstall, log out, add friction",
+    "🧠 Accountability: tell someone your plan today — social pressure works",
+    "🧠 1% better daily = 37x better in one year. Small wins compound",
+    "🧠 Don't wait for motivation. Action creates motivation, not the reverse",
+    "🧠 Implementation intention: I will [exercise] at [time] in [place]",
+    "🧠 Experiment → observe → fix → lock in. Don't theorize forever",
+    "🧠 Reward yourself ONLY after the habit. Movie after gym, not before",
+    "🧠 The chain of ticks on your tracker — you won't want to break it",
+    "🧠 Struggling today? Use the diagnostic: Is it hard? Forgotten? Unrewarding?",
+    "🧠 Join the gym CLOSEST to you. Distance is the #1 friction killer",
+    "🧠 Knowledge without application = useless. Apply one thing TODAY",
+    "🧠 Commitment device: sign up for a class — now you HAVE to show up",
+    "🧠 Separate pleasures from bad habits. Don't pair Netflix + junk food",
+    "🧠 Visualize the version of you 6 months from now. That person is built daily"
 ];
 
 function getDailyChallenge() {
     const today = new Date();
     const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
-    const index = seed % DAILY_CHALLENGES.length;
-    return DAILY_CHALLENGES[index];
+    const exIdx = seed % EXERCISE_TIPS.length;
+    const habIdx = (seed * 7 + 13) % HABIT_TIPS.length; // different offset so they don't correlate
+    return EXERCISE_TIPS[exIdx] + '\n' + HABIT_TIPS[habIdx];
 }
 
 // --- MOTIVATIONAL QUOTES (shown during timer) ---
@@ -257,39 +293,41 @@ function playClick() {
     } catch (e) {}
 }
 
-function playWaterDrop() {
+const waterDropletAudio = new Audio('sounds/water-droplet.mp3');
+waterDropletAudio.volume = 0.6;
+const waterSplashAudio = new Audio('sounds/water-splash.mp3');
+waterSplashAudio.volume = 0.7;
+
+function playWaterDrop(isLastGlass) {
     try {
-        const ctx = getAudioContext();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.frequency.setValueAtTime(1400, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.15);
-        osc.type = 'sine';
-        gain.gain.setValueAtTime(0.12, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
-        osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 0.15);
+        if (isLastGlass) {
+            waterSplashAudio.currentTime = 0;
+            waterSplashAudio.play();
+            setTimeout(() => { waterSplashAudio.pause(); }, 1200);
+        } else {
+            waterDropletAudio.currentTime = 0;
+            waterDropletAudio.play();
+            setTimeout(() => { waterDropletAudio.pause(); }, 600);
+        }
     } catch (e) {}
 }
 
 function playStartTimer() {
     try {
         const ctx = getAudioContext();
-        // Two ascending beeps like a countdown go signal
-        [440, 880].forEach((freq, i) => {
+        // Beep-Beep-GO: two 440Hz beeps + one high 880Hz
+        const beeps = [{f:440, t:0, d:0.1}, {f:440, t:0.15, d:0.1}, {f:880, t:0.3, d:0.2}];
+        beeps.forEach(({f, t, d}) => {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
             osc.connect(gain);
             gain.connect(ctx.destination);
-            osc.frequency.value = freq;
+            osc.frequency.value = f;
             osc.type = 'sine';
-            gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.12);
-            gain.gain.linearRampToValueAtTime(0.15, ctx.currentTime + i * 0.12 + 0.02);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.25);
-            osc.start(ctx.currentTime + i * 0.12);
-            osc.stop(ctx.currentTime + i * 0.12 + 0.25);
+            gain.gain.setValueAtTime(0.2, ctx.currentTime + t);
+            gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + t + d);
+            osc.start(ctx.currentTime + t);
+            osc.stop(ctx.currentTime + t + d);
         });
     } catch (e) {}
 }
@@ -349,19 +387,19 @@ function playLogSaved() {
 function playComplete() {
     try {
         const ctx = getAudioContext();
-        // Triumphant 3-note chord
-        [523.25, 659.25, 783.99].forEach((freq, i) => {
+        // Ascending Chime — C→E→G→C high (triumphant staircase)
+        const notes = [{f:523,t:0,d:0.15},{f:659,t:0.15,d:0.15},{f:784,t:0.30,d:0.15},{f:1047,t:0.45,d:0.3}];
+        notes.forEach(({f, t, d}) => {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
             osc.connect(gain);
             gain.connect(ctx.destination);
-            osc.frequency.value = freq;
+            osc.frequency.value = f;
             osc.type = 'sine';
-            gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.15);
-            gain.gain.linearRampToValueAtTime(0.15, ctx.currentTime + i * 0.15 + 0.05);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.15 + 0.8);
-            osc.start(ctx.currentTime + i * 0.15);
-            osc.stop(ctx.currentTime + i * 0.15 + 0.8);
+            gain.gain.setValueAtTime(0.2, ctx.currentTime + t);
+            gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + t + d);
+            osc.start(ctx.currentTime + t);
+            osc.stop(ctx.currentTime + t + d);
         });
     } catch (e) {}
 }
@@ -369,19 +407,20 @@ function playComplete() {
 function playLevelUp() {
     try {
         const ctx = getAudioContext();
-        // Rising scale
-        [440, 554, 659, 880].forEach((freq, i) => {
+        // 8-Bit Retro Scale — rapid ascending with square wave (NES style)
+        const steps = [523, 587, 659, 698, 784, 880, 988, 1047];
+        steps.forEach((freq, i) => {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
             osc.connect(gain);
             gain.connect(ctx.destination);
             osc.frequency.value = freq;
-            osc.type = 'triangle';
-            gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.12);
-            gain.gain.linearRampToValueAtTime(0.12, ctx.currentTime + i * 0.12 + 0.04);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.4);
-            osc.start(ctx.currentTime + i * 0.12);
-            osc.stop(ctx.currentTime + i * 0.12 + 0.4);
+            osc.type = 'square';
+            const t = i * 0.06;
+            gain.gain.setValueAtTime(0.12, ctx.currentTime + t);
+            gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + t + 0.07);
+            osc.start(ctx.currentTime + t);
+            osc.stop(ctx.currentTime + t + 0.07);
         });
     } catch (e) {}
 }
@@ -389,17 +428,152 @@ function playLevelUp() {
 function playAchievement() {
     try {
         const ctx = getAudioContext();
+        // Mario Stage Clear — fast ascending run + triumphant ending (retro square wave)
+        const melody = [
+            {f:523,t:0,d:0.08},{f:659,t:0.08,d:0.08},{f:784,t:0.16,d:0.08},{f:1047,t:0.24,d:0.08},
+            {f:1319,t:0.32,d:0.08},{f:1568,t:0.40,d:0.08},{f:2093,t:0.48,d:0.25},
+            {f:1568,t:0.73,d:0.07},{f:2093,t:0.80,d:0.3}
+        ];
+        melody.forEach(({f, t, d}) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = f;
+            osc.type = 'square';
+            gain.gain.setValueAtTime(0.12, ctx.currentTime + t);
+            gain.gain.linearRampToValueAtTime(0.12, ctx.currentTime + t + d * 0.7);
+            gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + t + d);
+            osc.start(ctx.currentTime + t);
+            osc.stop(ctx.currentTime + t + d);
+        });
+        // Add triangle bass layer for warmth
+        const bass = [{f:262,t:0.48,d:0.25},{f:262,t:0.80,d:0.3}];
+        bass.forEach(({f, t, d}) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = f;
+            osc.type = 'triangle';
+            gain.gain.setValueAtTime(0.06, ctx.currentTime + t);
+            gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + t + d);
+            osc.start(ctx.currentTime + t);
+            osc.stop(ctx.currentTime + t + d);
+        });
+    } catch (e) {}
+}
+
+function playWorkoutSelect() {
+    try {
+        const ctx = getAudioContext();
+        // Punchy Thud — low-frequency impact (gym weight drop)
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.connect(gain);
         gain.connect(ctx.destination);
-        osc.frequency.setValueAtTime(600, ctx.currentTime);
-        osc.frequency.linearRampToValueAtTime(1200, ctx.currentTime + 0.2);
+        osc.frequency.setValueAtTime(450, ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(150, ctx.currentTime + 0.03);
         osc.type = 'sine';
-        gain.gain.setValueAtTime(0.15, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+        gain.gain.setValueAtTime(0.25, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + 0.15);
         osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 0.5);
+        osc.stop(ctx.currentTime + 0.15);
+    } catch (e) {}
+}
+
+function playFoodSelect() {
+    try {
+        const ctx = getAudioContext();
+        // Warm two-note chord (A4 + C#5)
+        [{f:440,t:0},{f:554,t:0}].forEach(({f, t}) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = f;
+            osc.type = 'sine';
+            gain.gain.setValueAtTime(0.12, ctx.currentTime + t);
+            gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + t + 0.2);
+            osc.start(ctx.currentTime + t);
+            osc.stop(ctx.currentTime + t + 0.2);
+        });
+    } catch (e) {}
+}
+
+function playSleepSelect() {
+    try {
+        const ctx = getAudioContext();
+        // Soft low hum (280Hz + 350Hz)
+        [{f:280,t:0},{f:350,t:0}].forEach(({f, t}) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = f;
+            osc.type = 'sine';
+            gain.gain.setValueAtTime(0.1, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.25);
+        });
+    } catch (e) {}
+}
+
+function playHealthTick() {
+    try {
+        const ctx = getAudioContext();
+        // Quick high tick (1200Hz, 60ms)
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = 1200;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + 0.06);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.06);
+    } catch (e) {}
+}
+
+function playXPGain() {
+    try {
+        const ctx = getAudioContext();
+        // 3-Note Sparkle — C6→E6→G6 (quick ascending)
+        const notes = [{f:1047,t:0,d:0.08},{f:1319,t:0.06,d:0.08},{f:1568,t:0.12,d:0.1}];
+        notes.forEach(({f, t, d}) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = f;
+            osc.type = 'sine';
+            gain.gain.setValueAtTime(0.12, ctx.currentTime + t);
+            gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + t + d);
+            osc.start(ctx.currentTime + t);
+            osc.stop(ctx.currentTime + t + d);
+        });
+    } catch (e) {}
+}
+
+function playStreakChime() {
+    try {
+        const ctx = getAudioContext();
+        // Sparkly Ascending — quick high-register notes
+        const notes = [{f:1568,t:0,d:0.08},{f:1760,t:0.06,d:0.08},{f:2093,t:0.12,d:0.08},{f:2637,t:0.18,d:0.12}];
+        notes.forEach(({f, t, d}) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = f;
+            osc.type = 'sine';
+            gain.gain.setValueAtTime(0.1, ctx.currentTime + t);
+            gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + t + d);
+            osc.start(ctx.currentTime + t);
+            osc.stop(ctx.currentTime + t + d);
+        });
     } catch (e) {}
 }
 

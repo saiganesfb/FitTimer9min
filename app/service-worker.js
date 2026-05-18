@@ -1,14 +1,16 @@
-const CACHE_NAME = 'fittimer-v20';
+const CACHE_NAME = 'fittimer-v21';
 const ASSETS = [
   './',
   './index.html',
-  './style.css?v=20',
+  './style.css?v=21',
   './db.js',
-  './gamification.js?v=20',
-  './script.js?v=20',
+  './gamification.js?v=21',
+  './script.js?v=21',
   './manifest.json',
   './icons/icon-192.png',
-  './icons/icon-512.png'
+  './icons/icon-512.png',
+  './sounds/water-droplet.mp3',
+  './sounds/water-splash.mp3'
 ];
 
 // Install: cache all app files

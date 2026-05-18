@@ -2,6 +2,14 @@
 // FitTimer — App Logic (v3 — Gamified)
 // ============================================
 
+// Mindset sub-tab panel switcher (global for inline onclick)
+function switchAhPanel(panel) {
+    document.querySelectorAll('.ah-subtab').forEach(b => b.classList.remove('active'));
+    document.querySelector('[onclick*="' + panel + '"]').classList.add('active');
+    document.querySelectorAll('.ah-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('ah' + panel.charAt(0).toUpperCase() + panel.slice(1)).classList.add('active');
+}
+
 // --- State ---
 let timerInterval = null;
 let remainingSeconds = 15 * 60;
@@ -12,7 +20,6 @@ let isPaused = false;
 let currentUserId = null;
 let currentUser = null;
 let sessions = [];
-let viewingMonth = new Date();
 let dailyLogs = [];
 let logViewingDate = new Date();
 let previousXP = 0;
@@ -51,9 +58,6 @@ const stopPartialMin = $('stopPartialMin');
 const celebration = $('celebration');
 const celebrationMsg = $('celebrationMsg');
 const celebrationStats = $('celebrationStats');
-
-const historyMonth = $('historyMonth');
-const calendarGrid = $('calendarGrid');
 
 const durationBtns = document.querySelectorAll('.duration-btn');
 const tabBtns = document.querySelectorAll('.tab-btn');
@@ -154,7 +158,6 @@ async function loginUser(userId) {
     updateStats();
     updateXPBar();
     updateDailyChallenge();
-    renderCalendar();
     renderHistory();
     renderProfile();
     renderProgress();
@@ -247,12 +250,15 @@ function bindEvents() {
             btn.classList.add('active');
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             $('tab' + capitalize(btn.dataset.tab)).classList.add('active');
-            if (btn.dataset.tab === 'history') { renderCalendar(); renderHistory(); }
+            if (btn.dataset.tab === 'history') { renderHistory(); initFullVolumeTab(); }
             if (btn.dataset.tab === 'profile') renderProfile();
             if (btn.dataset.tab === 'progress') renderProgress();
             if (btn.dataset.tab === 'log') renderLogTab();
         });
     });
+
+    // Mindset sub-tab switching (event delegation for hidden elements)
+    // (handled via inline onclick + global switchAhPanel function)
 
     // Duration buttons
     durationBtns.forEach(btn => {
@@ -260,12 +266,27 @@ function bindEvents() {
             if (isRunning) return;
             durationBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+            $('customMinutes').value = '';
             selectedDuration = parseInt(btn.dataset.minutes);
             remainingSeconds = selectedDuration * 60;
             totalSeconds = selectedDuration * 60;
             updateTimerDisplay();
             updateRingProgress();
         });
+    });
+
+    // Custom minutes input
+    $('customMinutes').addEventListener('change', () => {
+        if (isRunning) return;
+        const val = parseInt($('customMinutes').value);
+        if (val && val >= 1 && val <= 120) {
+            durationBtns.forEach(b => b.classList.remove('active'));
+            selectedDuration = val;
+            remainingSeconds = val * 60;
+            totalSeconds = val * 60;
+            updateTimerDisplay();
+            updateRingProgress();
+        }
     });
 
     // Timer controls
@@ -282,12 +303,10 @@ function bindEvents() {
     // Celebration
     $('celebrationClose').addEventListener('click', () => celebration.classList.add('hidden'));
 
-    // Calendar navigation
-    $('prevMonth').addEventListener('click', () => { viewingMonth.setMonth(viewingMonth.getMonth() - 1); renderCalendar(); });
-    $('nextMonth').addEventListener('click', () => { viewingMonth.setMonth(viewingMonth.getMonth() + 1); renderCalendar(); });
-
     // Profile actions
     $('editProfileBtn').addEventListener('click', editProfile);
+    $('saveProfileBtn').addEventListener('click', saveProfile);
+    $('cancelEditBtn').addEventListener('click', cancelEdit);
     $('exportDataBtn').addEventListener('click', exportData);
     $('importDataBtn').addEventListener('click', () => $('importFileInput').click());
     $('importFileInput').addEventListener('change', importData);
@@ -296,7 +315,8 @@ function bindEvents() {
     $('logPrevDay').addEventListener('click', () => { logViewingDate.setDate(logViewingDate.getDate() - 1); renderLogTab(); });
     $('logNextDay').addEventListener('click', () => { logViewingDate.setDate(logViewingDate.getDate() + 1); renderLogTab(); });
 
-    // Log buttons (workout, food, sleep)
+    // Log buttons (workout, food, sleep) — each with its own sound
+    const logSoundMap = { logWorkout: playWorkoutSelect, logFood: playFoodSelect, logSleep: playSleepSelect };
     ['logWorkout', 'logFood', 'logSleep'].forEach(groupId => {
         $(groupId).addEventListener('click', (e) => {
             const btn = e.target.closest('.log-btn');
@@ -304,9 +324,28 @@ function bindEvents() {
             // Toggle selection within group
             $(groupId).querySelectorAll('.log-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+            logSoundMap[groupId]();
             vibrateShort();
             autoSaveLog();
         });
+    });
+
+    // Health check (multi-select: tap to toggle each independently)
+    $('logHealth').addEventListener('click', (e) => {
+        const btn = e.target.closest('.log-btn');
+        if (!btn) return;
+        // "All Good" clears others; others clear "All Good"
+        if (btn.dataset.value === 'allgood') {
+            $('logHealth').querySelectorAll('.log-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        } else {
+            const allGoodBtn = $('logHealth').querySelector('[data-value="allgood"]');
+            if (allGoodBtn) allGoodBtn.classList.remove('active');
+            btn.classList.toggle('active');
+        }
+        playHealthTick();
+        vibrateShort();
+        autoSaveLog();
     });
 
     // Water glasses
@@ -320,7 +359,7 @@ function bindEvents() {
         const newCount = (num === currentFilled) ? num - 1 : num;
         glasses.forEach((g, i) => g.classList.toggle('filled', i < newCount));
         $('waterCount').textContent = `${newCount} / 8 glasses`;
-        playWaterDrop();
+        playWaterDrop(newCount === 8);
         autoSaveLog();
     });
 
@@ -456,6 +495,8 @@ async function completeSession(isPartial) {
     // Play sounds & haptics
     playComplete();
     vibrateDone();
+    // XP sparkle after completion fanfare
+    if (xpGained > 0) setTimeout(() => playXPGain(), 1200);
 
     // Show celebration
     showCelebration(actualMinutes, isPartial, xpGained);
@@ -551,64 +592,6 @@ function calculateStreak() {
 
 // --- Calendar ---
 
-function renderCalendar() {
-    const year = viewingMonth.getFullYear();
-    const month = viewingMonth.getMonth();
-    historyMonth.textContent = viewingMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const today = new Date();
-
-    // Get session dates for this month
-    const sessionDates = new Set(
-        sessions
-            .filter(s => { const d = new Date(s.date); return d.getFullYear() === year && d.getMonth() === month; })
-            .map(s => new Date(s.date).getDate())
-    );
-
-    // Build daily logs lookup for this month
-    const logsByDay = {};
-    dailyLogs.forEach(log => {
-        const d = new Date(log.dateKey + 'T00:00:00');
-        if (d.getFullYear() === year && d.getMonth() === month) {
-            logsByDay[d.getDate()] = log;
-        }
-    });
-
-    let html = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-        .map(d => `<div class="cal-header">${d}</div>`).join('');
-
-    // Empty slots before first day
-    for (let i = 0; i < firstDay; i++) html += '<div class="cal-day empty"></div>';
-
-    // Days with enhanced indicators
-    for (let day = 1; day <= daysInMonth; day++) {
-        const isToday = (day === today.getDate() && month === today.getMonth() && year === today.getFullYear());
-        const hasSession = sessionDates.has(day);
-        const log = logsByDay[day];
-        const classes = ['cal-day', isToday ? 'today' : '', hasSession ? 'has-session' : ''].filter(Boolean).join(' ');
-
-        // Workout icon from log
-        const workoutIcon = log && log.workout ? (WORKOUT_ICONS[log.workout] || '') : (hasSession ? '💪' : '');
-        // Food dot from log
-        const foodDot = log && log.food ? `<span class="cal-food cal-food-${log.food}"></span>` : '';
-
-        html += `<div class="${classes}"><span class="cal-num">${day}</span><span class="cal-workout">${workoutIcon}</span>${foodDot}</div>`;
-    }
-
-    calendarGrid.innerHTML = html;
-
-    // Month/year stats
-    const monthSess = sessions.filter(s => { const d = new Date(s.date); return d.getFullYear() === year && d.getMonth() === month; });
-    $('monthSessions').textContent = monthSess.length;
-    $('monthMinutes').textContent = monthSess.reduce((sum, s) => sum + s.duration, 0);
-
-    const yearSess = sessions.filter(s => new Date(s.date).getFullYear() === year);
-    $('yearSessions').textContent = yearSess.length;
-    $('yearMinutes').textContent = yearSess.reduce((sum, s) => sum + s.duration, 0);
-}
-
 // --- History List ---
 
 function renderHistory() {
@@ -667,21 +650,36 @@ function calculateAllStreaks() {
 }
 
 function editProfile() {
-    // Simple prompt-based edit (could be a modal later)
-    const newName = prompt('Name:', currentUser.name);
-    if (newName === null) return;
-    const newHeight = prompt('Height (cm):', currentUser.height || '');
-    const newWeight = prompt('Weight (kg):', currentUser.weight || '');
-    const newGoal = prompt('Daily goal (minutes: 9, 15, 30, or 45):', currentUser.goal || 15);
+    const form = $('editProfileForm');
+    form.classList.toggle('hidden');
+    if (!form.classList.contains('hidden')) {
+        $('editName').value = currentUser.name || '';
+        $('editHeight').value = currentUser.height || '';
+        $('editWeight').value = currentUser.weight || '';
+        $('editGoal').value = currentUser.goal || 15;
+        $('editName').focus();
+    }
+}
 
-    currentUser.name = newName || currentUser.name;
-    currentUser.height = newHeight ? Number(newHeight) : currentUser.height;
-    currentUser.weight = newWeight ? Number(newWeight) : currentUser.weight;
-    currentUser.goal = newGoal ? Number(newGoal) : currentUser.goal;
+function saveProfile() {
+    const name = $('editName').value.trim();
+    const height = $('editHeight').value;
+    const weight = $('editWeight').value;
+    const goal = $('editGoal').value;
+
+    if (name) currentUser.name = name;
+    if (height) currentUser.height = Number(height);
+    if (weight) currentUser.weight = Number(weight);
+    if (goal) currentUser.goal = Number(goal);
 
     updateUser(currentUser);
     currentUserEl.textContent = currentUser.name;
     renderProfile();
+    $('editProfileForm').classList.add('hidden');
+}
+
+function cancelEdit() {
+    $('editProfileForm').classList.add('hidden');
 }
 
 async function exportData() {
@@ -830,6 +828,13 @@ function renderLogTab() {
         }
         // Restore note
         if (log.note) $('logNote').value = log.note;
+        // Restore health tags
+        if (log.health && Array.isArray(log.health)) {
+            log.health.forEach(val => {
+                const btn = $('logHealth').querySelector(`[data-value="${val}"]`);
+                if (btn) btn.classList.add('active');
+            });
+        }
     } else {
         $('waterCount').textContent = '0 / 8 glasses';
     }
@@ -858,6 +863,7 @@ async function autoSaveLog() {
     log.sleep = sleepBtn ? sleepBtn.dataset.value : null;
     log.water = waterCount;
     log.note = note || null;
+    log.health = Array.from($('logHealth').querySelectorAll('.log-btn.active')).map(b => b.dataset.value);
     log.exercises = getWorkoutLoggerData();
     log.updatedAt = new Date().toISOString();
 
@@ -893,7 +899,9 @@ function updateXPBar() {
 }
 
 function updateDailyChallenge() {
-    $('dailyChallenge').textContent = getDailyChallenge();
+    const challenge = getDailyChallenge();
+    const el = $('dailyChallenge');
+    el.innerHTML = challenge.replace('\n', '<br>');
 }
 
 function renderProgress() {
@@ -2194,7 +2202,10 @@ function fmtDate(dateStr) {
     return parseInt(parts[2]) + ' ' + SHORT_MONTHS[parseInt(parts[1]) - 1];
 }
 
+let _volumeTabInited = false;
 function initFullVolumeTab() {
+    if (_volumeTabInited) { renderFullVolumeTable(); return; }
+    _volumeTabInited = true;
     const ROUTINE_COLORS = { push: '#e74c3c', pull: '#3498db', legs: '#27ae60', arms: '#9b59b6', rest: '#555' };
     let calMonth = new Date().getMonth();
     let calYear = new Date().getFullYear();
@@ -2215,10 +2226,10 @@ function initFullVolumeTab() {
         const detail = $('calDetail');
         detail.innerHTML = '';
 
-        // Build lookup: dateKey → routineDay
+        // Build lookup: dateKey → log (all daily logs)
         const logMap = {}; // dateKey → log
         dailyLogs.forEach(l => {
-            if (l.exercises && l.exercises.routineDay) logMap[l.dateKey] = l;
+            logMap[l.dateKey] = l;
         });
 
         // First day of month
@@ -2237,7 +2248,7 @@ function initFullVolumeTab() {
         for (let d = 1; d <= daysInMonth; d++) {
             const dateKey = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
             const log = logMap[dateKey];
-            const routineDay = log ? log.exercises.routineDay : null;
+            const routineDay = (log && log.exercises && log.exercises.routineDay) ? log.exercises.routineDay : null;
             const color = routineDay ? ROUTINE_COLORS[routineDay] : 'transparent';
             const isToday = dateKey === today ? ' cal-today' : '';
             const hasData = log ? ' cal-has-data' : '';
@@ -2245,6 +2256,14 @@ function initFullVolumeTab() {
         }
         html += '</div>';
         grid.innerHTML = html;
+
+        // Update stats
+        const monthSess = sessions.filter(s => { const d = new Date(s.date); return d.getFullYear() === calYear && d.getMonth() === calMonth; });
+        $('monthSessions').textContent = monthSess.length;
+        $('monthMinutes').textContent = monthSess.reduce((sum, s) => sum + s.duration, 0);
+        const yearSess = sessions.filter(s => new Date(s.date).getFullYear() === calYear);
+        $('yearSessions').textContent = yearSess.length;
+        $('yearMinutes').textContent = yearSess.reduce((sum, s) => sum + s.duration, 0);
 
         // Click handler
         grid.querySelectorAll('.cal-has-data').forEach(cell => {
@@ -2275,15 +2294,16 @@ function initFullVolumeTab() {
             const d = new Date(monday);
             d.setDate(monday.getDate() + i);
             const dk = d.toISOString().slice(0, 10);
-            const hasData = !!logMap[dk];
-            if (hasData) count++;
+            const log = logMap[dk];
+            const hasWorkout = !!(log && log.exercises && log.exercises.routineDay);
+            if (hasWorkout) count++;
             const isToday = i === dayOfWeek;
             let cls = 'wdot';
-            if (hasData) cls += ' wdot-done';
+            if (hasWorkout) cls += ' wdot-done';
             else if (isToday) cls += ' wdot-today';
             else if (i > dayOfWeek) cls += ' wdot-future';
             else cls += ' wdot-missed';
-            html += `<div class="${cls}"><span class="wdot-letter">${days[i]}</span><span class="wdot-icon">${hasData ? '✓' : isToday ? '💪' : ''}</span></div>`;
+            html += `<div class="${cls}"><span class="wdot-letter">${days[i]}</span><span class="wdot-icon">${hasWorkout ? '✓' : isToday ? '💪' : ''}</span></div>`;
         }
         const remaining = Math.max(0, 3 - count);
         const msg = count >= 3
@@ -2311,7 +2331,8 @@ function initFullVolumeTab() {
                 const day = new Date(weekStart);
                 day.setDate(weekStart.getDate() + d);
                 const dk = day.toISOString().slice(0, 10);
-                if (logMap[dk]) count++;
+                const log = logMap[dk];
+                if (log && log.exercises && log.exercises.routineDay) count++;
             }
             weeks.push({ count, isCurrent: w === 0 });
         }
@@ -2344,17 +2365,39 @@ function initFullVolumeTab() {
 
     function showDayDetail(dateKey, log) {
         const detail = $('calDetail');
-        const routineDay = log.exercises.routineDay;
-        const color = ROUTINE_COLORS[routineDay];
-        let html = `<div class="cal-detail-card"><div class="cal-detail-header" style="border-left:4px solid ${color}"><strong>${fmtDate(dateKey)}</strong> — ${routineDay.toUpperCase()} Day</div>`;
-        html += '<table class="cal-detail-table"><thead><tr><th>Exercise</th><th>Sets</th><th>Total Vol</th></tr></thead><tbody>';
-        log.exercises.exercises.forEach(ex => {
-            const setsStr = ex.sets.map(s => `${s.reps}×${s.weight > 0 ? s.weight + 'kg' : 'BW'}`).join(', ');
-            let vol = 0;
-            ex.sets.forEach(s => { const r = parseInt(s.reps)||0; const w = parseFloat(s.weight)||0; vol += r * (w > 0 ? w : 1); });
-            html += `<tr><td>${ex.name}</td><td>${setsStr}</td><td><strong>${vol}</strong></td></tr>`;
-        });
-        html += '</tbody></table></div>';
+        const routineDay = (log.exercises && log.exercises.routineDay) ? log.exercises.routineDay : null;
+        const color = routineDay ? ROUTINE_COLORS[routineDay] : '#888';
+        const dayLabel = routineDay ? `${routineDay.toUpperCase()} Day` : 'Rest / Log Only';
+
+        let html = `<div class="cal-detail-card"><div class="cal-detail-header" style="border-left:4px solid ${color}"><strong>${fmtDate(dateKey)}</strong> — ${dayLabel}</div>`;
+
+        // Daily log summary (food, sleep, water, health, note)
+        const chips = [];
+        if (log.workout) chips.push(`🏋️ ${log.workout}`);
+        if (log.food) chips.push(`🍽️ ${log.food}`);
+        if (log.sleep) chips.push(`😴 ${log.sleep}`);
+        if (log.water) chips.push(`💧 ${log.water}/8`);
+        if (log.health && log.health.length) chips.push(`🩺 ${log.health.join(', ')}`);
+        if (chips.length) {
+            html += `<div class="cal-detail-chips">${chips.map(c => `<span class="cal-chip">${c}</span>`).join('')}</div>`;
+        }
+        if (log.note) {
+            html += `<div class="cal-detail-note">📝 ${log.note}</div>`;
+        }
+
+        // Exercise table (if workout data exists)
+        if (log.exercises && log.exercises.exercises && log.exercises.exercises.length) {
+            html += '<table class="cal-detail-table"><thead><tr><th>Exercise</th><th>Sets</th><th>Total Vol</th></tr></thead><tbody>';
+            log.exercises.exercises.forEach(ex => {
+                const setsStr = ex.sets.map(s => `${s.reps}×${s.weight > 0 ? s.weight + 'kg' : 'BW'}`).join(', ');
+                let vol = 0;
+                ex.sets.forEach(s => { const r = parseInt(s.reps)||0; const w = parseFloat(s.weight)||0; vol += r * (w > 0 ? w : 1); });
+                html += `<tr><td>${ex.name}</td><td>${setsStr}</td><td><strong>${vol}</strong></td></tr>`;
+            });
+            html += '</tbody></table>';
+        }
+
+        html += '</div>';
         detail.innerHTML = html;
     }
 

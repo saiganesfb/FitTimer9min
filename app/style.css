@@ -146,6 +146,9 @@ body {
 .duration-btn { padding: 10px 20px; border: 2px solid var(--border); border-radius: 50px; background: transparent; color: var(--text-muted); font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: inherit; }
 .duration-btn:hover { border-color: var(--primary); color: var(--text); }
 .duration-btn.active { border-color: var(--primary); background: var(--primary); color: var(--text); box-shadow: 0 4px 16px rgba(108, 99, 255, 0.3); }
+.custom-minutes-input { width: 70px; padding: 10px 8px; border: 2px solid var(--border); border-radius: 50px; background: transparent; color: var(--text); font-size: 0.85rem; font-weight: 600; text-align: center; font-family: inherit; transition: all 0.2s; }
+.custom-minutes-input:focus { border-color: var(--primary); outline: none; box-shadow: 0 4px 16px rgba(108, 99, 255, 0.3); }
+.custom-minutes-input::placeholder { color: var(--text-muted); font-weight: 500; }
 
 .timer-ring-container { position: relative; }
 .timer-ring { width: 260px; height: 260px; border-radius: 50%; background: conic-gradient(var(--ring-bg) 0deg, var(--ring-bg) 360deg); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow); transition: background 0.3s; }
@@ -203,6 +206,14 @@ body {
 .detail-row:last-child { border-bottom: none; }
 .detail-label { color: var(--text-muted); font-size: 0.85rem; }
 .detail-value { font-weight: 600; font-size: 0.9rem; }
+
+.edit-profile-form { width: 100%; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-top: 12px; }
+.edit-profile-form .edit-field { margin-bottom: 12px; }
+.edit-profile-form .edit-field label { display: block; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; }
+.edit-profile-form .edit-field input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); font-size: 0.9rem; font-family: inherit; }
+.edit-profile-form .edit-field input:focus { border-color: var(--primary); outline: none; }
+.edit-profile-form .edit-actions { display: flex; gap: 8px; margin-top: 16px; }
+.edit-profile-form .edit-actions button { flex: 1; }
 
 /* ---- Dialogs ---- */
 
@@ -515,6 +526,7 @@ body {
     color: var(--text-muted);
     text-align: center;
     width: 100%;
+    line-height: 1.6;
     animation: fadeIn 0.5s ease;
 }
 
@@ -1672,6 +1684,28 @@ body {
     padding: 5px 6px;
     border-bottom: 1px solid rgba(255,255,255,0.05);
 }
+.cal-detail-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+.cal-chip {
+    font-size: 0.7rem;
+    background: rgba(78, 205, 196, 0.12);
+    border: 1px solid rgba(78, 205, 196, 0.3);
+    border-radius: 12px;
+    padding: 3px 10px;
+}
+.cal-detail-note {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 10px;
+    padding: 6px 10px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 6px;
+}
 
 /* Progressive Overload - vol-detail */
 .vol-detail {
@@ -1806,6 +1840,28 @@ body {
 .meas-del-btn:hover { opacity: 1; }
 
 /* ---- Mindset / Atomic Habits Tab ---- */
+/* Sub-tab pill bar */
+.ah-subtabs {
+    display: flex; justify-content: center; gap: 6px;
+    margin-bottom: 16px; padding: 4px;
+    background: rgba(255,255,255,0.03); border-radius: 12px;
+    border: 1px solid var(--border);
+}
+.ah-subtab {
+    flex: 1; padding: 8px 6px; border: none; border-radius: 9px;
+    background: transparent; color: var(--text-muted);
+    font-size: 0.68rem; font-weight: 700; cursor: pointer;
+    transition: all 0.2s;
+}
+.ah-subtab.active {
+    background: var(--primary); color: #fff;
+    box-shadow: 0 2px 8px rgba(108,99,255,0.3);
+}
+.ah-subtab:not(.active):hover { background: rgba(108,99,255,0.1); }
+/* Panels */
+.ah-panel { display: none; }
+.ah-panel.active { display: block; }
+
 .ah-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -1833,6 +1889,70 @@ body {
     font-style: italic; font-size: 0.75rem;
     color: var(--text-muted);
 }
+/* Habit Loop visual */
+.ah-loop {
+    display: flex; align-items: center; justify-content: center;
+    gap: 4px; flex-wrap: wrap; padding: 12px 0 6px;
+}
+.ah-loop-step {
+    text-align: center; padding: 8px 10px; border-radius: 10px;
+    background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+    min-width: 65px; font-size: 0.65rem; line-height: 1.4;
+}
+.ah-loop-num {
+    display: block; font-size: 0.85rem; font-weight: 800; margin-bottom: 2px;
+}
+.ah-loop-cue .ah-loop-num { color: #42a5f5; }
+.ah-loop-craving .ah-loop-num { color: #ec407a; }
+.ah-loop-response .ah-loop-num { color: #66bb6a; }
+.ah-loop-reward .ah-loop-num { color: #ffa726; }
+.ah-loop-cue { border-color: rgba(66,165,245,0.3); }
+.ah-loop-craving { border-color: rgba(236,64,122,0.3); }
+.ah-loop-response { border-color: rgba(102,187,106,0.3); }
+.ah-loop-reward { border-color: rgba(255,167,38,0.3); }
+.ah-loop-arrow { color: var(--text-muted); font-size: 0.9rem; font-weight: 700; }
+.ah-loop-map {
+    display: flex; justify-content: center; gap: 14px;
+    padding: 6px 0 4px; font-size: 0.6rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+.ah-loop-tag { opacity: 0.8; }
+/* Habit Loop example flow */
+.ah-loop-example {
+    margin: 14px 0 10px; padding: 10px 12px;
+    background: rgba(108,99,255,0.04); border-radius: 10px;
+    border: 1px dashed var(--border);
+}
+.ah-loop-ex-title {
+    font-size: 0.7rem; font-weight: 700; margin-bottom: 8px;
+    color: var(--text-muted);
+}
+.ah-loop-flow {
+    display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
+    justify-content: center;
+}
+.ah-loop-ex-step {
+    font-size: 0.62rem; padding: 6px 8px; border-radius: 8px;
+    background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+    text-align: center; min-width: 80px; line-height: 1.3;
+}
+.ah-loop-ex-arrow { color: var(--text-muted); font-size: 0.8rem; font-weight: 700; }
+/* Habit Loop examples table */
+.ah-loop-table {
+    width: 100%; border-collapse: collapse; margin: 14px 0 8px;
+    font-size: 0.62rem;
+}
+.ah-loop-table th {
+    padding: 6px 4px; font-size: 0.58rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border); text-align: left;
+}
+.ah-loop-table td {
+    padding: 5px 4px; border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text-muted); vertical-align: top;
+}
+.ah-loop-table tr:last-child td { border-bottom: none; }
+.ah-loop-table td:first-child { text-align: center; font-size: 0.75rem; }
 .ah-tip {
     margin-top: 10px; padding: 8px 12px;
     background: rgba(76,175,80,0.08);
