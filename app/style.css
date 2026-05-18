@@ -326,6 +326,16 @@ body {
     border-top: 1px solid var(--border);
 }
 .r-ex-card.open .r-ex-details { display: block; }
+.r-ex-img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-top: 10px;
+    background: var(--bg-card);
+    float: right;
+    margin-left: 10px;
+}
 .r-ex-equip {
     font-size: 0.7rem;
     color: var(--text-muted);

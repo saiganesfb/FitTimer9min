@@ -885,6 +885,38 @@ function showAchievementPopup(achievement) {
 
 // --- Routine Tab Data & Logic ---
 
+const EXERCISE_IMAGES = {
+    'Push-ups (Warm-up)': 'https://wger.de/media/exercise-images/1551/a6a9e561-3965-45c6-9f2b-ee671e1a3a45.png',
+    'DB Chest Press (Flat)': 'https://wger.de/media/exercise-images/192/Bench-press-1.png',
+    'Incline DB Press': 'https://wger.de/media/exercise-images/192/Bench-press-1.png',
+    'Dumbbell Fly': 'https://wger.de/media/exercise-images/238/2fc242d3-5bdd-4f97-99bd-678adb8c96fc.png',
+    'Overhead DB Press': 'https://wger.de/media/exercise-images/1893/7dbad19e-0616-41fd-9d7d-3e21649c0eea.png',
+    'Lateral Raises': 'https://wger.de/media/exercise-images/1744/cb9263c4-39fc-4261-8d30-a5d6d57841c1.jpg',
+    'Tricep Pushdown (Band)': 'https://wger.de/media/exercise-images/805/7a437824-e2cc-46e1-804a-674f0ea31d25.png',
+    'Overhead Tricep Ext (Band)': 'https://wger.de/media/exercise-images/1519/fab7f641-27d4-40b5-8edd-1a0a137bfd94.gif',
+    'Overhead Tricep Ext (DB)': 'https://wger.de/media/exercise-images/1519/fab7f641-27d4-40b5-8edd-1a0a137bfd94.gif',
+    'Bent-Over DB Row': 'https://wger.de/media/exercise-images/1283/e7262f70-7512-408a-8d00-4c499ef632fc.jpg',
+    'Single-Arm DB Row': 'https://wger.de/media/exercise-images/1283/e7262f70-7512-408a-8d00-4c499ef632fc.jpg',
+    'Face Pulls (Band)': 'https://wger.de/media/exercise-images/1732/d13b9adb-968e-4f73-95e6-b16690bcf616.jpg',
+    'Band Seated Rows': 'https://wger.de/media/exercise-images/1725/f0ebd44e-b8e1-400c-b598-ca371f3a07af.png',
+    'Dumbbell Shrugs': 'https://wger.de/media/exercise-images/151/Dumbbell-shrugs-2.png',
+    'Z-Bar Bicep Curls': 'https://wger.de/media/exercise-images/1225/39a0b7e7-9780-425d-84f5-56d10d1690ac.gif',
+    'Hammer Curls': 'https://wger.de/media/exercise-images/86/Bicep-hammer-curl-1.png',
+    'Barbell Deadlift': 'https://wger.de/media/exercise-images/161/Dead-lifts-2.png',
+    'Goblet Squats': 'https://wger.de/media/exercise-images/977/3124c091-6395-4377-96c5-56048b627ceb.png',
+    'Lunges': 'https://wger.de/media/exercise-images/1903/6ec66efd-e74f-4142-bed1-0a0ac74e3294.png',
+    'Hip Thrust (Bench)': 'https://wger.de/media/exercise-images/1642/a81ad922-caf5-47f8-99b4-640cb0717436.webp',
+    'Romanian Deadlift (DB)': 'https://wger.de/media/exercise-images/161/Dead-lifts-2.png',
+    'Bulgarian Split Squat': 'https://wger.de/media/exercise-images/1593/9815fcd6-cf40-4ddd-9b38-2eac25973de1.gif',
+    'Calf Raises (Step)': 'https://wger.de/media/exercise-images/1243/53d4fabe-c994-4907-873f-8d82813a9832.png',
+    'Incline DB Curl': 'https://wger.de/media/exercise-images/1225/39a0b7e7-9780-425d-84f5-56d10d1690ac.gif',
+    'Preacher Curl (Bench)': 'https://wger.de/media/exercise-images/193/Preacher-curl-3-1.png',
+    'Diamond Push-ups': 'https://wger.de/media/exercise-images/1551/a6a9e561-3965-45c6-9f2b-ee671e1a3a45.png',
+    'Crunches': 'https://wger.de/media/exercise-images/176/Cross-body-crunch-1.png',
+    'Leg Raises': 'https://wger.de/media/exercise-images/125/Leg-raises-2.png',
+    'Plank': 'https://wger.de/media/exercise-images/1091/50c8912d-54ef-46c9-99d1-633b6196aa1e.jpg',
+};
+
 const ROUTINE_DATA = {
     push: {
         title: 'PUSH Day',
@@ -1033,6 +1065,8 @@ function renderRoutine(day) {
         html += `<div class="routine-muscle-group">`;
         html += `<div class="routine-muscle-header">${group.name} <span class="r-badge ${group.badge}">${group.badge}</span></div>`;
         group.exercises.forEach(ex => {
+            const imgUrl = EXERCISE_IMAGES[ex.name] || '';
+            const imgHtml = imgUrl ? `<img class="r-ex-img" src="${imgUrl}" alt="${ex.name}" onerror="this.style.display='none'">` : '';
             html += `<div class="r-ex-card" onclick="this.classList.toggle('open')">
                 <div class="r-ex-summary">
                     <span class="r-ex-name">${ex.name}</span>
@@ -1042,6 +1076,7 @@ function renderRoutine(day) {
                     </div>
                 </div>
                 <div class="r-ex-details">
+                    ${imgHtml}
                     <div class="r-ex-equip">🔧 ${ex.equip}</div>
                     <div class="r-ex-tip">${ex.tip.replace(/\.\s+/g, '.<br>')}</div>
                 </div>
