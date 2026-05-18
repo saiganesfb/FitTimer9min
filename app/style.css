@@ -1146,6 +1146,134 @@ body {
 .vol-total-row td { border-top: 2px solid var(--primary); }
 .vol-total { font-weight: 800; color: var(--text); font-size: 0.72rem; }
 
+/* Calendar Volume Log */
+.cal-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+.cal-legend {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+.cal-legend-chip {
+    font-size: 0.65rem;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-weight: 600;
+    color: #fff;
+}
+.cal-grid {
+    width: 100%;
+}
+.cal-header-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+}
+.cal-body {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+}
+.cal-cell {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text);
+    border: 2px solid transparent;
+    cursor: default;
+    transition: border-color 0.15s;
+}
+.cal-cell.cal-empty { background: transparent; }
+.cal-cell.cal-has-data { cursor: pointer; color: #fff; opacity: 0.85; }
+.cal-cell.cal-has-data:hover { opacity: 1; transform: scale(1.08); }
+.cal-cell.cal-today { border-color: var(--primary); }
+.cal-cell.cal-selected { border-color: #fff; box-shadow: 0 0 8px rgba(255,255,255,0.4); }
+.cal-detail-card {
+    margin-top: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px;
+}
+.cal-detail-header {
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    margin-bottom: 10px;
+}
+.cal-detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.7rem;
+}
+.cal-detail-table th {
+    text-align: left;
+    padding: 4px 6px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 0.6rem;
+}
+.cal-detail-table td {
+    padding: 5px 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Progressive Overload - vol-detail */
+.vol-detail {
+    font-size: 0.55rem;
+    color: var(--text-muted);
+    margin-top: 1px;
+}
+
+/* Full Volume Table */
+.fvol-full { font-size: 0.62rem; }
+.fvol-full .vol-ex-name { font-size: 0.64rem; padding: 4px 6px; }
+.fvol-full .vol-cell { padding: 3px 2px; font-size: 0.62rem; min-width: 30px; }
+.fvol-ex-th { text-align: left; min-width: 130px; }
+.fvol-wk-th { background: rgba(78,205,196,0.15) !important; }
+.fvol-ex-cell { position: sticky; left: 0; z-index: 1; background: var(--bg-elevated); }
+.fvol-partition { background: var(--bg) !important; }
+.fvol-partition td {
+    padding: 6px 10px;
+    font-weight: 800;
+    font-size: 0.72rem;
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.fvol-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 8px;
+}
+.fvol-legend-chip {
+    font-size: 0.6rem;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+    color: var(--text);
+}
+
 /* ---- Body Measurements & Composition ---- */
 .measurements-section {
     width: 100%;

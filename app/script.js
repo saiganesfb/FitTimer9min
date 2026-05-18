@@ -138,6 +138,7 @@ async function loginUser(userId) {
     renderProgress();
     initRoutineTab();
     initWorkoutLogger();
+    initFullVolumeTab();
     initMeasurements();
     initComposition();
 }
@@ -1301,11 +1302,11 @@ function renderVolumeTable(day) {
         g.exercises.forEach(ex => routineExercises.push(ex.name));
     });
 
-    // Get all logs for this routine day (last 4 weeks)
+    // Get all logs for this routine day (last 8 weeks)
     const now = new Date();
-    const fourWeeksAgo = new Date(now);
-    fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 28);
-    const cutoff = fourWeeksAgo.toISOString().slice(0, 10);
+    const eightWeeksAgo = new Date(now);
+    eightWeeksAgo.setDate(eightWeeksAgo.getDate() - 56);
+    const cutoff = eightWeeksAgo.toISOString().slice(0, 10);
 
     const relevantLogs = dailyLogs
         .filter(l => l.exercises && l.exercises.routineDay === day && l.dateKey >= cutoff)
@@ -1316,29 +1317,7 @@ function renderVolumeTable(day) {
         return;
     }
 
-    // Build volume + max weight per exercise per date
-    const volumeByDate = {}; // { date: { exName: { vol, maxWt } } }
-    relevantLogs.forEach(log => {
-        const dateKey = log.dateKey;
-        if (!volumeByDate[dateKey]) volumeByDate[dateKey] = {};
-        log.exercises.exercises.forEach(ex => {
-            let vol = 0;
-            let maxWt = 0;
-            ex.sets.forEach(s => {
-                const reps = parseInt(s.reps) || 0;
-                const w = parseFloat(s.weight) || 0;
-                vol += reps * (w > 0 ? w : 1);
-                if (w > maxWt) maxWt = w;
-            });
-            if (!volumeByDate[dateKey][ex.name]) volumeByDate[dateKey][ex.name] = { vol: 0, maxWt: 0 };
-            volumeByDate[dateKey][ex.name].vol += vol;
-            if (maxWt > volumeByDate[dateKey][ex.name].maxWt) volumeByDate[dateKey][ex.name].maxWt = maxWt;
-        });
-    });
-
-    const dates = Object.keys(volumeByDate).sort();
-
-    // Weekly totals
+    // Group logs into weeks (Mon-Sun)
     function getWeekKey(dateStr) {
         const d = new Date(dateStr + 'T00:00:00');
         const dayOfWk = d.getDay();
@@ -1346,76 +1325,304 @@ function renderVolumeTable(day) {
         mon.setDate(d.getDate() - (dayOfWk === 0 ? 6 : dayOfWk - 1));
         return mon.toISOString().slice(0, 10);
     }
-    const weeks = {};
-    dates.forEach(d => {
-        const wk = getWeekKey(d);
-        if (!weeks[wk]) weeks[wk] = {};
-        routineExercises.forEach(exName => {
-            if (!weeks[wk][exName]) weeks[wk][exName] = { vol: 0, maxWt: 0 };
-            const entry = volumeByDate[d][exName];
-            if (entry) {
-                weeks[wk][exName].vol += entry.vol;
-                if (entry.maxWt > weeks[wk][exName].maxWt) weeks[wk][exName].maxWt = entry.maxWt;
-            }
+
+    // Build weekly volume: max weight × reps at max weight, per exercise per week
+    const weekData = {}; // { weekKey: { exName: { maxWt, repsAtMax, totalVol } } }
+    relevantLogs.forEach(log => {
+        const wk = getWeekKey(log.dateKey);
+        if (!weekData[wk]) weekData[wk] = {};
+        log.exercises.exercises.forEach(ex => {
+            if (!weekData[wk][ex.name]) weekData[wk][ex.name] = { maxWt: 0, repsAtMax: 0, totalVol: 0 };
+            ex.sets.forEach(s => {
+                const reps = parseInt(s.reps) || 0;
+                const w = parseFloat(s.weight) || 0;
+                weekData[wk][ex.name].totalVol += reps * (w > 0 ? w : 1);
+                if (w > weekData[wk][ex.name].maxWt) {
+                    weekData[wk][ex.name].maxWt = w;
+                    weekData[wk][ex.name].repsAtMax = reps;
+                } else if (w === weekData[wk][ex.name].maxWt) {
+                    weekData[wk][ex.name].repsAtMax += reps;
+                }
+            });
         });
     });
-    const weekKeys = Object.keys(weeks).sort();
 
-    // Build table
+    const weekKeys = Object.keys(weekData).sort();
+
+    // Build table: Exercise | Wk1 | Wk2 | ...
     let html = '<div class="volume-table-wrap"><table class="volume-table"><thead><tr><th>Exercise</th>';
-    dates.forEach(d => {
-        html += `<th class="vol-date" colspan="2">${d.slice(5)}</th>`;
-    });
     weekKeys.forEach(wk => {
-        html += `<th class="vol-week" colspan="2">Wk ${wk.slice(5)}</th>`;
+        html += `<th class="vol-week">Wk ${fmtDate(wk)}</th>`;
     });
-    html += '</tr><tr><th></th>';
-    dates.forEach(() => { html += '<th class="vol-sub">Vol</th><th class="vol-sub">Max</th>'; });
-    weekKeys.forEach(() => { html += '<th class="vol-sub vol-week">Vol</th><th class="vol-sub vol-week">Max</th>'; });
     html += '</tr></thead><tbody>';
 
-    // Total row data
-    const totalByDate = {};
-    dates.forEach(d => { totalByDate[d] = 0; });
-    const totalByWeek = {};
+    let totalByWeek = {};
     weekKeys.forEach(wk => { totalByWeek[wk] = 0; });
 
     routineExercises.forEach(exName => {
         html += `<tr><td class="vol-ex-name">${exName}</td>`;
         let prevVol = null;
-        dates.forEach(d => {
-            const entry = volumeByDate[d][exName];
-            const vol = entry ? entry.vol : 0;
-            const maxWt = entry ? entry.maxWt : 0;
-            let cls = '';
-            if (prevVol !== null && vol > 0) {
-                cls = vol > prevVol ? ' vol-up' : vol < prevVol ? ' vol-down' : '';
-            }
-            html += `<td class="vol-cell${cls}">${vol > 0 ? vol : '—'}</td>`;
-            html += `<td class="vol-cell vol-max">${maxWt > 0 ? maxWt + 'kg' : '—'}</td>`;
-            totalByDate[d] += vol;
-            if (vol > 0) prevVol = vol;
-        });
         weekKeys.forEach(wk => {
-            const wkData = weeks[wk][exName];
-            html += `<td class="vol-cell vol-wk-cell">${wkData && wkData.vol > 0 ? wkData.vol : '—'}</td>`;
-            html += `<td class="vol-cell vol-wk-cell vol-max">${wkData && wkData.maxWt > 0 ? wkData.maxWt + 'kg' : '—'}</td>`;
-            if (wkData) totalByWeek[wk] += wkData.vol;
+            const d = weekData[wk][exName];
+            const vol = d ? d.totalVol : 0;
+            let cls = 'vol-cell';
+            if (prevVol !== null && vol > 0) {
+                cls += vol > prevVol ? ' vol-up' : vol < prevVol ? ' vol-down' : '';
+            }
+            if (vol > 0) {
+                const label = d.maxWt > 0 ? `${d.repsAtMax}×${d.maxWt}kg` : `${vol}`;
+                html += `<td class="${cls}"><div>${vol}</div><div class="vol-detail">${label}</div></td>`;
+                totalByWeek[wk] += vol;
+                prevVol = vol;
+            } else {
+                html += `<td class="${cls}">—</td>`;
+            }
         });
         html += '</tr>';
     });
 
-    // Total volume row
+    // Total row
     html += '<tr class="vol-total-row"><td class="vol-ex-name"><strong>TOTAL</strong></td>';
-    dates.forEach(d => {
-        html += `<td class="vol-cell vol-total">${totalByDate[d] || '—'}</td><td class="vol-cell"></td>`;
-    });
     weekKeys.forEach(wk => {
-        html += `<td class="vol-cell vol-wk-cell vol-total">${totalByWeek[wk] || '—'}</td><td class="vol-cell"></td>`;
+        html += `<td class="vol-cell vol-total">${totalByWeek[wk] || '—'}</td>`;
     });
     html += '</tr>';
 
     html += '</tbody></table></div>';
+    container.innerHTML = html;
+}
+
+// --- Full Volume Log Tab ---
+
+// Muscle group → background color mapping
+const MUSCLE_COLORS = {
+    'Chest': 'rgba(239,83,80,0.12)',
+    'Shoulders': 'rgba(255,152,0,0.12)',
+    'Triceps': 'rgba(171,71,188,0.12)',
+    'Back': 'rgba(66,165,245,0.12)',
+    'Traps': 'rgba(38,198,218,0.12)',
+    'Biceps': 'rgba(102,187,106,0.12)',
+    'Quads & Glutes': 'rgba(255,167,38,0.12)',
+    'Glutes & Hamstrings': 'rgba(236,64,122,0.12)',
+    'Calves': 'rgba(120,144,156,0.15)',
+    'Mobility': 'rgba(141,110,99,0.12)',
+    'Abs & Core': 'rgba(255,202,40,0.12)',
+    'Finishers': 'rgba(236,64,122,0.12)',
+};
+
+// Build exercise → muscle mapping from ROUTINE_DATA
+function buildExerciseMuscleMap() {
+    const map = {};
+    const order = [];
+    const groupNames = {
+        '🫁 Chest': 'Chest', '🔴 Shoulders': 'Shoulders', '🔺 Triceps': 'Triceps',
+        '🔙 Back': 'Back', '🔼 Traps': 'Traps', '💪 Biceps': 'Biceps',
+        '🦵 Quads & Glutes': 'Quads & Glutes', '🍑 Glutes & Hamstrings': 'Glutes & Hamstrings',
+        '🦶 Calves': 'Calves', '🔧 Mobility': 'Mobility',
+        '🔥 Abs & Core': 'Abs & Core', '🦵 Ankle Weight Finishers': 'Finishers',
+    };
+    ['push','pull','legs','arms'].forEach(day => {
+        ROUTINE_DATA[day].groups.forEach(g => {
+            const muscle = groupNames[g.name] || g.name;
+            g.exercises.forEach(ex => {
+                if (!map[ex.name]) {
+                    map[ex.name] = { muscle, day };
+                    order.push(ex.name);
+                }
+            });
+        });
+    });
+    return { map, order };
+}
+
+const SHORT_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function fmtDate(dateStr) {
+    const parts = dateStr.split('-');
+    return parseInt(parts[2]) + ' ' + SHORT_MONTHS[parseInt(parts[1]) - 1];
+}
+
+function initFullVolumeTab() {
+    const ROUTINE_COLORS = { push: '#e74c3c', pull: '#3498db', legs: '#27ae60', arms: '#9b59b6', rest: '#555' };
+    let calMonth = new Date().getMonth();
+    let calYear = new Date().getFullYear();
+
+    const legend = $('calLegend');
+    if (legend) {
+        legend.innerHTML = Object.entries(ROUTINE_COLORS).filter(([k]) => k !== 'rest').map(([k, c]) =>
+            `<span class="cal-legend-chip" style="background:${c}">${k.charAt(0).toUpperCase() + k.slice(1)}</span>`
+        ).join('');
+    }
+
+    $('calPrev').addEventListener('click', () => { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); });
+    $('calNext').addEventListener('click', () => { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); });
+
+    function renderCalendar() {
+        $('calMonthLabel').textContent = SHORT_MONTHS[calMonth] + ' ' + calYear;
+        const grid = $('calGrid');
+        const detail = $('calDetail');
+        detail.innerHTML = '';
+
+        // Build lookup: dateKey → routineDay
+        const logMap = {}; // dateKey → log
+        dailyLogs.forEach(l => {
+            if (l.exercises && l.exercises.routineDay) logMap[l.dateKey] = l;
+        });
+
+        // First day of month
+        const firstDay = new Date(calYear, calMonth, 1);
+        const startDow = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1; // Mon=0
+        const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+
+        let html = '<div class="cal-header-row">';
+        ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d => html += `<div class="cal-hdr">${d}</div>`);
+        html += '</div><div class="cal-body">';
+
+        // Empty cells before first day
+        for (let i = 0; i < startDow; i++) html += '<div class="cal-cell cal-empty"></div>';
+
+        const today = new Date().toISOString().slice(0, 10);
+        for (let d = 1; d <= daysInMonth; d++) {
+            const dateKey = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+            const log = logMap[dateKey];
+            const routineDay = log ? log.exercises.routineDay : null;
+            const color = routineDay ? ROUTINE_COLORS[routineDay] : 'transparent';
+            const isToday = dateKey === today ? ' cal-today' : '';
+            const hasData = log ? ' cal-has-data' : '';
+            html += `<div class="cal-cell${isToday}${hasData}" data-date="${dateKey}" style="background:${color}">${d}</div>`;
+        }
+        html += '</div>';
+        grid.innerHTML = html;
+
+        // Click handler
+        grid.querySelectorAll('.cal-has-data').forEach(cell => {
+            cell.addEventListener('click', () => {
+                grid.querySelectorAll('.cal-cell').forEach(c => c.classList.remove('cal-selected'));
+                cell.classList.add('cal-selected');
+                showDayDetail(cell.dataset.date, logMap[cell.dataset.date]);
+            });
+        });
+    }
+
+    function showDayDetail(dateKey, log) {
+        const detail = $('calDetail');
+        const routineDay = log.exercises.routineDay;
+        const color = ROUTINE_COLORS[routineDay];
+        let html = `<div class="cal-detail-card"><div class="cal-detail-header" style="border-left:4px solid ${color}"><strong>${fmtDate(dateKey)}</strong> — ${routineDay.toUpperCase()} Day</div>`;
+        html += '<table class="cal-detail-table"><thead><tr><th>Exercise</th><th>Sets</th><th>Total Vol</th></tr></thead><tbody>';
+        log.exercises.exercises.forEach(ex => {
+            const setsStr = ex.sets.map(s => `${s.reps}×${s.weight > 0 ? s.weight + 'kg' : 'BW'}`).join(', ');
+            let vol = 0;
+            ex.sets.forEach(s => { const r = parseInt(s.reps)||0; const w = parseFloat(s.weight)||0; vol += r * (w > 0 ? w : 1); });
+            html += `<tr><td>${ex.name}</td><td>${setsStr}</td><td><strong>${vol}</strong></td></tr>`;
+        });
+        html += '</tbody></table></div>';
+        detail.innerHTML = html;
+    }
+
+    renderCalendar();
+    renderFullVolumeTable();
+}
+
+function renderFullVolumeTable() {
+    const container = $('fullVolumeTable');
+    if (!container) return;
+
+    const { map: exMap, order: exOrder } = buildExerciseMuscleMap();
+
+    const now = new Date();
+    const eightWeeksAgo = new Date(now);
+    eightWeeksAgo.setDate(eightWeeksAgo.getDate() - 56);
+    const cutoff = eightWeeksAgo.toISOString().slice(0, 10);
+
+    const allLogs = dailyLogs
+        .filter(l => l.exercises && l.exercises.exercises && l.exercises.exercises.length > 0 && l.dateKey >= cutoff)
+        .sort((a, b) => a.dateKey.localeCompare(b.dateKey));
+
+    if (allLogs.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
+
+    // Build volume per exercise per date
+    const volData = {};
+    const allDates = [];
+    allLogs.forEach(log => {
+        const dk = log.dateKey;
+        if (!allDates.includes(dk)) allDates.push(dk);
+        log.exercises.exercises.forEach(ex => {
+            if (!volData[ex.name]) volData[ex.name] = {};
+            let vol = 0;
+            ex.sets.forEach(s => {
+                const reps = parseInt(s.reps) || 0;
+                const w = parseFloat(s.weight) || 0;
+                vol += reps * (w > 0 ? w : 1);
+            });
+            volData[ex.name][dk] = (volData[ex.name][dk] || 0) + vol;
+        });
+    });
+    allDates.sort();
+
+    // Group dates into weeks
+    function getWeekKey(dateStr) {
+        const d = new Date(dateStr + 'T00:00:00');
+        const dow = d.getDay();
+        const mon = new Date(d);
+        mon.setDate(d.getDate() - (dow === 0 ? 6 : dow - 1));
+        return mon.toISOString().slice(0, 10);
+    }
+
+    const columns = [];
+    const weekDates = {};
+    allDates.forEach(d => {
+        const wk = getWeekKey(d);
+        if (!weekDates[wk]) weekDates[wk] = [];
+        weekDates[wk].push(d);
+    });
+    const weekKeys = Object.keys(weekDates).sort();
+    weekKeys.forEach(wk => {
+        weekDates[wk].forEach(d => columns.push({ type: 'date', date: d }));
+        columns.push({ type: 'week', weekKey: wk });
+    });
+
+    let html = '<div class="volume-table-wrap"><table class="volume-table fvol-full"><thead><tr><th class="fvol-ex-th">Exercise</th>';
+    columns.forEach(col => {
+        if (col.type === 'date') html += `<th class="vol-date">${fmtDate(col.date)}</th>`;
+        else html += `<th class="vol-week fvol-wk-th">Σ Wk</th>`;
+    });
+    html += '</tr></thead><tbody>';
+
+    let lastDay = null;
+    exOrder.forEach(exName => {
+        const info = exMap[exName];
+        const dayLabel = ROUTINE_DATA[info.day].title;
+        if (info.day !== lastDay) {
+            lastDay = info.day;
+            html += `<tr class="fvol-partition"><td colspan="${columns.length + 1}">${dayLabel}</td></tr>`;
+        }
+        const bgColor = MUSCLE_COLORS[info.muscle] || 'transparent';
+        html += `<tr style="background:${bgColor}"><td class="vol-ex-name fvol-ex-cell">${exName}</td>`;
+        columns.forEach(col => {
+            if (col.type === 'date') {
+                const vol = (volData[exName] && volData[exName][col.date]) || 0;
+                html += `<td class="vol-cell">${vol > 0 ? vol : ''}</td>`;
+            } else {
+                const wkDates = weekDates[col.weekKey] || [];
+                let sum = 0;
+                wkDates.forEach(d => { sum += (volData[exName] && volData[exName][d]) || 0; });
+                html += `<td class="vol-cell vol-wk-cell">${sum > 0 ? sum : ''}</td>`;
+            }
+        });
+        html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+
+    // Legend
+    html += '<div class="fvol-legend">';
+    Object.keys(MUSCLE_COLORS).forEach(m => {
+        html += `<span class="fvol-legend-chip" style="background:${MUSCLE_COLORS[m]}">${m}</span>`;
+    });
+    html += '</div>';
+
     container.innerHTML = html;
 }
 

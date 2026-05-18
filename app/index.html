@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="icon" href="icons/icon-192.png">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
-    <link rel="stylesheet" href="style.css?v=10">
+    <link rel="stylesheet" href="style.css?v=16">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
 </head>
@@ -100,6 +100,7 @@
             <button class="tab-btn" data-tab="routine">Routine</button>
             <button class="tab-btn" data-tab="workout">Workout</button>
             <button class="tab-btn" data-tab="log">Log</button>
+            <button class="tab-btn" data-tab="volume">Volume</button>
             <button class="tab-btn" data-tab="progress">Progress</button>
             <button class="tab-btn" data-tab="history">History</button>
             <button class="tab-btn" data-tab="profile">Profile</button>
@@ -267,6 +268,20 @@
 
             <!-- Save indicator -->
             <div class="log-saved hidden" id="logSaved">✓ Saved</div>
+        </section>
+
+        <!-- TAB: Volume (Full Progressive Overload Log) -->
+        <section id="tabVolume" class="tab-content">
+            <h3 class="section-title" style="margin-bottom:12px;">📊 Volume Log</h3>
+            <div class="cal-nav">
+                <button id="calPrev" class="icon-btn">&larr;</button>
+                <span id="calMonthLabel"></span>
+                <button id="calNext" class="icon-btn">&rarr;</button>
+            </div>
+            <div class="cal-legend" id="calLegend"></div>
+            <div class="cal-grid" id="calGrid"></div>
+            <div id="calDetail"></div>
+            <div id="fullVolumeTable" style="margin-top:20px;"></div>
         </section>
 
         <!-- TAB: Progress (Gamification) -->
@@ -472,7 +487,7 @@
 
     <script src="db.js"></script>
     <script src="gamification.js"></script>
-    <script src="script.js?v=10"></script>
+    <script src="script.js?v=16"></script>
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./service-worker.js');
