@@ -901,7 +901,7 @@ const EXERCISE_IMAGES = {
     'Band Seated Rows': 'https://wger.de/media/exercise-images/1725/f0ebd44e-b8e1-400c-b598-ca371f3a07af.png',
     'Dumbbell Shrugs': 'https://wger.de/media/exercise-images/151/Dumbbell-shrugs-2.png',
     'Z-Bar Bicep Curls': 'https://wger.de/media/exercise-images/1225/39a0b7e7-9780-425d-84f5-56d10d1690ac.gif',
-    'Hammer Curls': 'https://wger.de/media/exercise-images/86/Bicep-hammer-curl-1.png',
+    'Hammer Curls': 'https://wger.de/media/exercise-images/1567/0a8c155c-a48e-47e8-9df3-e39f025c6cad.png',
     'Barbell Deadlift': 'https://wger.de/media/exercise-images/161/Dead-lifts-2.png',
     'Goblet Squats': 'https://wger.de/media/exercise-images/977/3124c091-6395-4377-96c5-56048b627ceb.png',
     'Lunges': 'https://wger.de/media/exercise-images/1903/6ec66efd-e74f-4142-bed1-0a0ac74e3294.png',
@@ -910,11 +910,13 @@ const EXERCISE_IMAGES = {
     'Bulgarian Split Squat': 'https://wger.de/media/exercise-images/1593/9815fcd6-cf40-4ddd-9b38-2eac25973de1.gif',
     'Calf Raises (Step)': 'https://wger.de/media/exercise-images/1243/53d4fabe-c994-4907-873f-8d82813a9832.png',
     'Incline DB Curl': 'https://wger.de/media/exercise-images/1225/39a0b7e7-9780-425d-84f5-56d10d1690ac.gif',
-    'Preacher Curl (Bench)': 'https://wger.de/media/exercise-images/193/Preacher-curl-3-1.png',
+    'Preacher Curl (Bench)': 'https://wger.de/media/exercise-images/193/Preacher-curl-3-2.png',
     'Diamond Push-ups': 'https://wger.de/media/exercise-images/1551/a6a9e561-3965-45c6-9f2b-ee671e1a3a45.png',
     'Crunches': 'https://wger.de/media/exercise-images/176/Cross-body-crunch-1.png',
     'Leg Raises': 'https://wger.de/media/exercise-images/125/Leg-raises-2.png',
     'Plank': 'https://wger.de/media/exercise-images/1091/50c8912d-54ef-46c9-99d1-633b6196aa1e.jpg',
+    'Hip Flexor Stretch': 'https://wger.de/media/exercise-images/1867/767631e5-10d2-46b8-b03f-cc298f96963b.png',
+    'Pelvic Tilt Practice': 'https://wger.de/media/exercise-images/1871/85a6b9de-4eec-445b-8ebb-f1950b076aba.png',
 };
 
 const ROUTINE_DATA = {
