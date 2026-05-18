@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitTimer — Gamification POC Ideas</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: #0f0f1a; color: #fff; padding: 20px; }
+h1 { text-align: center; margin-bottom: 10px; font-size: 1.5rem; }
+.subtitle { text-align: center; color: #999; margin-bottom: 30px; font-size: 0.85rem; }
+.ideas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 900px; margin: 0 auto; }
+@media (max-width: 700px) { .ideas-grid { grid-template-columns: 1fr; } }
+.idea-card {
+    background: #1a1a2e;
+    border: 1px solid #2a2a4a;
+    border-radius: 16px;
+    padding: 20px;
+    position: relative;
+}
+.idea-card h2 { font-size: 1rem; margin-bottom: 4px; color: #6c63ff; }
+.idea-card .principle { font-size: 0.7rem; color: #f59e0b; margin-bottom: 14px; font-style: italic; }
+.idea-card .description { font-size: 0.75rem; color: #aaa; margin-top: 12px; line-height: 1.5; }
+.idea-num {
+    position: absolute; top: -10px; right: 14px;
+    background: #6c63ff; color: #fff; font-size: 0.65rem; font-weight: 700;
+    padding: 3px 10px; border-radius: 10px;
+}
+
+/* === IDEA 1: Week Dots Progress === */
+.week-dots { display: flex; align-items: center; gap: 6px; justify-content: center; padding: 12px 0; }
+.week-dot {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; font-weight: 700;
+    border: 2px solid #333;
+    transition: all 0.3s;
+}
+.week-dot.done { background: #4caf50; border-color: #4caf50; color: #fff; }
+.week-dot.today { border-color: #6c63ff; animation: todayPulse 2s infinite; }
+.week-dot.next-target { border-color: #f59e0b; border-style: dashed; animation: targetGlow 1.5s infinite; }
+.week-dot.future { opacity: 0.3; }
+.dots-message { text-align: center; font-size: 0.75rem; color: #ccc; margin-top: 8px; }
+@keyframes todayPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(108,99,255,0.4); } 50% { box-shadow: 0 0 0 6px rgba(108,99,255,0); } }
+@keyframes targetGlow { 0%,100% { opacity: 0.6; } 50% { opacity: 1; } }
+
+/* === IDEA 2: Progress Bar with Milestones === */
+.progress-track {
+    position: relative; height: 28px;
+    background: #222; border-radius: 14px;
+    overflow: visible; margin: 16px 0;
+}
+.progress-fill {
+    height: 100%; border-radius: 14px;
+    background: linear-gradient(90deg, #ef4444 0%, #f59e0b 33%, #4caf50 66%, #6c63ff 100%);
+    width: 33%; /* 1 of 3 */
+    transition: width 0.8s ease;
+    position: relative;
+}
+.progress-fill::after {
+    content: '🏃'; position: absolute; right: -12px; top: -2px; font-size: 1.2rem;
+    animation: bounce 1s infinite;
+}
+@keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+.milestone-markers {
+    position: absolute; top: 0; left: 0; right: 0; height: 100%;
+    display: flex; justify-content: space-between; padding: 0 4px;
+    pointer-events: none;
+}
+.milestone {
+    display: flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; border-radius: 50%;
+    background: #333; border: 2px solid #555;
+    font-size: 0.6rem; margin-top: 2px;
+}
+.milestone.reached { background: #4caf50; border-color: #4caf50; }
+.milestone-labels {
+    display: flex; justify-content: space-between; padding: 0 4px;
+    font-size: 0.6rem; color: #666; margin-top: 4px;
+}
+
+/* === IDEA 3: Chain Links (Don't Break the Chain) === */
+.chain-row { display: flex; align-items: center; justify-content: center; gap: 2px; padding: 10px 0; }
+.chain-link {
+    width: 30px; height: 42px; border-radius: 12px;
+    border: 3px solid #333; position: relative;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.55rem; font-weight: 700; color: #555;
+}
+.chain-link.active { border-color: #4caf50; background: rgba(76,175,80,0.15); color: #4caf50; }
+.chain-link.active::before, .chain-link.active::after {
+    content: ''; position: absolute; width: 3px; height: 6px; background: #4caf50;
+}
+.chain-link.active::before { top: -5px; }
+.chain-link.active::after { bottom: -5px; }
+.chain-link.current { border-color: #6c63ff; border-style: dashed; color: #6c63ff; }
+.chain-connector { width: 4px; height: 3px; background: #333; border-radius: 2px; }
+.chain-connector.linked { background: #4caf50; }
+.chain-weeks { text-align: center; margin-top: 8px; font-size: 0.7rem; color: #f59e0b; font-weight: 700; }
+
+/* === IDEA 4: XP Ring (Apple Watch style) === */
+.ring-container { display: flex; align-items: center; justify-content: center; gap: 20px; padding: 10px 0; }
+.ring-svg { width: 80px; height: 80px; transform: rotate(-90deg); }
+.ring-bg { fill: none; stroke: #222; stroke-width: 8; }
+.ring-fill { fill: none; stroke: #4caf50; stroke-width: 8; stroke-linecap: round; stroke-dasharray: 188; stroke-dashoffset: 125; transition: stroke-dashoffset 1s ease; }
+.ring-text { text-align: left; }
+.ring-count { font-size: 1.8rem; font-weight: 800; color: #4caf50; }
+.ring-label { font-size: 0.65rem; color: #888; }
+.ring-reward { font-size: 0.7rem; color: #f59e0b; margin-top: 4px; }
+
+/* === IDEA 5: Streak Flame + Level === */
+.flame-row { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 14px 0; }
+.flame-icon { font-size: 2.5rem; animation: flameFlicker 0.8s infinite alternate; }
+@keyframes flameFlicker { 0% { transform: scale(1) rotate(-2deg); } 100% { transform: scale(1.05) rotate(2deg); } }
+.flame-stats { text-align: left; }
+.flame-streak { font-size: 1.4rem; font-weight: 800; }
+.flame-level { font-size: 0.7rem; color: #888; }
+.flame-xp-bar { width: 100px; height: 6px; background: #333; border-radius: 3px; margin-top: 4px; overflow: hidden; }
+.flame-xp-fill { height: 100%; width: 60%; background: linear-gradient(90deg, #f59e0b, #ef4444); border-radius: 3px; }
+.flame-next { font-size: 0.6rem; color: #666; margin-top: 2px; }
+
+/* === IDEA 6: Weekly Calendar with Fill === */
+.week-fill-row { display: flex; gap: 4px; justify-content: center; padding: 10px 0; }
+.week-fill-day {
+    width: 38px; height: 50px; border-radius: 8px;
+    border: 1.5px solid #333; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 2px;
+    transition: all 0.3s;
+}
+.week-fill-day .day-letter { font-size: 0.55rem; color: #666; font-weight: 700; }
+.week-fill-day .day-icon { font-size: 1rem; }
+.week-fill-day.completed { background: rgba(76,175,80,0.15); border-color: #4caf50; }
+.week-fill-day.completed .day-letter { color: #4caf50; }
+.week-fill-day.today-slot { border-color: #6c63ff; }
+.week-reward {
+    text-align: center; margin-top: 8px; padding: 6px 12px;
+    background: rgba(245,158,11,0.1); border: 1px dashed #f59e0b;
+    border-radius: 8px; font-size: 0.7rem; color: #f59e0b;
+}
+.week-reward.locked { opacity: 0.4; }
+
+/* === IDEA 7: Habit Garden === */
+.garden-row { display: flex; gap: 8px; justify-content: center; align-items: flex-end; padding: 14px 0; }
+.plant { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.plant-icon { font-size: 1.8rem; }
+.plant-label { font-size: 0.55rem; color: #666; }
+.plant.growing { animation: plantGrow 2s ease; }
+@keyframes plantGrow { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+.garden-msg { text-align: center; font-size: 0.7rem; color: #4caf50; margin-top: 6px; font-style: italic; }
+
+/* === IDEA 8: Compact Inline Bar === */
+.inline-bar-wrap { display: flex; align-items: center; gap: 8px; justify-content: center; padding: 12px 0; }
+.inline-segments { display: flex; gap: 3px; }
+.inline-seg {
+    width: 28px; height: 10px; border-radius: 3px;
+    background: #333; transition: all 0.3s;
+}
+.inline-seg.filled { background: #4caf50; }
+.inline-seg.filled:nth-child(4) { background: #f59e0b; }
+.inline-seg.filled:nth-child(5) { background: #ef4444; }
+.inline-seg.next { background: #333; border: 1px dashed #4caf50; animation: nextSeg 1.5s infinite; }
+@keyframes nextSeg { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+.inline-msg { font-size: 0.7rem; color: #ccc; font-weight: 600; }
+.inline-reward { font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<h1>🎮 Gamification POC Ideas</h1>
+<p class="subtitle">Inspired by Atomic Habits — Pick what motivates you most. These go in the Volume calendar tab.</p>
+
+<div class="ideas-grid">
+
+<!-- IDEA 1 -->
+<div class="idea-card">
+    <span class="idea-num">1</span>
+    <h2>Week Dots (Visual Cue)</h2>
+    <p class="principle">Atomic Habits: "Make it obvious" — visual tracking creates awareness</p>
+    <div class="week-dots">
+        <div class="week-dot done">M</div>
+        <div class="week-dot future">T</div>
+        <div class="week-dot future">W</div>
+        <div class="week-dot next-target">T</div>
+        <div class="week-dot today">F</div>
+        <div class="week-dot future">S</div>
+        <div class="week-dot future">S</div>
+    </div>
+    <div class="dots-message">🎯 Next target: Thursday — <strong>2 more</strong> to unlock the week!</div>
+    <p class="description">Each dot fills green when you workout. The dashed one pulses to show your next target. Simple, obvious, motivating.</p>
+</div>
+
+<!-- IDEA 2 -->
+<div class="idea-card">
+    <span class="idea-num">2</span>
+    <h2>Progress Bar + Milestones</h2>
+    <p class="principle">Atomic Habits: "Make it satisfying" — visual progress = immediate reward</p>
+    <div class="progress-track">
+        <div class="progress-fill"></div>
+        <div class="milestone-markers">
+            <div class="milestone reached">✓</div>
+            <div class="milestone" style="margin-left:30%">2</div>
+            <div class="milestone" style="margin-left:auto">3</div>
+        </div>
+    </div>
+    <div class="milestone-labels">
+        <span>Started!</span>
+        <span>Halfway</span>
+        <span>🏆 Week Complete!</span>
+    </div>
+    <p class="description">A runner emoji chases the finish. Each milestone unlocks. The bar fills with gradient energy as you progress through the week.</p>
+</div>
+
+<!-- IDEA 3 -->
+<div class="idea-card">
+    <span class="idea-num">3</span>
+    <h2>Chain Links ("Don't Break the Chain")</h2>
+    <p class="principle">Atomic Habits: "Never miss twice" — Seinfeld's chain method</p>
+    <div class="chain-row">
+        <div class="chain-link active">W1</div>
+        <div class="chain-connector linked"></div>
+        <div class="chain-link active">W2</div>
+        <div class="chain-connector linked"></div>
+        <div class="chain-link active">W3</div>
+        <div class="chain-connector linked"></div>
+        <div class="chain-link active">W4</div>
+        <div class="chain-connector"></div>
+        <div class="chain-link current">W5</div>
+    </div>
+    <div class="chain-weeks">🔗 4-week chain! Don't break it — complete 3 workouts this week</div>
+    <p class="description">Each week you hit 3+ workouts = chain link forged. Visual chain grows. Breaking it resets. Powerful psychological pull to not break.</p>
+</div>
+
+<!-- IDEA 4 -->
+<div class="idea-card">
+    <span class="idea-num">4</span>
+    <h2>Activity Ring (Apple Watch style)</h2>
+    <p class="principle">Atomic Habits: "Close your rings" — clear daily/weekly target</p>
+    <div class="ring-container">
+        <svg class="ring-svg" viewBox="0 0 70 70">
+            <circle class="ring-bg" cx="35" cy="35" r="30"/>
+            <circle class="ring-fill" cx="35" cy="35" r="30"/>
+        </svg>
+        <div class="ring-text">
+            <div class="ring-count">1/3</div>
+            <div class="ring-label">workouts this week</div>
+            <div class="ring-reward">🎁 Close ring → unlock badge</div>
+        </div>
+    </div>
+    <p class="description">Simple ring fills as you complete workouts. Closing it feels satisfying. Compact and familiar from Apple Watch.</p>
+</div>
+
+<!-- IDEA 5 -->
+<div class="idea-card">
+    <span class="idea-num">5</span>
+    <h2>Streak Flame + XP Level</h2>
+    <p class="principle">Atomic Habits: "Identity-based habits" — become a person who works out</p>
+    <div class="flame-row">
+        <div class="flame-icon">🔥</div>
+        <div class="flame-stats">
+            <div class="flame-streak">4-week streak</div>
+            <div class="flame-level">Level 3 — Dedicated</div>
+            <div class="flame-xp-bar"><div class="flame-xp-fill"></div></div>
+            <div class="flame-next">60/100 XP → Level 4: Warrior</div>
+        </div>
+    </div>
+    <p class="description">Earn XP per workout. Level up with titles (Beginner → Dedicated → Warrior → Beast → Legend). The flame grows with your streak.</p>
+</div>
+
+<!-- IDEA 6 -->
+<div class="idea-card">
+    <span class="idea-num">6</span>
+    <h2>Week Fill + Reward Preview</h2>
+    <p class="principle">Atomic Habits: "Temptation bundling" — pair habit with reward</p>
+    <div class="week-fill-row">
+        <div class="week-fill-day completed"><span class="day-letter">M</span><span class="day-icon">✅</span></div>
+        <div class="week-fill-day"><span class="day-letter">T</span><span class="day-icon">⬜</span></div>
+        <div class="week-fill-day"><span class="day-letter">W</span><span class="day-icon">⬜</span></div>
+        <div class="week-fill-day"><span class="day-letter">T</span><span class="day-icon">⬜</span></div>
+        <div class="week-fill-day today-slot"><span class="day-letter">F</span><span class="day-icon">💪</span></div>
+        <div class="week-fill-day"><span class="day-letter">S</span><span class="day-icon">⬜</span></div>
+        <div class="week-fill-day"><span class="day-letter">S</span><span class="day-icon">⬜</span></div>
+    </div>
+    <div class="week-reward locked">🎁 Hit 3 → Unlock: "Treat yourself to something nice this weekend"</div>
+    <p class="description">Shows reward preview (you set it). Reward unlocks only when you hit target. Connects habit to satisfaction.</p>
+</div>
+
+<!-- IDEA 7 -->
+<div class="idea-card">
+    <span class="idea-num">7</span>
+    <h2>Habit Garden 🌱</h2>
+    <p class="principle">Atomic Habits: "Small habits compound" — watch growth over time</p>
+    <div class="garden-row">
+        <div class="plant growing"><span class="plant-icon">🌳</span><span class="plant-label">Wk 1</span></div>
+        <div class="plant growing"><span class="plant-icon">🌳</span><span class="plant-label">Wk 2</span></div>
+        <div class="plant growing"><span class="plant-icon">🌲</span><span class="plant-label">Wk 3</span></div>
+        <div class="plant growing"><span class="plant-icon">🌱</span><span class="plant-label">Wk 4</span></div>
+        <div class="plant"><span class="plant-icon">🫘</span><span class="plant-label">Wk 5</span></div>
+    </div>
+    <div class="garden-msg">Your garden grows with consistency — miss a week and plants wilt! 🥀</div>
+    <p class="description">Each week with 3+ workouts = plant grows (seed → sprout → tree). Miss a week = plant wilts. Visual story of your journey.</p>
+</div>
+
+<!-- IDEA 8 -->
+<div class="idea-card">
+    <span class="idea-num">8</span>
+    <h2>Compact Segment Bar</h2>
+    <p class="principle">Atomic Habits: "Reduce friction" — minimal, always visible, no clicks needed</p>
+    <div class="inline-bar-wrap">
+        <div class="inline-segments">
+            <div class="inline-seg filled"></div>
+            <div class="inline-seg next"></div>
+            <div class="inline-seg"></div>
+        </div>
+        <span class="inline-msg">1 down, 2 to go</span>
+        <span class="inline-reward">🏆</span>
+    </div>
+    <p class="description">Ultra-compact. Sits inside the calendar header row. Segments fill, trophy appears when done. Zero friction to see progress.</p>
+</div>
+
+</div>
+
+<div style="text-align:center; margin-top:30px; padding: 20px; background:#1a1a2e; border-radius:12px; max-width:600px; margin-left:auto; margin-right:auto;">
+    <h3 style="color:#6c63ff; margin-bottom:10px;">💡 My Recommendation</h3>
+    <p style="color:#ccc; font-size:0.8rem; line-height:1.6;">
+        <strong>Combine #8 (compact bar)</strong> as the always-visible inline indicator above the calendar +
+        <strong>#3 (chain links)</strong> as a longer-term streak motivator below it +
+        <strong>#5 (XP/Level)</strong> in the Progress tab for identity building.<br><br>
+        This gives you: <em>immediate feedback</em> (bar fills), <em>loss aversion</em> (don't break chain), and <em>identity shift</em> (level up titles).
+    </p>
+</div>
+
+</body>
+</html>

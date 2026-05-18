@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="icon" href="icons/icon-192.png">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
-    <link rel="stylesheet" href="style.css?v=19">
+    <link rel="stylesheet" href="style.css?v=20">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
 </head>
@@ -90,6 +90,7 @@
             </div>
             <div class="header-right">
                 <span id="currentUser" class="user-badge"></span>
+                <button id="themeToggleBtn" class="icon-btn" title="Toggle theme">🌙</button>
                 <button id="switchUserBtn" class="icon-btn" title="Profile">&#128100;</button>
             </div>
         </header>
@@ -103,6 +104,7 @@
             <button class="tab-btn" data-tab="volume">Volume</button>
             <button class="tab-btn" data-tab="progress">Progress</button>
             <button class="tab-btn" data-tab="history">History</button>
+            <button class="tab-btn" data-tab="mindset">Mindset</button>
             <button class="tab-btn" data-tab="profile">Profile</button>
         </nav>
 
@@ -287,6 +289,11 @@
                 <button id="calNext" class="icon-btn">&rarr;</button>
             </div>
             <div class="cal-legend" id="calLegend"></div>
+            <!-- Week Dots + Chain -->
+            <div class="week-gamify">
+                <div class="week-dots-row" id="weekDotsRow"></div>
+                <div class="chain-links-row" id="chainLinksRow"></div>
+            </div>
             <div class="cal-grid" id="calGrid"></div>
             <div id="calDetail"></div>
             <div id="fullVolumeTable" style="margin-top:20px;"></div>
@@ -338,6 +345,13 @@
                 </div>
             </div>
 
+            <!-- Habit Garden -->
+            <div class="habit-garden-section">
+                <h3 class="section-title">🌱 Habit Garden</h3>
+                <div class="garden-row" id="habitGardenRow"></div>
+                <div class="garden-message" id="gardenMessage"></div>
+            </div>
+
             <!-- Achievements Grid -->
             <div class="achievements-section">
                 <h3 class="section-title">Achievements</h3>
@@ -377,6 +391,268 @@
             </div>
         </section>
 
+        <!-- TAB: Mindset (Atomic Habits) -->
+        <section id="tabMindset" class="tab-content">
+            <h3 class="section-title" style="text-align:center;margin-bottom:4px;">🧠 Atomic Habits</h3>
+            <p style="text-align:center;font-size:0.7rem;color:var(--text-muted);margin-bottom:16px;">Tiny changes, remarkable results — James Clear</p>
+
+            <!-- The Core Idea -->
+            <div class="ah-card ah-core">
+                <div class="ah-card-header">💡 The 1% Rule</div>
+                <div class="ah-card-body">
+                    <p>If you get <strong>1% better each day</strong>, you'll be <strong>37x better</strong> in one year.</p>
+                    <p>If you get 1% worse each day, you'll decline to nearly zero.</p>
+                    <div class="ah-quote">"You do not rise to the level of your goals. You fall to the level of your systems."</div>
+                </div>
+            </div>
+
+            <!-- The 4 Laws -->
+            <div class="ah-section-title">The 4 Laws of Behavior Change</div>
+
+            <div class="ah-card ah-law1">
+                <div class="ah-card-header">1️⃣ Make It Obvious</div>
+                <div class="ah-card-body">
+                    <ul class="ah-list">
+                        <li><strong>Implementation intention:</strong> "I will [exercise] at [6 AM] in [my room]"</li>
+                        <li><strong>Habit stacking:</strong> "After I [brush my teeth], I will [do 5 push-ups]"</li>
+                        <li><strong>Environment design:</strong> Put your workout clothes next to your bed</li>
+                        <li><strong>Pointing & calling:</strong> Say out loud: "It's 6 AM, time to train"</li>
+                    </ul>
+                    <div class="ah-tip">🎯 Your environment is more powerful than your motivation. Design it.</div>
+                </div>
+            </div>
+
+            <div class="ah-card ah-law2">
+                <div class="ah-card-header">2️⃣ Make It Attractive</div>
+                <div class="ah-card-body">
+                    <ul class="ah-list">
+                        <li><strong>Temptation bundling:</strong> "After I complete my workout, I'll watch my show"</li>
+                        <li><strong>Join a tribe:</strong> Surround yourself with people who exercise daily</li>
+                        <li><strong>Reframe mindset:</strong> Not "I have to work out" → "I GET to build my body"</li>
+                        <li><strong>Motivation ritual:</strong> Play your hype song before every workout</li>
+                    </ul>
+                    <div class="ah-tip">🧲 The more attractive a habit, the more likely it becomes automatic.</div>
+                </div>
+            </div>
+
+            <div class="ah-card ah-law3">
+                <div class="ah-card-header">3️⃣ Make It Easy</div>
+                <div class="ah-card-body">
+                    <ul class="ah-list">
+                        <li><strong>2-Minute Rule:</strong> "Start with just 2 minutes" — scale down until it's effortless</li>
+                        <li><strong>Reduce friction:</strong> Sleep in workout clothes. Keep weights visible.</li>
+                        <li><strong>Prime your environment:</strong> Set up your mat, bands, and water the night before</li>
+                        <li><strong>Automate:</strong> Same time, same place, same routine. No decisions needed.</li>
+                    </ul>
+                    <div class="ah-tip">⚡ The most effective form of learning is practice, not planning.</div>
+                </div>
+            </div>
+
+            <div class="ah-card ah-law4">
+                <div class="ah-card-header">4️⃣ Make It Satisfying</div>
+                <div class="ah-card-body">
+                    <ul class="ah-list">
+                        <li><strong>Habit tracking:</strong> Mark the X. Never break the chain. (This app does this!)</li>
+                        <li><strong>Immediate reward:</strong> After working out → enjoy a protein shake/smoothie</li>
+                        <li><strong>Never miss twice:</strong> Bad day? Do just 1 set. Show up. That's the real habit.</li>
+                        <li><strong>Accountability partner:</strong> Share your garden/streak with someone</li>
+                    </ul>
+                    <div class="ah-tip">✅ What is immediately rewarded is repeated. What is immediately punished is avoided.</div>
+                </div>
+            </div>
+
+            <!-- Identity Section -->
+            <div class="ah-card ah-identity">
+                <div class="ah-card-header">🪞 Identity-Based Habits</div>
+                <div class="ah-card-body">
+                    <p>Don't focus on <em>what</em> you want (outcomes). Focus on <em>who</em> you want to become.</p>
+                    <div class="ah-identity-shift">
+                        <div class="ah-old">❌ "I want to lose weight"</div>
+                        <div class="ah-arrow">→</div>
+                        <div class="ah-new">✅ "I am a person who moves every day"</div>
+                    </div>
+                    <div class="ah-identity-shift">
+                        <div class="ah-old">❌ "I want bigger muscles"</div>
+                        <div class="ah-arrow">→</div>
+                        <div class="ah-new">✅ "I am someone who never misses a workout"</div>
+                    </div>
+                    <div class="ah-quote">"Every action you take is a vote for the type of person you wish to become."</div>
+                </div>
+            </div>
+
+            <!-- The Plateau of Latent Potential -->
+            <div class="ah-card ah-plateau">
+                <div class="ah-card-header">📈 The Valley of Disappointment</div>
+                <div class="ah-card-body">
+                    <p>Results take time. Expect a <strong>lag period</strong> where you see no visible change.</p>
+                    <div class="ah-visual-bar">
+                        <div class="ah-bar-section ah-bar-valley">Weeks 1-8: No visible change<br><span>💪 Keep going!</span></div>
+                        <div class="ah-bar-section ah-bar-break">The breakthrough</div>
+                        <div class="ah-bar-section ah-bar-results">Results compound<br><span>🚀 Explosion!</span></div>
+                    </div>
+                    <div class="ah-quote">"Ice doesn't melt at 31°. It melts at 32°. One degree makes the difference."</div>
+                </div>
+            </div>
+
+            <!-- Inversion: Breaking Bad Habits -->
+            <div class="ah-card ah-inversion">
+                <div class="ah-card-header">🚫 Breaking Bad Habits (Inversions)</div>
+                <div class="ah-card-body">
+                    <ul class="ah-list">
+                        <li><strong>Make it invisible:</strong> Remove junk food from sight. Delete food delivery apps.</li>
+                        <li><strong>Make it unattractive:</strong> Reframe: "Skipping workouts = choosing to be weak"</li>
+                        <li><strong>Make it difficult:</strong> Put your phone in another room. Unplug the TV.</li>
+                        <li><strong>Make it unsatisfying:</strong> Tell someone your commitment. Social cost of failing.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Daily Mantras -->
+            <div class="ah-card ah-mantras">
+                <div class="ah-card-header">🔑 Burn These Into Your Brain</div>
+                <div class="ah-card-body">
+                    <div class="ah-mantra">"Habits are the compound interest of self-improvement."</div>
+                    <div class="ah-mantra">"You don't need motivation. You need a system."</div>
+                    <div class="ah-mantra">"The task of building a good habit is like cultivating a delicate flower one day at a time."</div>
+                    <div class="ah-mantra">"Be the architect of your habits, not the victim of them."</div>
+                    <div class="ah-mantra">"Success is the product of daily habits, not once-in-a-lifetime transformations."</div>
+                    <div class="ah-mantra">"Missing once is an accident. Missing twice is the start of a new habit."</div>
+                </div>
+            </div>
+
+            <!-- How This App Applies It -->
+            <div class="ah-section-title">Your System — Built Into This App</div>
+
+            <div class="ah-app-grid">
+                <!-- Week Dots -->
+                <div class="ah-app-item ah-app-obvious">
+                    <div class="ah-app-feature">🟢 Week Dots</div>
+                    <div class="ah-app-principle">"Make it obvious" — visual tracking creates awareness</div>
+                    <div class="ah-app-visual">
+                        <span class="ah-mini-dot done"></span>
+                        <span class="ah-mini-dot done"></span>
+                        <span class="ah-mini-dot done"></span>
+                        <span class="ah-mini-dot target"></span>
+                        <span class="ah-mini-dot today"></span>
+                        <span class="ah-mini-dot"></span>
+                        <span class="ah-mini-dot"></span>
+                    </div>
+                    <div class="ah-app-hit">🎯 Next target: Thursday — <strong>2 more</strong> to unlock the week!</div>
+                    <div class="ah-app-desc">Each dot fills green when you workout. The dashed one pulses to show your next target.</div>
+                    <div class="ah-app-loc">📍 Volume tab → above calendar</div>
+                </div>
+
+                <!-- Chain Links -->
+                <div class="ah-app-item ah-app-chain">
+                    <div class="ah-app-feature">🔗 Chain Links</div>
+                    <div class="ah-app-principle">"Never miss twice" — Seinfeld's chain method</div>
+                    <div class="ah-app-visual">
+                        <span class="ah-mini-link done">W1</span>
+                        <span class="ah-mini-conn done"></span>
+                        <span class="ah-mini-link done">W2</span>
+                        <span class="ah-mini-conn done"></span>
+                        <span class="ah-mini-link done">W3</span>
+                        <span class="ah-mini-conn done"></span>
+                        <span class="ah-mini-link done">W4</span>
+                        <span class="ah-mini-conn"></span>
+                        <span class="ah-mini-link current">W5</span>
+                    </div>
+                    <div class="ah-app-hit">🔗 4-week chain! Don't break it — complete 3 workouts this week</div>
+                    <div class="ah-app-desc">Each week you hit 3+ workouts = chain link forged. Breaking it resets. Powerful pull.</div>
+                    <div class="ah-app-loc">📍 Volume tab → below Week Dots</div>
+                </div>
+
+                <!-- Habit Garden -->
+                <div class="ah-app-item ah-app-garden">
+                    <div class="ah-app-feature">🌱 Habit Garden</div>
+                    <div class="ah-app-principle">"Small habits compound" — watch growth over time</div>
+                    <div class="ah-app-visual ah-garden-vis">
+                        <span>🌳</span><span>🌳</span><span>🌲</span><span>🌿</span><span>🌱</span><span>🫘</span>
+                    </div>
+                    <div class="ah-app-hit">🌱 Your garden grows with consistency — miss a week and plants wilt! 🥀</div>
+                    <div class="ah-app-desc">Each week with 3+ workouts = plant grows (seed → sprout → tree). A visual story of your journey.</div>
+                    <div class="ah-app-loc">📍 Progress tab → below Activity Ring</div>
+                </div>
+
+                <!-- Progress / Activity Ring -->
+                <div class="ah-app-item ah-app-satisfying">
+                    <div class="ah-app-feature">⭕ Activity Ring</div>
+                    <div class="ah-app-principle">"Make it satisfying" — visual progress = immediate reward</div>
+                    <div class="ah-app-visual">
+                        <svg class="ah-mini-ring" viewBox="0 0 44 44">
+                            <circle cx="22" cy="22" r="18" fill="none" stroke="#222" stroke-width="5"/>
+                            <circle cx="22" cy="22" r="18" fill="none" stroke="#4caf50" stroke-width="5" stroke-linecap="round" stroke-dasharray="113" stroke-dashoffset="75" transform="rotate(-90 22 22)"/>
+                        </svg>
+                        <span class="ah-ring-label">1/3</span>
+                    </div>
+                    <div class="ah-app-hit">⭕ Close your ring → <strong>1 down, 2 to go</strong> 🏆</div>
+                    <div class="ah-app-desc">Watch your ring fill as you train. Closing it feels satisfying. Immediate feedback that your effort counts.</div>
+                    <div class="ah-app-loc">📍 Progress tab → Activity Ring</div>
+                </div>
+
+                <!-- Streak & Levels -->
+                <div class="ah-app-item ah-app-identity">
+                    <div class="ah-app-feature">🔥 Streak & Levels</div>
+                    <div class="ah-app-principle">"Identity-based habits" — become a person who works out</div>
+                    <div class="ah-app-visual ah-flame-vis">
+                        <span class="ah-flame-emoji">🔥</span>
+                        <span class="ah-flame-text"><strong>4-week streak</strong><br><small>Level 3 — Dedicated</small></span>
+                    </div>
+                    <div class="ah-app-hit">🔥 You're not building a habit. You're becoming an <strong>athlete</strong>.</div>
+                    <div class="ah-app-desc">Every logged session = a vote for who you're becoming. Level up: Beginner → Dedicated → Warrior → Beast → Legend.</div>
+                    <div class="ah-app-loc">📍 Timer tab → XP bar & level badge</div>
+                </div>
+
+                <!-- Quick Log -->
+                <div class="ah-app-item ah-app-easy">
+                    <div class="ah-app-feature">⚡ Quick Log & Defaults</div>
+                    <div class="ah-app-principle">"Reduce friction" — minimal effort, no excuses</div>
+                    <div class="ah-app-visual ah-quick-vis">
+                        <span class="ah-quick-chip">⚡ Apply Defaults</span>
+                        <span class="ah-quick-chip">📋 Copy Last</span>
+                    </div>
+                    <div class="ah-app-hit">⚡ One tap. Auto-filled. Zero excuses. Just show up.</div>
+                    <div class="ah-app-desc">One-tap defaults, auto-save, copy last session. Remove every barrier between you and the workout.</div>
+                    <div class="ah-app-loc">📍 Workout tab → Quick Defaults bar</div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="ah-app-item ah-app-bundle">
+                    <div class="ah-app-feature">🏃 Progress Bar + Milestones</div>
+                    <div class="ah-app-principle">"Make it attractive" — pair the habit with reward</div>
+                    <div class="ah-app-visual">
+                        <div class="ah-mini-bar">
+                            <div class="ah-mini-bar-fill"></div>
+                            <span class="ah-mini-bar-runner">🏃</span>
+                        </div>
+                        <div class="ah-mini-milestones">
+                            <span>Started!</span><span>Halfway</span><span>🏆</span>
+                        </div>
+                    </div>
+                    <div class="ah-app-hit">🎁 Hit 3 → Unlock: "Treat yourself to something nice this weekend"</div>
+                    <div class="ah-app-desc">A runner chases the finish. Each milestone unlocks. The bar fills with energy as you progress.</div>
+                    <div class="ah-app-loc">📍 Progress tab → weekly milestone bar</div>
+                </div>
+
+                <!-- Segment Bar -->
+                <div class="ah-app-item ah-app-ring">
+                    <div class="ah-app-feature">📊 Compact Segment Bar</div>
+                    <div class="ah-app-principle">"Close your rings" — clear daily/weekly target</div>
+                    <div class="ah-app-visual ah-seg-vis">
+                        <span class="ah-seg filled"></span>
+                        <span class="ah-seg next"></span>
+                        <span class="ah-seg"></span>
+                        <span class="ah-seg-msg">1 down, 2 to go</span>
+                        <span>🏆</span>
+                    </div>
+                    <div class="ah-app-hit">✅ Each segment = one workout. Fill them all = week conquered.</div>
+                    <div class="ah-app-desc">Ultra-compact. Always visible in your calendar. Segments fill, trophy appears when done.</div>
+                    <div class="ah-app-loc">📍 Volume tab → calendar header</div>
+                </div>
+            </div>
+
+        </section>
+
         <!-- TAB: Profile -->
         <section id="tabProfile" class="tab-content">
             <div class="profile-view">
@@ -391,7 +667,9 @@
                 </div>
                 <button id="editProfileBtn" class="control-btn pause-btn">Edit Profile</button>
                 <button id="exportDataBtn" class="control-btn reset-btn" style="margin-top:8px;">Export Data (JSON)</button>
-                <button id="logoutBtn" class="control-btn reset-btn" style="margin-top:16px;background:#c62828;">Logout</button>
+                <button id="importDataBtn" class="control-btn reset-btn" style="margin-top:8px;">Import Data (JSON)</button>
+                <input type="file" id="importFileInput" accept=".json" style="display:none;">
+                <button id="logoutBtn" class="control-btn" style="margin-top:16px;background:#c62828;color:#fff;border:none;">Logout</button>
             </div>
 
             <!-- Body Measurements -->
@@ -416,8 +694,8 @@
                         <div class="measure-field"><label>Calf R (in)</label><input type="number" id="mCalfR" step="0.1" placeholder="14.1"></div>
                     </div>
                     <button id="saveMeasurementsBtn" class="control-btn start-btn" style="margin-top:12px;">Save Measurements</button>
-                    <div class="measure-history" id="measureHistory"></div>
                 </div>
+                <div class="measure-history" id="measureHistory"></div>
             </div>
 
             <!-- Body Composition (DrTrust) -->
@@ -495,8 +773,8 @@
     </div>
 
     <script src="db.js"></script>
-    <script src="gamification.js?v=19"></script>
-    <script src="script.js?v=19"></script>
+    <script src="gamification.js?v=20"></script>
+    <script src="script.js?v=20"></script>
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./service-worker.js');

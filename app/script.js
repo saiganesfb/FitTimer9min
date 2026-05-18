@@ -58,6 +58,28 @@ const calendarGrid = $('calendarGrid');
 const durationBtns = document.querySelectorAll('.duration-btn');
 const tabBtns = document.querySelectorAll('.tab-btn');
 
+// --- Theme Toggle ---
+(function initTheme() {
+    const saved = localStorage.getItem('ft-theme') || 'dark';
+    if (saved === 'light') document.documentElement.setAttribute('data-theme', 'light');
+    const btn = $('themeToggleBtn');
+    if (btn) {
+        btn.textContent = saved === 'light' ? '☀️' : '🌙';
+        btn.addEventListener('click', () => {
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+            if (isLight) {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('ft-theme', 'dark');
+                btn.textContent = '🌙';
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('ft-theme', 'light');
+                btn.textContent = '☀️';
+            }
+        });
+    }
+})();
+
 // --- Initialize ---
 async function init() {
     await openDB();
@@ -267,6 +289,8 @@ function bindEvents() {
     // Profile actions
     $('editProfileBtn').addEventListener('click', editProfile);
     $('exportDataBtn').addEventListener('click', exportData);
+    $('importDataBtn').addEventListener('click', () => $('importFileInput').click());
+    $('importFileInput').addEventListener('change', importData);
 
     // Log tab interactions
     $('logPrevDay').addEventListener('click', () => { logViewingDate.setDate(logViewingDate.getDate() - 1); renderLogTab(); });
@@ -671,6 +695,51 @@ async function exportData() {
     URL.revokeObjectURL(url);
 }
 
+async function importData(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    e.target.value = '';
+
+    const text = await file.text();
+    let data;
+    try { data = JSON.parse(text); } catch { alert('Invalid JSON file.'); return; }
+
+    const counts = {
+        dailyLogs: data.dailyLogs?.length || 0,
+        measurements: data.measurements?.length || 0,
+        compositions: data.compositions?.length || 0,
+        sessions: data.sessions?.length || 0
+    };
+    const msg = `Import data from ${data.exportedAt?.slice(0,10) || 'unknown date'}?\n\n` +
+        `• ${counts.dailyLogs} workout logs\n• ${counts.measurements} measurements\n• ${counts.compositions} compositions\n• ${counts.sessions} sessions\n\n` +
+        `This will ADD to your existing data (not replace).`;
+    if (!confirm(msg)) return;
+
+    let imported = 0;
+    if (data.dailyLogs) {
+        for (const log of data.dailyLogs) {
+            log.userId = currentUserId;
+            try { await saveDailyLog(log); imported++; } catch {}
+        }
+    }
+    if (data.measurements) {
+        for (const m of data.measurements) {
+            m.userId = currentUserId;
+            delete m.id;
+            try { await addMeasurement(m); imported++; } catch {}
+        }
+    }
+    if (data.compositions) {
+        for (const c of data.compositions) {
+            c.userId = currentUserId;
+            delete c.id;
+            try { await addComposition(c); imported++; } catch {}
+        }
+    }
+    alert(`Imported ${imported} records successfully!`);
+    location.reload();
+}
+
 // --- Celebration ---
 
 function showCelebration(minutes, isPartial, xpGained) {
@@ -876,6 +945,91 @@ function renderProgress() {
             <span class="achievement-desc">${ach.desc}</span>
         </div>`;
     }).join('');
+
+    // Habit Garden
+    renderHabitGarden();
+}
+
+function renderHabitGarden() {
+    const gardenRow = $('habitGardenRow');
+    const gardenMsg = $('gardenMessage');
+    if (!gardenRow) return;
+
+    // Calculate last 8 weeks: how many workouts per week
+    const now = new Date();
+    const dayOfWeek = now.getDay() === 0 ? 6 : now.getDay() - 1;
+    const thisMonday = new Date(now);
+    thisMonday.setDate(now.getDate() - dayOfWeek);
+
+    const weeks = [];
+    for (let w = 7; w >= 0; w--) {
+        const weekStart = new Date(thisMonday);
+        weekStart.setDate(thisMonday.getDate() - (w * 7));
+        let count = 0;
+        for (let d = 0; d < 7; d++) {
+            const day = new Date(weekStart);
+            day.setDate(weekStart.getDate() + d);
+            const dk = day.toISOString().slice(0, 10);
+            if (dailyLogs.find(l => l.dateKey === dk && l.exercises && l.exercises.routineDay)) count++;
+        }
+        weeks.push(count);
+    }
+
+    // Plant stages based on cumulative consistency
+    // 0 workouts = dead, 1-2 = wilting, 3-4 = sprout, 5+ = thriving
+    const plantStages = [
+        { icon: '💀', label: 'dead' },    // 0
+        { icon: '🥀', label: 'wilting' },  // 1-2
+        { icon: '🫘', label: 'seed' },     // 3 (just met goal)
+        { icon: '🌱', label: 'sprout' },   // 3+
+        { icon: '🌿', label: 'growing' },  // 4
+        { icon: '🌲', label: 'tree' },     // 5
+        { icon: '🌳', label: 'oak' },      // 6+
+    ];
+
+    function getPlant(count) {
+        if (count === 0) return plantStages[0];
+        if (count <= 2) return plantStages[1];
+        if (count === 3) return plantStages[3];
+        if (count === 4) return plantStages[4];
+        if (count === 5) return plantStages[5];
+        return plantStages[6];
+    }
+
+    let html = '';
+    weeks.forEach((count, i) => {
+        const plant = getPlant(count);
+        const isCurrent = i === weeks.length - 1;
+        const weekLabel = isCurrent ? 'Now' : `W${i + 1}`;
+        const cls = isCurrent ? 'garden-plant garden-current' : count >= 3 ? 'garden-plant garden-healthy' : 'garden-plant garden-wilted';
+        html += `<div class="${cls}"><span class="garden-icon">${plant.icon}</span><span class="garden-label">${weekLabel}</span></div>`;
+    });
+    gardenRow.innerHTML = html;
+
+    // Count healthy streak
+    let healthyStreak = 0;
+    for (let i = weeks.length - 2; i >= 0; i--) {
+        if (weeks[i] >= 3) healthyStreak++;
+        else break;
+    }
+
+    const currentCount = weeks[weeks.length - 1];
+    if (healthyStreak >= 4) {
+        gardenMsg.innerHTML = `🌳 <strong>${healthyStreak}-week forest!</strong> Your garden is thriving!`;
+        gardenMsg.className = 'garden-message garden-msg-great';
+    } else if (healthyStreak >= 2) {
+        gardenMsg.innerHTML = `🌿 ${healthyStreak} weeks growing! Keep watering your habits`;
+        gardenMsg.className = 'garden-message garden-msg-good';
+    } else if (currentCount >= 3) {
+        gardenMsg.innerHTML = `🌱 This week's plant is healthy! Water it again next week`;
+        gardenMsg.className = 'garden-message garden-msg-good';
+    } else if (currentCount > 0) {
+        gardenMsg.innerHTML = `🫘 ${3 - currentCount} more workouts to keep your plant alive!`;
+        gardenMsg.className = 'garden-message garden-msg-warn';
+    } else {
+        gardenMsg.innerHTML = `🥀 Your plant needs water — do a workout today!`;
+        gardenMsg.className = 'garden-message garden-msg-bad';
+    }
 }
 
 function showLevelUp(level) {
@@ -1333,12 +1487,26 @@ function renderQuickLogExercises(day) {
     }
 
     function buildSetCell(weights, targetReps, setNum) {
-        const weightOpts = weights.map(w => `<option value="${w}">${typeof w === 'number' ? w : w}</option>`).join('');
-        const repOpts = REPS.map(r => `<option value="${r}" ${r === targetReps ? 'selected' : ''}>${r}</option>`).join('');
-        return `<td class="qlog-td-set"><select class="qlog-reps" data-set="${setNum}">${repOpts}</select><select class="qlog-weight" data-set="${setNum}">${weightOpts}</select></td>`;
+        const weightOpts = `<option value="-">-</option>` + weights.map(w => `<option value="${w}">${typeof w === 'number' ? w : w}</option>`).join('');
+        const repOpts = `<option value="0" selected>-</option>` + REPS.filter(r => r > 0).map(r => `<option value="${r}">${r}</option>`).join('');
+        return `<td class="qlog-td-set">` +
+            `<div class="qlog-set-row"><button class="qlog-adj" data-target="reps" data-dir="-1">−</button><select class="qlog-reps" data-set="${setNum}">${repOpts}</select><button class="qlog-adj" data-target="reps" data-dir="1">+</button></div>` +
+            `<div class="qlog-set-row"><button class="qlog-adj" data-target="weight" data-dir="-1">−</button><select class="qlog-weight" data-set="${setNum}">${weightOpts}</select><button class="qlog-adj" data-target="weight" data-dir="1">+</button></div>` +
+            `</td>`;
     }
 
-    let html = '<div class="qlog-table-wrap"><table class="qlog-table"><thead><tr><th class="qlog-th-ex">Exercise</th><th>Set 1</th><th>Set 2</th><th>Set 3</th><th></th></tr></thead><tbody>';
+    // Quick defaults bar
+    let html = `<div class="qlog-defaults-bar">
+        <span class="qlog-defaults-label">Quick fill:</span>
+        <label><input type="checkbox" class="qlog-def-chk" data-def="band" checked> 🟡 Yellow (bands)</label>
+        <label><input type="checkbox" class="qlog-def-chk" data-def="bw" checked> BW (bodyweight)</label>
+        <label><input type="checkbox" class="qlog-def-chk" data-def="weight" checked> <select class="qlog-def-weight">${DB_WEIGHTS.filter(w=>w>0).map(w=>`<option value="${w}"${w===5?' selected':''}>${w}kg</option>`).join('')}</select> (DB)</label>
+        <label><input type="checkbox" class="qlog-def-chk" data-def="reps" checked> <select class="qlog-def-reps">${REPS.filter(r=>r>0).map(r=>`<option value="${r}"${r===8?' selected':''}>${r}</option>`).join('')}</select> reps</label>
+        <button class="qlog-def-apply">✔ Apply</button>
+    </div>`;
+    // "Copy last" + "Clear all" buttons
+    html += `<div class="qlog-copy-bar"><button class="qlog-copy-last" data-day="${day}">📋 Copy last ${data.title}</button><button class="qlog-clear-all">🗑️ Clear all</button></div>`;
+    html += '<div class="qlog-table-wrap"><table class="qlog-table"><thead><tr><th class="qlog-th-ex">Exercise</th><th>Set 1</th><th>Set 2</th><th>Set 3</th><th></th></tr></thead><tbody>';
 
     data.groups.forEach(group => {
         group.exercises.forEach(ex => {
@@ -1355,7 +1523,7 @@ function renderQuickLogExercises(day) {
             for (let s = numSets + 1; s <= 3; s++) {
                 html += '<td class="qlog-td-set qlog-empty">—</td>';
             }
-            html += `<td class="qlog-td-add"><button class="qlog-add-set" title="Add set">+Set</button></td></tr>`;
+            html += `<td class="qlog-td-add"><button class="qlog-add-set" title="Add set">+Set</button><select class="qlog-clear-ex" title="Clear"><option value="">🧹</option><option value="1">Set 1</option><option value="2">Set 2</option><option value="3">Set 3</option><option value="all">All sets</option></select></td></tr>`;
         });
     });
 
@@ -1375,7 +1543,7 @@ function renderQuickLogExercises(day) {
 
     container.innerHTML = html;
 
-    // Pre-fill from today's log (data logged from Routine tab)
+    // Pre-fill from today's log — mark saved cells as green
     const todayKey = getDateKey(new Date());
     const todayLog = dailyLogs.find(l => l.dateKey === todayKey);
     if (todayLog && todayLog.exercises && todayLog.exercises.exercises) {
@@ -1394,10 +1562,192 @@ function renderQuickLogExercises(day) {
                 if (weightSelect && s.weight !== undefined) {
                     const wVal = (s.weight === 0 || s.weight === '0') ? 'BW' : String(s.weight);
                     weightSelect.value = wVal;
-                    // If no exact match, try numeric
                     if (weightSelect.value !== wVal) weightSelect.value = s.weight;
                 }
             });
+        });
+    }
+
+    // Mark cell as logged when user changes any select (only if reps > 0)
+    container.addEventListener('change', (e) => {
+        if (e.target.matches('.qlog-reps, .qlog-weight')) {
+            const cell = e.target.closest('.qlog-td-set');
+            if (cell) {
+                const repsEl = cell.querySelector('.qlog-reps');
+                const reps = parseInt(repsEl?.value) || 0;
+                if (reps > 0) {
+                    cell.classList.add('qlog-td-logged');
+                } else {
+                    cell.classList.remove('qlog-td-logged');
+                }
+            }
+            autoSaveWorkoutTable();
+        }
+    });
+
+    // +/- adjustment buttons
+    container.addEventListener('click', (e) => {
+        const btn = e.target.closest('.qlog-adj');
+        if (!btn) return;
+        const cell = btn.closest('.qlog-td-set');
+        const target = btn.dataset.target; // 'reps' or 'weight'
+        const dir = parseInt(btn.dataset.dir); // 1 or -1
+        const sel = cell.querySelector(target === 'reps' ? '.qlog-reps' : '.qlog-weight');
+        if (!sel) return;
+
+        const opts = [...sel.options].filter(o => o.value !== '0' && o.value !== '-');
+        const curIdx = opts.findIndex(o => o.value === sel.value);
+
+        if (curIdx === -1) {
+            // Currently empty — go to first real option
+            if (dir > 0 && opts.length) sel.value = opts[0].value;
+        } else {
+            const newIdx = curIdx + dir;
+            if (newIdx >= 0 && newIdx < opts.length) sel.value = opts[newIdx].value;
+        }
+
+        sel.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+
+    // "Copy last" button
+    const copyBtn = container.querySelector('.qlog-copy-last');
+    if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+            const targetDay = copyBtn.dataset.day;
+            const todayKey = getDateKey(new Date());
+            // Find most recent log for this routine day (not today)
+            const lastLog = dailyLogs
+                .filter(l => l.exercises && l.exercises.routineDay === targetDay && l.dateKey < todayKey)
+                .sort((a, b) => b.dateKey.localeCompare(a.dateKey))[0];
+
+            if (!lastLog || !lastLog.exercises.exercises.length) {
+                copyBtn.textContent = '❌ No previous data';
+                setTimeout(() => { copyBtn.textContent = `📋 Copy last ${ROUTINE_DATA[targetDay].title}`; }, 2000);
+                return;
+            }
+
+            // Fill table with last log data
+            lastLog.exercises.exercises.forEach(loggedEx => {
+                const row = container.querySelector(`.qlog-row[data-exname="${loggedEx.name}"]`);
+                if (!row) return;
+                loggedEx.sets.forEach((s, i) => {
+                    const setNum = i + 1;
+                    const repsEl = row.querySelector(`.qlog-reps[data-set="${setNum}"]`);
+                    const weightEl = row.querySelector(`.qlog-weight[data-set="${setNum}"]`);
+                    if (repsEl && s.reps) {
+                        repsEl.value = s.reps;
+                        const cell = repsEl.closest('.qlog-td-set');
+                        if (cell) cell.classList.add('qlog-td-logged');
+                    }
+                    if (weightEl && s.weight !== undefined) {
+                        const wVal = (s.weight === 0 || s.weight === '0') ? 'BW' : String(s.weight);
+                        weightEl.value = wVal;
+                        if (weightEl.value !== wVal) weightEl.value = s.weight;
+                    }
+                });
+            });
+
+            autoSaveWorkoutTable();
+            copyBtn.textContent = '✅ Copied from ' + lastLog.dateKey;
+            setTimeout(() => { copyBtn.textContent = `📋 Copy last ${ROUTINE_DATA[targetDay].title}`; }, 3000);
+        });
+    }
+
+    // "Clear all" button (with confirmation)
+    const clearAllBtn = container.querySelector('.qlog-clear-all');
+    if (clearAllBtn) {
+        clearAllBtn.addEventListener('click', () => {
+            const loggedCount = container.querySelectorAll('.qlog-td-logged').length;
+            if (loggedCount === 0) return;
+            if (!confirm(`Clear ALL logged sets (${loggedCount} sets)? This cannot be undone.`)) return;
+            container.querySelectorAll('.qlog-td-set').forEach(cell => {
+                const reps = cell.querySelector('.qlog-reps');
+                const weight = cell.querySelector('.qlog-weight');
+                if (reps) reps.value = '0';
+                if (weight) weight.value = '-';
+                cell.classList.remove('qlog-td-logged');
+            });
+            autoSaveWorkoutTable();
+        });
+    }
+
+    // Per-exercise clear dropdown
+    container.querySelectorAll('.qlog-clear-ex').forEach(sel => {
+        sel.addEventListener('change', function() {
+            const val = this.value;
+            if (!val) return;
+            const row = this.closest('.qlog-row');
+            const cells = row.querySelectorAll('.qlog-td-set:not(.qlog-empty)');
+            const toClear = val === 'all' ? [...cells] : [cells[parseInt(val) - 1]].filter(Boolean);
+            if (toClear.length === 0) { this.value = ''; return; }
+            toClear.forEach(cell => {
+                const reps = cell.querySelector('.qlog-reps');
+                const weight = cell.querySelector('.qlog-weight');
+                if (reps) reps.value = '0';
+                if (weight) weight.value = '-';
+                cell.classList.remove('qlog-td-logged');
+            });
+            autoSaveWorkoutTable();
+            this.value = '';
+        });
+    });
+
+    // Quick defaults Apply button
+    const defApplyBtn = container.querySelector('.qlog-def-apply');
+    if (defApplyBtn) {
+        defApplyBtn.addEventListener('click', () => {
+            const checks = container.querySelectorAll('.qlog-def-chk');
+            const defs = {};
+            checks.forEach(chk => { if (chk.checked) defs[chk.dataset.def] = true; });
+            const defWeight = container.querySelector('.qlog-def-weight')?.value || '5';
+            const defReps = container.querySelector('.qlog-def-reps')?.value || '8';
+
+            container.querySelectorAll('.qlog-row').forEach(row => {
+                const equip = (row.dataset.equip || '').toLowerCase();
+                const isBand = equip.includes('band');
+                const isBW = (equip.includes('bodyweight') || equip.includes('mat')) && !equip.includes('kg');
+                const cells = row.querySelectorAll('.qlog-td-set:not(.qlog-empty)');
+                cells.forEach(cell => {
+                    const repsEl = cell.querySelector('.qlog-reps');
+                    const weightEl = cell.querySelector('.qlog-weight');
+
+                    // Apply reps if checked
+                    if (defs.reps && repsEl) {
+                        repsEl.value = defReps;
+                        if (repsEl.value !== defReps) {
+                            // Find closest option
+                            const opts = [...repsEl.options].filter(o => o.value !== '0');
+                            const closest = opts.reduce((a, b) => Math.abs(+b.value - +defReps) < Math.abs(+a.value - +defReps) ? b : a);
+                            repsEl.value = closest.value;
+                        }
+                    }
+
+                    // Apply weight based on equipment
+                    if (weightEl) {
+                        if (isBand && defs.band) {
+                            weightEl.value = 'Yellow';
+                        } else if (isBW && defs.bw) {
+                            weightEl.value = 'BW';
+                        } else if (!isBand && !isBW && defs.weight) {
+                            weightEl.value = defWeight;
+                            if (weightEl.value !== defWeight) {
+                                // Find closest available weight
+                                const opts = [...weightEl.options].filter(o => o.value !== '-' && !isNaN(+o.value));
+                                if (opts.length) {
+                                    const closest = opts.reduce((a, b) => Math.abs(+b.value - +defWeight) < Math.abs(+a.value - +defWeight) ? b : a);
+                                    weightEl.value = closest.value;
+                                }
+                            }
+                        }
+                    }
+
+                    // Mark as logged if reps > 0
+                    if (repsEl && +repsEl.value > 0) {
+                        cell.classList.add('qlog-td-logged');
+                    }
+                });
+            });
+            autoSaveWorkoutTable();
         });
     }
 
@@ -1505,17 +1855,61 @@ function getWorkoutLoggerData() {
     const exercises = [...rows].map(row => {
         const name = row.dataset.exname;
         const sets = [...row.querySelectorAll('.qlog-td-set')].map(td => {
+            if (!td.classList.contains('qlog-td-logged')) return null;
             const repsEl = td.querySelector('.qlog-reps');
             const weightEl = td.querySelector('.qlog-weight');
             if (!repsEl) return null;
+            const reps = parseInt(repsEl.value) || 0;
+            if (reps === 0) return null; // 0 reps = not done
             return {
-                reps: parseInt(repsEl.value) || 0,
+                reps,
                 weight: weightEl ? weightEl.value : 'BW'
             };
         }).filter(Boolean);
         return { name, sets };
-    }).filter(ex => ex.sets.some(s => s.reps > 0));
+    }).filter(ex => ex.sets.length > 0);
     return { routineDay, exercises };
+}
+
+async function autoSaveWorkoutTable() {
+    const data = getWorkoutLoggerData();
+    const dateKey = getDateKey(new Date());
+    let log = dailyLogs.find(l => l.dateKey === dateKey);
+
+    if (!data.exercises.length) {
+        // Nothing logged — clear exercises from stored log
+        if (log && log.exercises) {
+            delete log.exercises;
+            log.updatedAt = new Date().toISOString();
+            await saveDailyLog(log);
+        }
+        // Update UI
+        const picker = $('wlogDatePicker');
+        if (picker) {
+            renderWlogDaySummary(picker.value);
+            highlightWorkedPills(picker.value);
+        }
+        return;
+    }
+
+    if (!log) {
+        log = { userId: currentUserId, dateKey: dateKey };
+    }
+    log.exercises = data;
+    log.updatedAt = new Date().toISOString();
+
+    const id = await saveDailyLog(log);
+    if (!log.id) log.id = id;
+    const idx = dailyLogs.findIndex(l => l.dateKey === dateKey);
+    if (idx >= 0) dailyLogs[idx] = log;
+    else dailyLogs.push(log);
+
+    // Update summary and progress pill
+    const picker = $('wlogDatePicker');
+    if (picker) {
+        renderWlogDaySummary(picker.value);
+        highlightWorkedPills(picker.value);
+    }
 }
 
 function loadQuickLogHistory() {
@@ -1535,7 +1929,13 @@ function loadQuickLogHistory() {
         const d = log.dateKey; // YYYY-MM-DD
         const dayLabel = log.exercises.routineDay ? log.exercises.routineDay.toUpperCase() : '';
         const exList = log.exercises.exercises.map(ex => {
-            const setsStr = ex.sets.map(s => `${s.reps}×${s.weight}`).join(', ');
+            const setsStr = ex.sets.map(s => {
+                let w;
+                if (s.weight === 'BW' || s.weight === 0 || s.weight === '0') w = 'BW';
+                else if (typeof s.weight === 'string' && isNaN(s.weight)) w = s.weight;
+                else w = s.weight + 'kg';
+                return `${s.reps}r×${w}`;
+            }).join(', ');
             return `<div class="qlog-history-ex"><strong>${ex.name}</strong>: ${setsStr}</div>`;
         }).join('');
         return `<div class="qlog-history-entry"><div class="qlog-history-date">${d} ${dayLabel ? '— ' + dayLabel : ''}</div>${exList}</div>`;
@@ -1587,7 +1987,10 @@ function renderWlogDaySummary(dateKey) {
     let html = `<div class="wlog-summary"><div class="wlog-summary-header">${dayLabel}</div>`;
     log.exercises.exercises.forEach(ex => {
         const setsHtml = ex.sets.map((s, i) => {
-            const w = s.weight === 'BW' || s.weight === 0 || s.weight === '0' ? 'BW' : s.weight + 'kg';
+            let w;
+            if (s.weight === 'BW' || s.weight === 0 || s.weight === '0') w = 'BW';
+            else if (typeof s.weight === 'string' && isNaN(s.weight)) w = s.weight;
+            else w = s.weight + 'kg';
             return `<span class="wlog-set-chip">S${i + 1}: ${s.reps}r × ${w}</span>`;
         }).join('');
         html += `<div class="wlog-ex-row"><div class="wlog-ex-name">${ex.name}</div><div class="wlog-ex-sets">${setsHtml}</div></div>`;
@@ -1688,7 +2091,7 @@ function renderVolumeTable(day) {
             }
             if (vol > 0) {
                 const label = d.maxWt > 0 ? `${d.repsAtMax}×${d.maxWt}kg` : `${vol}`;
-                html += `<td class="${cls}"><div>${vol}</div><div class="vol-detail">${label}</div></td>`;
+                html += `<td class="${cls} vol-clickable" data-ex="${exName}" data-wk="${wk}"><div>${vol}</div><div class="vol-detail">${label}</div></td>`;
                 totalByWeek[wk] += vol;
                 prevVol = vol;
             } else {
@@ -1706,7 +2109,40 @@ function renderVolumeTable(day) {
     html += '</tr>';
 
     html += '</tbody></table></div>';
+    html += '<div id="volDayDetail" class="vol-day-detail"></div>';
     container.innerHTML = html;
+
+    // Click handler for volume cells → show daily breakdown
+    container.querySelectorAll('.vol-clickable').forEach(cell => {
+        cell.addEventListener('click', () => {
+            const exName = cell.dataset.ex;
+            const wk = cell.dataset.wk;
+            const wkEnd = new Date(wk + 'T00:00:00');
+            wkEnd.setDate(wkEnd.getDate() + 6);
+            const wkEndStr = wkEnd.toISOString().slice(0, 10);
+
+            const dayLogs = relevantLogs.filter(l => l.dateKey >= wk && l.dateKey <= wkEndStr);
+            let detailHtml = `<div class="vol-detail-header">${exName} — Week of ${fmtDate(wk)}</div>`;
+            let found = false;
+            dayLogs.forEach(l => {
+                const ex = l.exercises.exercises.find(e => e.name === exName);
+                if (ex) {
+                    found = true;
+                    const dayName = new Date(l.dateKey + 'T00:00:00').toLocaleDateString('en', { weekday: 'short' });
+                    const setsStr = ex.sets.map((s, i) => {
+                        let w;
+                        if (s.weight === 'BW' || s.weight === 0 || s.weight === '0') w = 'BW';
+                        else if (typeof s.weight === 'string' && isNaN(s.weight)) w = s.weight;
+                        else w = s.weight + 'kg';
+                        return `S${i + 1}: ${s.reps}r × ${w}`;
+                    }).join(', ');
+                    detailHtml += `<div class="vol-detail-row"><span class="vol-detail-date">${dayName} ${fmtDate(l.dateKey)}</span><span class="vol-detail-sets">${setsStr}</span></div>`;
+                }
+            });
+            if (!found) detailHtml += '<div class="vol-detail-row">No data</div>';
+            document.getElementById('volDayDetail').innerHTML = detailHtml;
+        });
+    });
 }
 
 // --- Full Volume Log Tab ---
@@ -1818,6 +2254,92 @@ function initFullVolumeTab() {
                 showDayDetail(cell.dataset.date, logMap[cell.dataset.date]);
             });
         });
+
+        // Week Dots + Chain Links
+        renderWeekDots(logMap);
+        renderChainLinks(logMap);
+    }
+
+    function renderWeekDots(logMap) {
+        const container = $('weekDotsRow');
+        if (!container) return;
+        const now = new Date();
+        const dayOfWeek = now.getDay() === 0 ? 6 : now.getDay() - 1; // Mon=0
+        const monday = new Date(now);
+        monday.setDate(now.getDate() - dayOfWeek);
+        const days = ['M','T','W','T','F','S','S'];
+
+        let count = 0;
+        let html = '';
+        for (let i = 0; i < 7; i++) {
+            const d = new Date(monday);
+            d.setDate(monday.getDate() + i);
+            const dk = d.toISOString().slice(0, 10);
+            const hasData = !!logMap[dk];
+            if (hasData) count++;
+            const isToday = i === dayOfWeek;
+            let cls = 'wdot';
+            if (hasData) cls += ' wdot-done';
+            else if (isToday) cls += ' wdot-today';
+            else if (i > dayOfWeek) cls += ' wdot-future';
+            else cls += ' wdot-missed';
+            html += `<div class="${cls}"><span class="wdot-letter">${days[i]}</span><span class="wdot-icon">${hasData ? '✓' : isToday ? '💪' : ''}</span></div>`;
+        }
+        const remaining = Math.max(0, 3 - count);
+        const msg = count >= 3
+            ? `<span class="wdot-msg-done">🔥 ${count} workouts! Week goal smashed!</span>`
+            : `<span class="wdot-msg-progress">🎯 ${remaining} more to close the week</span>`;
+        container.innerHTML = `<div class="wdot-row">${html}</div><div class="wdot-msg">${msg}</div>`;
+    }
+
+    function renderChainLinks(logMap) {
+        const container = $('chainLinksRow');
+        if (!container) return;
+
+        // Calculate last 8 weeks of workout counts
+        const now = new Date();
+        const dayOfWeek = now.getDay() === 0 ? 6 : now.getDay() - 1;
+        const thisMonday = new Date(now);
+        thisMonday.setDate(now.getDate() - dayOfWeek);
+
+        const weeks = [];
+        for (let w = 7; w >= 0; w--) {
+            const weekStart = new Date(thisMonday);
+            weekStart.setDate(thisMonday.getDate() - (w * 7));
+            let count = 0;
+            for (let d = 0; d < 7; d++) {
+                const day = new Date(weekStart);
+                day.setDate(weekStart.getDate() + d);
+                const dk = day.toISOString().slice(0, 10);
+                if (logMap[dk]) count++;
+            }
+            weeks.push({ count, isCurrent: w === 0 });
+        }
+
+        // Count consecutive completed weeks (3+)
+        let chainLength = 0;
+        for (let i = weeks.length - 2; i >= 0; i--) { // exclude current week
+            if (weeks[i].count >= 3) chainLength++;
+            else break;
+        }
+
+        let html = '';
+        weeks.forEach((wk, i) => {
+            const isComplete = wk.count >= 3;
+            const cls = wk.isCurrent ? 'chain-link chain-current' : isComplete ? 'chain-link chain-done' : 'chain-link chain-broken';
+            html += `<div class="${cls}"><span class="chain-count">${wk.count}</span></div>`;
+            if (i < weeks.length - 1) {
+                const nextComplete = weeks[i + 1].isCurrent ? false : weeks[i + 1].count >= 3;
+                html += `<div class="chain-conn${isComplete && nextComplete ? ' chain-conn-linked' : ''}"></div>`;
+            }
+        });
+
+        const chainMsg = chainLength > 0
+            ? `🔗 ${chainLength}-week chain! Don't break it!`
+            : chainLength === 0 && weeks[weeks.length - 1].count > 0
+            ? `⛓️ Start your chain — hit 3 this week!`
+            : `⛓️ Build your chain — 3 workouts = 1 link`;
+        container.innerHTML = `<div class="chain-row">${html}</div><div class="chain-msg">${chainMsg}</div>`;
     }
 
     function showDayDetail(dateKey, log) {
@@ -1955,6 +2477,19 @@ function initMeasurements() {
         toggleBtn.classList.toggle('open');
     });
 
+    // Pre-fill inputs with last saved values (so user can just adjust & save)
+    getMeasurementsByUser(currentUserId).then(records => {
+        if (records.length) {
+            records.sort((a, b) => new Date(b.date) - new Date(a.date));
+            const last = records[0];
+            const fields = ['weight','shoulders','chest','waist','hips','bicepl','bicepr','thighl','thighr','calfl','calfr'];
+            const ids = ['mWeight','mShoulders','mChest','mWaist','mHips','mBicepL','mBicepR','mThighL','mThighR','mCalfL','mCalfR'];
+            fields.forEach((f, i) => {
+                if (last[f] !== undefined) $(ids[i]).value = last[f];
+            });
+        }
+    });
+
     $('saveMeasurementsBtn').addEventListener('click', saveMeasurements);
     loadMeasurementHistory();
 }
@@ -2009,7 +2544,7 @@ async function loadMeasurementHistory() {
 
     let html = '<div class="measure-history-scroll"><table class="measure-table"><thead><tr><th>Date</th>';
     fields.forEach(f => { html += `<th>${f.label}</th>`; });
-    html += '</tr></thead><tbody>';
+    html += '<th></th></tr></thead><tbody>';
 
     recent.forEach((row, i) => {
         const d = new Date(row.date).toLocaleDateString('en-GB', {day:'2-digit',month:'short'});
@@ -2026,10 +2561,22 @@ async function loadMeasurementHistory() {
             }
             html += `<td class="${cls}">${val}</td>`;
         });
+        html += `<td><button class="meas-del-btn" data-id="${row.id}" title="Delete">🗑</button></td>`;
         html += '</tr>';
     });
     html += '</tbody></table></div>';
     container.innerHTML = html;
+
+    // Delete row handler
+    container.querySelectorAll('.meas-del-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            if (!confirm('Delete this measurement entry? This cannot be undone.')) return;
+            const id = parseInt(this.dataset.id);
+            const tx = db.transaction('measurements', 'readwrite');
+            tx.objectStore('measurements').delete(id);
+            tx.oncomplete = () => loadMeasurementHistory();
+        });
+    });
 }
 
 // --- Body Composition ---

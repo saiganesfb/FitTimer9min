@@ -163,7 +163,9 @@ async function exportUserData(userId) {
     const user = await getUser(userId);
     const sessions = await getSessionsByUser(userId);
     const dailyLogs = await getDailyLogsByUser(userId);
-    return { user, sessions, dailyLogs, exportedAt: new Date().toISOString() };
+    const measurements = await getMeasurementsByUser(userId);
+    const compositions = await getCompositionsByUser(userId);
+    return { user, sessions, dailyLogs, measurements, compositions, exportedAt: new Date().toISOString() };
 }
 
 // --- Daily Log Operations ---
