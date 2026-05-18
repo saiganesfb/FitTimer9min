@@ -893,7 +893,7 @@ const EXERCISE_IMAGES = {
     'Overhead DB Press': 'https://wger.de/media/exercise-images/1893/7dbad19e-0616-41fd-9d7d-3e21649c0eea.png',
     'Lateral Raises': 'https://wger.de/media/exercise-images/1744/cb9263c4-39fc-4261-8d30-a5d6d57841c1.jpg',
     'Tricep Pushdown (Band)': 'https://wger.de/media/exercise-images/805/7a437824-e2cc-46e1-804a-674f0ea31d25.png',
-    'Overhead Tricep Ext (Band)': '',
+    'Overhead Tricep Ext (Band)': 'https://wger.de/media/exercise-images/1519/fab7f641-27d4-40b5-8edd-1a0a137bfd94.gif',
     'Overhead Tricep Ext (DB)': 'https://wger.de/media/exercise-images/1519/fab7f641-27d4-40b5-8edd-1a0a137bfd94.gif',
     'Bent-Over DB Row': 'https://wger.de/media/exercise-images/110/Reverse-grip-bent-over-rows-1.png',
     'Single-Arm DB Row': 'https://wger.de/media/exercise-images/1637/a1fbe83a-a3e5-49f6-a2c2-5d5b533c2be8.png',
