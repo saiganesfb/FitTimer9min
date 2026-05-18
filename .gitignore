@@ -11,3 +11,13 @@ Desktop.ini
 # Temp
 _tmp_*
 *.bak
+
+# Generated outputs
+FitTimer.html
+FitTimer_App.zip*
+
+# Personal/private files
+input/
+
+# Dev-only preview
+sound_preview/
