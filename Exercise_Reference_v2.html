@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exercise Reference v2 — Image Upgrade Candidates</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: 'Inter', 'Segoe UI', sans-serif; background:#0f1117; color:#e8e8e8; padding:20px; }
+h1 { text-align:center; margin-bottom:8px; color:#00e676; }
+.subtitle { text-align:center; color:#888; margin-bottom:30px; font-size:14px; }
+.day-section { margin-bottom:40px; }
+.day-title { font-size:22px; font-weight:700; color:#ffd54f; margin-bottom:16px; padding:10px 16px; background:#1a1d27; border-radius:8px; border-left:4px solid #ffd54f; }
+.exercise-card { background:#1e2130; border-radius:12px; margin-bottom:20px; padding:16px; border:1px solid #2a2d3a; }
+.exercise-name { font-size:18px; font-weight:600; color:#fff; margin-bottom:12px; }
+.exercise-name .badge { font-size:11px; padding:2px 8px; border-radius:10px; margin-left:8px; }
+.badge-upgrade { background:#00e676; color:#000; }
+.badge-new { background:#448aff; color:#fff; }
+.badge-keep { background:#666; color:#ccc; }
+.badge-noalt { background:#ff5252; color:#fff; }
+.images-row { display:flex; flex-wrap:wrap; gap:16px; margin-top:10px; }
+.img-option { background:#141620; border-radius:10px; padding:12px; border:2px solid #2a2d3a; text-align:center; max-width:220px; transition: border-color 0.2s; }
+.img-option:hover { border-color:#00e676; }
+.img-option.current { border-color:#ff9800; }
+.img-option.recommended { border-color:#00e676; box-shadow:0 0 12px rgba(0,230,118,0.3); }
+.img-option img { width:160px; height:160px; object-fit:contain; border-radius:8px; background:#0a0c12; }
+.img-option .label { font-size:11px; color:#aaa; margin-top:6px; }
+.img-option .type-tag { font-size:10px; padding:2px 6px; border-radius:4px; margin-top:4px; display:inline-block; }
+.type-photo { background:#1b5e20; color:#a5d6a7; }
+.type-gif { background:#4a148c; color:#ce93d8; }
+.type-png { background:#37474f; color:#90a4ae; }
+.type-png-inv { background:#b71c1c; color:#ef9a9a; }
+.current-label { font-size:10px; color:#ff9800; font-weight:600; margin-top:4px; }
+.recommended-label { font-size:10px; color:#00e676; font-weight:600; margin-top:4px; }
+.legend { background:#1a1d27; padding:16px; border-radius:10px; margin-bottom:30px; }
+.legend h3 { margin-bottom:8px; color:#fff; }
+.legend-items { display:flex; flex-wrap:wrap; gap:12px; font-size:13px; }
+.legend-item { display:flex; align-items:center; gap:6px; }
+.inv-filter { filter: invert(0.85) hue-rotate(180deg); }
+.note { font-size:12px; color:#888; margin-top:6px; font-style:italic; }
+</style>
+</head>
+<body>
+
+<h1>Exercise Reference v2 — Image Upgrade Candidates</h1>
+<p class="subtitle">Compare current (orange border) vs recommended upgrades (green border). Photos/GIFs preferred over dark line-art PNGs.</p>
+
+<div class="legend">
+<h3>Legend</h3>
+<div class="legend-items">
+<div class="legend-item"><span class="type-tag type-photo">PHOTO</span> Real photograph (jpg/webp)</div>
+<div class="legend-item"><span class="type-tag type-gif">GIF</span> Animated demo</div>
+<div class="legend-item"><span class="type-tag type-png">PNG</span> Illustration (may be dark)</div>
+<div class="legend-item"><span class="type-tag type-png-inv">PNG+INV</span> Dark illustration with invert filter applied</div>
+<div class="legend-item"><span class="badge badge-upgrade">UPGRADE</span> Better option available</div>
+<div class="legend-item"><span class="badge badge-new">NEW</span> Previously missing</div>
+<div class="legend-item"><span class="badge badge-keep">KEEP</span> Current is good</div>
+<div class="legend-item"><span class="badge badge-noalt">NO ALT</span> No better option found</div>
+</div>
+</div>
+
+<!-- ========== PUSH DAY ========== -->
+<div class="day-section">
+<div class="day-title">💪 PUSH DAY — Chest, Shoulders, Triceps</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Push-ups (Warm-up) <span class="badge badge-upgrade">UPGRADE</span></div>
+<div class="images-row">
+<div class="img-option current">
+<img src="https://wger.de/media/exercise-images/1551/a6a9e561-3965-45c6-9f2b-ee671e1a3a45.png">
+<div class="label">Push-Up (line art)</div>
+<span class="type-tag type-png">PNG</span>
+<div class="current-label">▲ CURRENT</div>
+</div>
+<div class="img-option recommended">
+<img src="https://wger.de/media/exercise-images/1080/c4bf7ba1-6058-4d14-928f-7187885d5d57.webp">
+<div class="label">Hindu Pushups (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+<div class="recommended-label">★ RECOMMENDED</div>
+</div>
+<div class="img-option">
+<img src="https://wger.de/media/exercise-images/1551/a6a9e561-3965-45c6-9f2b-ee671e1a3a45.png" class="inv-filter">
+<div class="label">Push-Up (inverted)</div>
+<span class="type-tag type-png-inv">PNG+INV</span>
+</div>
+</div>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">DB Chest Press (Flat) <span class="badge badge-upgrade">UPGRADE</span></div>
+<div class="images-row">
+<div class="img-option current">
+<img src="https://wger.de/media/exercise-images/97/Dumbbell-bench-press-1.png">
+<div class="label">Dumbbell Bench Press (line art)</div>
+<span class="type-tag type-png">PNG</span>
+<div class="current-label">▲ CURRENT</div>
+</div>
+<div class="img-option recommended">
+<img src="https://wger.de/media/exercise-images/97/Dumbbell-bench-press-1.png" class="inv-filter">
+<div class="label">Same image (inverted)</div>
+<span class="type-tag type-png-inv">PNG+INV</span>
+<div class="recommended-label">★ INVERTED</div>
+</div>
+</div>
+<p class="note">No photo alternative available on wger.de for flat dumbbell press</p>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Incline DB Press <span class="badge badge-upgrade">UPGRADE</span></div>
+<div class="images-row">
+<div class="img-option current">
+<img src="https://wger.de/media/exercise-images/97/Dumbbell-bench-press-1.png">
+<div class="label">Flat DB Press (wrong exercise)</div>
+<span class="type-tag type-png">PNG</span>
+<div class="current-label">▲ CURRENT</div>
+</div>
+<div class="img-option recommended">
+<img src="https://wger.de/media/exercise-images/1277/9f3c7817-3e3d-417d-8b08-2c0a1aa5fe03.jpg">
+<div class="label">Incline Dumbbell Press (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+<div class="recommended-label">★ RECOMMENDED</div>
+</div>
+<div class="img-option">
+<img src="https://wger.de/media/exercise-images/16/Incline-press-1.png" class="inv-filter">
+<div class="label">Incline Press DB (inverted)</div>
+<span class="type-tag type-png-inv">PNG+INV</span>
+</div>
+</div>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Dumbbell Fly <span class="badge badge-upgrade">UPGRADE</span></div>
+<div class="images-row">
+<div class="img-option current">
+<img src="https://wger.de/media/exercise-images/238/2fc242d3-5bdd-4f97-99bd-678adb8c96fc.png">
+<div class="label">DB Fly (illustration)</div>
+<span class="type-tag type-png">PNG</span>
+<div class="current-label">▲ CURRENT</div>
+</div>
+<div class="img-option recommended">
+<img src="https://wger.de/media/exercise-images/1922/eb750ee5-3220-4128-aef1-5e2f1ccff40a.webp">
+<div class="label">Butterfly Cable (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+<div class="recommended-label">★ PHOTO OPTION</div>
+</div>
+<div class="img-option">
+<img src="https://wger.de/media/exercise-images/238/2fc242d3-5bdd-4f97-99bd-678adb8c96fc.png" class="inv-filter">
+<div class="label">DB Fly (inverted)</div>
+<span class="type-tag type-png-inv">PNG+INV</span>
+</div>
+</div>
+<p class="note">Cable butterfly photo is different movement than dumbbell fly. Inverted PNG may be better.</p>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Overhead DB Press <span class="badge badge-noalt">NO ALT</span></div>
+<div class="images-row">
+<div class="img-option current">
+<img src="https://wger.de/media/exercise-images/1893/7dbad19e-0616-41fd-9d7d-3e21649c0eea.png">
+<div class="label">Overhead Press (illustration)</div>
+<span class="type-tag type-png">PNG</span>
+<div class="current-label">▲ CURRENT</div>
+</div>
+<div class="img-option recommended">
+<img src="https://wger.de/media/exercise-images/1893/7dbad19e-0616-41fd-9d7d-3e21649c0eea.png" class="inv-filter">
+<div class="label">Overhead Press (inverted)</div>
+<span class="type-tag type-png-inv">PNG+INV</span>
+<div class="recommended-label">★ INVERTED</div>
+</div>
+</div>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Lateral Raises <span class="badge badge-keep">KEEP</span></div>
+<div class="images-row">
+<div class="img-option current recommended">
+<img src="https://wger.de/media/exercise-images/1744/cb9263c4-39fc-4261-8d30-a5d6d57841c1.jpg">
+<div class="label">Lateral Raise Machine (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+<div class="current-label">▲ CURRENT ✓</div>
+</div>
+<div class="img-option">
+<img src="https://wger.de/media/exercise-images/1378/7c1fcf34-fb7e-45e7-a0c1-51f296235315.jpg">
+<div class="label">Cable Lateral Raise (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+</div>
+</div>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Tricep Pushdown (Band) <span class="badge badge-upgrade">UPGRADE</span></div>
+<div class="images-row">
+<div class="img-option current">
+<img src="https://wger.de/media/exercise-images/805/7a437824-e2cc-46e1-804a-674f0ea31d25.png">
+<div class="label">Tricep Pushdown (line art)</div>
+<span class="type-tag type-png">PNG</span>
+<div class="current-label">▲ CURRENT</div>
+</div>
+<div class="img-option recommended">
+<img src="https://wger.de/media/exercise-images/1185/c5ca283d-8958-4fd8-9d59-a3f52a3ac66b.jpg">
+<div class="label">Triceps Pushdown (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+<div class="recommended-label">★ RECOMMENDED</div>
+</div>
+</div>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Overhead Tricep Ext (Band/DB) <span class="badge badge-keep">KEEP</span></div>
+<div class="images-row">
+<div class="img-option current recommended">
+<img src="https://wger.de/media/exercise-images/1519/fab7f641-27d4-40b5-8edd-1a0a137bfd94.gif">
+<div class="label">Overhead Extension (animated)</div>
+<span class="type-tag type-gif">GIF</span>
+<div class="current-label">▲ CURRENT ✓</div>
+</div>
+</div>
+</div>
+
+</div>
+
+<!-- ========== PULL DAY ========== -->
+<div class="day-section">
+<div class="day-title">🔙 PULL DAY — Back, Traps, Biceps</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Bent-Over DB Row <span class="badge badge-noalt">NO ALT</span></div>
+<div class="images-row">
+<div class="img-option current">
+<img src="https://wger.de/media/exercise-images/110/Reverse-grip-bent-over-rows-1.png">
+<div class="label">Bent Over Row (line art)</div>
+<span class="type-tag type-png">PNG</span>
+<div class="current-label">▲ CURRENT</div>
+</div>
+<div class="img-option recommended">
+<img src="https://wger.de/media/exercise-images/110/Reverse-grip-bent-over-rows-1.png" class="inv-filter">
+<div class="label">Bent Over Row (inverted)</div>
+<span class="type-tag type-png-inv">PNG+INV</span>
+<div class="recommended-label">★ INVERTED</div>
+</div>
+</div>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Single-Arm DB Row <span class="badge badge-upgrade">UPGRADE</span></div>
+<div class="images-row">
+<div class="img-option current">
+<img src="https://wger.de/media/exercise-images/1637/a1fbe83a-a3e5-49f6-a2c2-5d5b533c2be8.png">
+<div class="label">Single Arm Row (illustration)</div>
+<span class="type-tag type-png">PNG</span>
+<div class="current-label">▲ CURRENT</div>
+</div>
+<div class="img-option recommended">
+<img src="https://wger.de/media/exercise-images/1283/e7262f70-7512-408a-8d00-4c499ef632fc.jpg">
+<div class="label">Chest-Supported DB Row (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+<div class="recommended-label">★ RECOMMENDED</div>
+</div>
+<div class="img-option">
+<img src="https://wger.de/media/exercise-images/1637/a1fbe83a-a3e5-49f6-a2c2-5d5b533c2be8.png" class="inv-filter">
+<div class="label">Single Arm Row (inverted)</div>
+<span class="type-tag type-png-inv">PNG+INV</span>
+</div>
+</div>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Band Lat Pulldown <span class="badge badge-new">NEW</span></div>
+<div class="images-row">
+<div class="img-option">
+<img src="" style="display:flex;align-items:center;justify-content:center;font-size:40px;background:#1a1d27;">
+<div class="label">No image currently</div>
+<div class="current-label">▲ CURRENT (none)</div>
+</div>
+<div class="img-option recommended">
+<img src="https://wger.de/media/exercise-images/158/02e8a7c3-dc67-434e-a4bc-77fdecf84b49.webp">
+<div class="label">Close-Grip Lat Pulldown (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+<div class="recommended-label">★ RECOMMENDED</div>
+</div>
+<div class="img-option">
+<img src="https://wger.de/media/exercise-images/1635/b8c34e3a-7474-41ea-99e3-8d7fdb1e12d6.png">
+<div class="label">Modified Pulldown (illustration)</div>
+<span class="type-tag type-png">PNG</span>
+</div>
+</div>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Face Pulls (Band) <span class="badge badge-keep">KEEP</span></div>
+<div class="images-row">
+<div class="img-option current recommended">
+<img src="https://wger.de/media/exercise-images/1732/d13b9adb-968e-4f73-95e6-b16690bcf616.jpg">
+<div class="label">Face Pulls with Band (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+<div class="current-label">▲ CURRENT ✓</div>
+</div>
+<div class="img-option">
+<img src="https://wger.de/media/exercise-images/1639/8927346e-f5ca-4795-bdf1-5ac9309401e7.webp">
+<div class="label">DB Bent Over Face Pull (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+</div>
+</div>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Band Seated Rows <span class="badge badge-noalt">NO ALT</span></div>
+<div class="images-row">
+<div class="img-option current">
+<img src="https://wger.de/media/exercise-images/1725/f0ebd44e-b8e1-400c-b598-ca371f3a07af.png">
+<div class="label">Band Seated Row (illustration)</div>
+<span class="type-tag type-png">PNG</span>
+<div class="current-label">▲ CURRENT</div>
+</div>
+<div class="img-option recommended">
+<img src="https://wger.de/media/exercise-images/1725/f0ebd44e-b8e1-400c-b598-ca371f3a07af.png" class="inv-filter">
+<div class="label">Band Seated Row (inverted)</div>
+<span class="type-tag type-png-inv">PNG+INV</span>
+<div class="recommended-label">★ INVERTED</div>
+</div>
+<div class="img-option">
+<img src="https://wger.de/media/exercise-images/512/b938437e-ff00-4679-9036-acb41bb28bbd.png" class="inv-filter">
+<div class="label">Rowing Seated Narrow (inverted)</div>
+<span class="type-tag type-png-inv">PNG+INV</span>
+</div>
+</div>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Dumbbell Shrugs <span class="badge badge-upgrade">UPGRADE</span></div>
+<div class="images-row">
+<div class="img-option current">
+<img src="https://wger.de/media/exercise-images/151/Dumbbell-shrugs-2.png">
+<div class="label">DB Shrugs (line art)</div>
+<span class="type-tag type-png">PNG</span>
+<div class="current-label">▲ CURRENT</div>
+</div>
+<div class="img-option recommended">
+<img src="https://wger.de/media/exercise-images/1645/9e730259-1dcd-4b5e-b4cc-9ebc0cfda75c.webp">
+<div class="label">Dumbbell Shrug (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+<div class="recommended-label">★ RECOMMENDED</div>
+</div>
+<div class="img-option">
+<img src="https://wger.de/media/exercise-images/570/68b4a33f-40f1-4dda-b56c-a2e20ed13903.jpg">
+<div class="label">Shoulder Shrug (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+</div>
+</div>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Z-Bar Bicep Curls <span class="badge badge-noalt">NO ALT</span></div>
+<div class="images-row">
+<div class="img-option current">
+<img src="https://wger.de/media/exercise-images/1225/39a0b7e7-9780-425d-84f5-56d10d1690ac.gif">
+<div class="label">Wide Bicep Curls (animated)</div>
+<span class="type-tag type-gif">GIF</span>
+<div class="current-label">▲ CURRENT ✓</div>
+</div>
+<div class="img-option">
+<img src="https://wger.de/media/exercise-images/94/6dee2f60-aea2-4f2d-9bf6-aef50c4f9483.png" class="inv-filter">
+<div class="label">SZ-Bar Curls (inverted)</div>
+<span class="type-tag type-png-inv">PNG+INV</span>
+</div>
+</div>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Hammer Curls <span class="badge badge-noalt">NO ALT</span></div>
+<div class="images-row">
+<div class="img-option current">
+<img src="https://wger.de/media/exercise-images/1567/0a8c155c-a48e-47e8-9df3-e39f025c6cad.png">
+<div class="label">Alternating Hammer Curl (illustration)</div>
+<span class="type-tag type-png">PNG</span>
+<div class="current-label">▲ CURRENT</div>
+</div>
+<div class="img-option recommended">
+<img src="https://wger.de/media/exercise-images/86/Bicep-hammer-curl-1.png" class="inv-filter">
+<div class="label">Hammer Curl Classic (inverted)</div>
+<span class="type-tag type-png-inv">PNG+INV</span>
+<div class="recommended-label">★ INVERTED ALT</div>
+</div>
+<div class="img-option">
+<img src="https://wger.de/media/exercise-images/1567/0a8c155c-a48e-47e8-9df3-e39f025c6cad.png" class="inv-filter">
+<div class="label">Alternating (inverted)</div>
+<span class="type-tag type-png-inv">PNG+INV</span>
+</div>
+</div>
+</div>
+
+</div>
+
+<!-- ========== LEGS DAY ========== -->
+<div class="day-section">
+<div class="day-title">🦵 LEGS DAY — Quads, Glutes, Calves + Mobility</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Barbell Deadlift <span class="badge badge-upgrade">UPGRADE</span></div>
+<div class="images-row">
+<div class="img-option current">
+<img src="https://wger.de/media/exercise-images/161/Dead-lifts-2.png">
+<div class="label">Deadlift (line art)</div>
+<span class="type-tag type-png">PNG</span>
+<div class="current-label">▲ CURRENT</div>
+</div>
+<div class="img-option recommended">
+<img src="https://wger.de/media/exercise-images/184/1709c405-620a-4d07-9658-fade2b66a2df.jpeg">
+<div class="label">Deadlift (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+<div class="recommended-label">★ RECOMMENDED</div>
+</div>
+<div class="img-option">
+<img src="https://wger.de/media/exercise-images/630/b0f0c7d8-5878-4d9e-b820-21acc013741d.webp">
+<div class="label">Sumo Deadlift (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+</div>
+</div>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Goblet Squats <span class="badge badge-upgrade">UPGRADE</span></div>
+<div class="images-row">
+<div class="img-option current">
+<img src="https://wger.de/media/exercise-images/977/3124c091-6395-4377-96c5-56048b627ceb.png">
+<div class="label">Goblet Squat (illustration)</div>
+<span class="type-tag type-png">PNG</span>
+<div class="current-label">▲ CURRENT</div>
+</div>
+<div class="img-option recommended">
+<img src="https://wger.de/media/exercise-images/203/1c052351-2af0-4227-aeb0-244008e4b0a8.jpeg">
+<div class="label">Goblet Squat (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+<div class="recommended-label">★ RECOMMENDED</div>
+</div>
+<div class="img-option">
+<img src="https://wger.de/media/exercise-images/203/300a44ac-4368-48e2-8b18-beea32ab915d.gif">
+<div class="label">Goblet Squat (animated)</div>
+<span class="type-tag type-gif">GIF</span>
+</div>
+<div class="img-option">
+<img src="https://wger.de/media/exercise-images/203/2ab30113-4e08-4d39-9d23-d901ce2c0971.jpeg">
+<div class="label">Goblet Squat alt (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+</div>
+</div>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Lunges <span class="badge badge-upgrade">UPGRADE</span></div>
+<div class="images-row">
+<div class="img-option current">
+<img src="https://wger.de/media/exercise-images/1903/6ec66efd-e74f-4142-bed1-0a0ac74e3294.png">
+<div class="label">Lunges (illustration)</div>
+<span class="type-tag type-png">PNG</span>
+<div class="current-label">▲ CURRENT</div>
+</div>
+<div class="img-option recommended">
+<img src="https://wger.de/media/exercise-images/1651/04ab2679-a04d-4d05-9c85-0d36e898328c.webp">
+<div class="label">Dumbbell Rear Lunge (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+<div class="recommended-label">★ RECOMMENDED</div>
+</div>
+<div class="img-option">
+<img src="https://wger.de/media/exercise-images/1830/3b6c547c-ab3d-4472-93cf-561710279eab.jpg">
+<div class="label">Barbell Step Back Lunge (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+</div>
+</div>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Hip Thrust (Bench) <span class="badge badge-keep">KEEP</span></div>
+<div class="images-row">
+<div class="img-option current recommended">
+<img src="https://wger.de/media/exercise-images/1642/a81ad922-caf5-47f8-99b4-640cb0717436.webp">
+<div class="label">Dumbbell Hip Thrust (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+<div class="current-label">▲ CURRENT ✓</div>
+</div>
+</div>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Romanian Deadlift (DB) <span class="badge badge-upgrade">UPGRADE</span></div>
+<div class="images-row">
+<div class="img-option current">
+<img src="https://wger.de/media/exercise-images/161/Dead-lifts-2.png">
+<div class="label">Barbell Deadlift (wrong exercise!)</div>
+<span class="type-tag type-png">PNG</span>
+<div class="current-label">▲ CURRENT (wrong)</div>
+</div>
+<div class="img-option recommended">
+<img src="https://wger.de/media/exercise-images/1652/0306c8c0-70cc-45d4-92de-6fa72ceaa834.webp">
+<div class="label">Dumbbell Romanian Deadlift (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+<div class="recommended-label">★ RECOMMENDED</div>
+</div>
+</div>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Bulgarian Split Squat <span class="badge badge-keep">KEEP</span></div>
+<div class="images-row">
+<div class="img-option current recommended">
+<img src="https://wger.de/media/exercise-images/1593/9815fcd6-cf40-4ddd-9b38-2eac25973de1.gif">
+<div class="label">Split Squat (animated)</div>
+<span class="type-tag type-gif">GIF</span>
+<div class="current-label">▲ CURRENT ✓</div>
+</div>
+</div>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Calf Raises (Step) <span class="badge badge-upgrade">UPGRADE</span></div>
+<div class="images-row">
+<div class="img-option current">
+<img src="https://wger.de/media/exercise-images/1243/53d4fabe-c994-4907-873f-8d82813a9832.png">
+<div class="label">Calf Raise (illustration)</div>
+<span class="type-tag type-png">PNG</span>
+<div class="current-label">▲ CURRENT</div>
+</div>
+<div class="img-option recommended">
+<img src="https://wger.de/media/exercise-images/622/9a429bd0-afd3-4ad0-8043-e9beec901c81.jpeg">
+<div class="label">Standing Calf Raises (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+<div class="recommended-label">★ RECOMMENDED</div>
+</div>
+<div class="img-option">
+<img src="https://wger.de/media/exercise-images/1620/edd40e39-e337-4460-a8dd-6127d40ddd16.jpeg">
+<div class="label">Seated DB Calf Raise (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+</div>
+</div>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Hip Flexor Stretch <span class="badge badge-keep">KEEP</span></div>
+<div class="images-row">
+<div class="img-option current recommended">
+<img src="https://wger.de/media/exercise-images/1867/767631e5-10d2-46b8-b03f-cc298f96963b.png">
+<div class="label">Hip Flexor Stretch (photo-quality PNG)</div>
+<span class="type-tag type-photo">PHOTO</span>
+<div class="current-label">▲ CURRENT ✓</div>
+</div>
+</div>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Pelvic Tilt Practice <span class="badge badge-keep">KEEP</span></div>
+<div class="images-row">
+<div class="img-option current recommended">
+<img src="https://wger.de/media/exercise-images/1871/85a6b9de-4eec-445b-8ebb-f1950b076aba.png">
+<div class="label">Lying Knee Stretch (photo-quality)</div>
+<span class="type-tag type-photo">PHOTO</span>
+<div class="current-label">▲ CURRENT ✓</div>
+</div>
+</div>
+</div>
+
+</div>
+
+<!-- ========== ARMS + ABS DAY ========== -->
+<div class="day-section">
+<div class="day-title">💪 ARMS + ABS DAY — Biceps, Triceps, Core + Finishers</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Incline DB Curl <span class="badge badge-keep">KEEP</span></div>
+<div class="images-row">
+<div class="img-option current recommended">
+<img src="https://wger.de/media/exercise-images/1225/39a0b7e7-9780-425d-84f5-56d10d1690ac.gif">
+<div class="label">Wide Bicep Curls (animated)</div>
+<span class="type-tag type-gif">GIF</span>
+<div class="current-label">▲ CURRENT ✓</div>
+</div>
+<div class="img-option">
+<img src="https://wger.de/media/exercise-images/1277/9f3c7817-3e3d-417d-8b08-2c0a1aa5fe03.jpg">
+<div class="label">Incline DB Press (photo) — could reuse?</div>
+<span class="type-tag type-photo">PHOTO</span>
+</div>
+</div>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Preacher Curl (Bench) <span class="badge badge-noalt">NO ALT</span></div>
+<div class="images-row">
+<div class="img-option current">
+<img src="https://wger.de/media/exercise-images/193/Preacher-curl-3-2.png">
+<div class="label">Preacher Curl (dark line art)</div>
+<span class="type-tag type-png">PNG</span>
+<div class="current-label">▲ CURRENT</div>
+</div>
+<div class="img-option recommended">
+<img src="https://wger.de/media/exercise-images/193/Preacher-curl-3-1.png" class="inv-filter">
+<div class="label">Preacher Curl (inverted)</div>
+<span class="type-tag type-png-inv">PNG+INV</span>
+<div class="recommended-label">★ INVERTED</div>
+</div>
+<div class="img-option">
+<img src="https://wger.de/media/exercise-images/193/Preacher-curl-3-2.png" class="inv-filter">
+<div class="label">Preacher Curl alt (inverted)</div>
+<span class="type-tag type-png-inv">PNG+INV</span>
+</div>
+<div class="img-option">
+<img src="https://wger.de/media/exercise-images/1109/00b0a0bf-c14a-4f13-bb14-62c09030a1aa.png" class="inv-filter">
+<div class="label">Cable Concentration Curl (inverted)</div>
+<span class="type-tag type-png-inv">PNG+INV</span>
+</div>
+</div>
+<p class="note">No photo available for preacher curl. Invert filter makes line art visible on dark bg.</p>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Diamond Push-ups <span class="badge badge-noalt">NO ALT</span></div>
+<div class="images-row">
+<div class="img-option current">
+<img src="https://wger.de/media/exercise-images/1551/a6a9e561-3965-45c6-9f2b-ee671e1a3a45.png">
+<div class="label">Push-Up (same as warm-up)</div>
+<span class="type-tag type-png">PNG</span>
+<div class="current-label">▲ CURRENT</div>
+</div>
+<div class="img-option recommended">
+<img src="https://wger.de/media/exercise-images/1551/a6a9e561-3965-45c6-9f2b-ee671e1a3a45.png" class="inv-filter">
+<div class="label">Push-Up (inverted)</div>
+<span class="type-tag type-png-inv">PNG+INV</span>
+<div class="recommended-label">★ INVERTED</div>
+</div>
+</div>
+<p class="note">No diamond push-up specific image on wger.de</p>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Crunches <span class="badge badge-upgrade">UPGRADE</span></div>
+<div class="images-row">
+<div class="img-option current">
+<img src="https://wger.de/media/exercise-images/176/Cross-body-crunch-1.png">
+<div class="label">Cross-body Crunch (dark line art)</div>
+<span class="type-tag type-png">PNG</span>
+<div class="current-label">▲ CURRENT</div>
+</div>
+<div class="img-option recommended">
+<img src="https://wger.de/media/exercise-images/1648/63ae02d6-6dd9-4e9e-84da-d4905e78a33c.jpg">
+<div class="label">Weighted Crunch (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+<div class="recommended-label">★ RECOMMENDED</div>
+</div>
+<div class="img-option">
+<img src="https://wger.de/media/exercise-images/1479/0305d98e-0887-4c0c-8992-7c220814efc2.webp">
+<div class="label">Sit-Ups Elbow-to-Knee (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+</div>
+<div class="img-option">
+<img src="https://wger.de/media/exercise-images/91/Crunches-1.png" class="inv-filter">
+<div class="label">Crunches Classic (inverted)</div>
+<span class="type-tag type-png-inv">PNG+INV</span>
+</div>
+</div>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Leg Raises <span class="badge badge-noalt">NO ALT</span></div>
+<div class="images-row">
+<div class="img-option current">
+<img src="https://wger.de/media/exercise-images/125/Leg-raises-2.png">
+<div class="label">Lying Leg Raises (dark line art)</div>
+<span class="type-tag type-png">PNG</span>
+<div class="current-label">▲ CURRENT</div>
+</div>
+<div class="img-option recommended">
+<img src="https://wger.de/media/exercise-images/125/Leg-raises-2.png" class="inv-filter">
+<div class="label">Lying Leg Raises (inverted)</div>
+<span class="type-tag type-png-inv">PNG+INV</span>
+<div class="recommended-label">★ INVERTED</div>
+</div>
+<div class="img-option">
+<img src="https://wger.de/media/exercise-images/1889/bc51ef67-0c12-4340-a36c-42ef722778dd.png" class="inv-filter">
+<div class="label">Decline Bench Leg Raise (inverted)</div>
+<span class="type-tag type-png-inv">PNG+INV</span>
+</div>
+<div class="img-option">
+<img src="https://wger.de/media/exercise-images/979/27097a3a-5749-428d-b94c-6082afe390f6.png" class="inv-filter">
+<div class="label">Hanging Leg Raises (inverted)</div>
+<span class="type-tag type-png-inv">PNG+INV</span>
+</div>
+</div>
+<p class="note">No photo available for leg raises. Invert filter recommended.</p>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Plank <span class="badge badge-keep">KEEP</span></div>
+<div class="images-row">
+<div class="img-option current recommended">
+<img src="https://wger.de/media/exercise-images/1091/50c8912d-54ef-46c9-99d1-633b6196aa1e.jpg">
+<div class="label">Plank Shoulder Taps (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+<div class="current-label">▲ CURRENT ✓</div>
+</div>
+</div>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Dead Bug <span class="badge badge-noalt">NO ALT</span></div>
+<div class="images-row">
+<div class="img-option current">
+<img src="" style="display:flex;align-items:center;justify-content:center;font-size:40px;background:#1a1d27;">
+<div class="label">No image currently (emoji placeholder)</div>
+<div class="current-label">▲ CURRENT (none)</div>
+</div>
+</div>
+<p class="note">No dead bug image available on wger.de. Consider external source or custom illustration.</p>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Lying Hamstring Curls <span class="badge badge-noalt">NO ALT</span></div>
+<div class="images-row">
+<div class="img-option current">
+<img src="" style="display:flex;align-items:center;justify-content:center;font-size:40px;background:#1a1d27;">
+<div class="label">No image currently (emoji placeholder)</div>
+<div class="current-label">▲ CURRENT (none)</div>
+</div>
+<div class="img-option recommended">
+<img src="https://wger.de/media/exercise-images/154/lying-leg-curl-machine-large-1.png" class="inv-filter">
+<div class="label">Lying Leg Curl Machine (inverted)</div>
+<span class="type-tag type-png-inv">PNG+INV</span>
+<div class="recommended-label">★ BEST AVAILABLE</div>
+</div>
+<div class="img-option">
+<img src="https://wger.de/media/exercise-images/364/b318dde9-f5f2-489f-940a-cd864affb9e3.png" class="inv-filter">
+<div class="label">Leg Curl (inverted)</div>
+<span class="type-tag type-png-inv">PNG+INV</span>
+</div>
+</div>
+<p class="note">Only machine-based leg curl images available. Your exercise uses ankle weights on mat.</p>
+</div>
+
+<div class="exercise-card">
+<div class="exercise-name">Donkey Kicks <span class="badge badge-upgrade">UPGRADE</span></div>
+<div class="images-row">
+<div class="img-option current">
+<img src="" style="display:flex;align-items:center;justify-content:center;font-size:40px;background:#1a1d27;">
+<div class="label">No image currently (emoji placeholder)</div>
+<div class="current-label">▲ CURRENT (none)</div>
+</div>
+<div class="img-option recommended">
+<img src="https://wger.de/media/exercise-images/1613/a851fe9d-771f-44da-82f0-799e02ae3fd1.jpg">
+<div class="label">Band Glute Kickback (photo)</div>
+<span class="type-tag type-photo">PHOTO</span>
+<div class="recommended-label">★ RECOMMENDED</div>
+</div>
+<div class="img-option">
+<img src="https://wger.de/media/exercise-images/990/de20457c-914a-45c9-8cf9-0ad9739759a1.png" class="inv-filter">
+<div class="label">Kickbacks Kneeling (inverted)</div>
+<span class="type-tag type-png-inv">PNG+INV</span>
+</div>
+</div>
+</div>
+
+</div>
+
+<!-- ========== SUMMARY ========== -->
+<div class="day-section">
+<div class="day-title">📊 UPGRADE SUMMARY</div>
+<div class="exercise-card">
+<table style="width:100%; border-collapse:collapse; font-size:13px;">
+<tr style="border-bottom:1px solid #333; color:#888;">
+<th style="text-align:left; padding:8px;">Exercise</th>
+<th style="text-align:left; padding:8px;">Current</th>
+<th style="text-align:left; padding:8px;">Recommendation</th>
+</tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Push-ups</td><td>PNG</td><td style="color:#00e676;">Hindu Pushup PHOTO or INVERT</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">DB Chest Press</td><td>PNG</td><td style="color:#ff9800;">INVERT only (no photo)</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Incline DB Press</td><td>Wrong PNG</td><td style="color:#00e676;">Incline DB Press PHOTO ✓</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Dumbbell Fly</td><td>PNG</td><td style="color:#ff9800;">Cable photo (different) or INVERT</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Overhead DB Press</td><td>PNG</td><td style="color:#ff9800;">INVERT only</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Lateral Raises</td><td>PHOTO ✓</td><td style="color:#00e676;">Keep current</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Tricep Pushdown</td><td>PNG</td><td style="color:#00e676;">Pushdown PHOTO ✓</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Overhead Tricep Ext</td><td>GIF ✓</td><td style="color:#00e676;">Keep current</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Bent-Over DB Row</td><td>PNG</td><td style="color:#ff9800;">INVERT only</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Single-Arm DB Row</td><td>PNG</td><td style="color:#00e676;">Chest-Supported Row PHOTO</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Band Lat Pulldown</td><td>None</td><td style="color:#448aff;">NEW: Close-grip Pulldown PHOTO</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Face Pulls</td><td>PHOTO ✓</td><td style="color:#00e676;">Keep current</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Band Seated Rows</td><td>PNG</td><td style="color:#ff9800;">INVERT only</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Dumbbell Shrugs</td><td>PNG</td><td style="color:#00e676;">DB Shrug PHOTO ✓</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Z-Bar Bicep Curls</td><td>GIF ✓</td><td style="color:#00e676;">Keep current</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Hammer Curls</td><td>PNG</td><td style="color:#ff9800;">INVERT (no photo)</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Incline DB Curl</td><td>GIF ✓</td><td style="color:#00e676;">Keep current</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Preacher Curl</td><td>Dark PNG</td><td style="color:#ff9800;">INVERT (no photo)</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Diamond Push-ups</td><td>PNG</td><td style="color:#ff9800;">INVERT only</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Barbell Deadlift</td><td>PNG</td><td style="color:#00e676;">Deadlift PHOTO ✓</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Goblet Squats</td><td>PNG</td><td style="color:#00e676;">Goblet Squat PHOTO + GIF ✓</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Lunges</td><td>PNG</td><td style="color:#00e676;">DB Rear Lunge PHOTO ✓</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Hip Thrust</td><td>PHOTO ✓</td><td style="color:#00e676;">Keep current</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Romanian Deadlift</td><td>Wrong PNG</td><td style="color:#00e676;">DB Romanian DL PHOTO ✓</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Bulgarian Split Squat</td><td>GIF ✓</td><td style="color:#00e676;">Keep current</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Calf Raises</td><td>PNG</td><td style="color:#00e676;">Standing Calf PHOTO ✓</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Hip Flexor Stretch</td><td>PHOTO ✓</td><td style="color:#00e676;">Keep current</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Pelvic Tilt</td><td>PHOTO ✓</td><td style="color:#00e676;">Keep current</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Crunches</td><td>Dark PNG</td><td style="color:#00e676;">Weighted Crunch PHOTO ✓</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Leg Raises</td><td>Dark PNG</td><td style="color:#ff9800;">INVERT (no photo)</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Plank</td><td>PHOTO ✓</td><td style="color:#00e676;">Keep current</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Dead Bug</td><td>None</td><td style="color:#ff5252;">No image available</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Lying Hamstring Curls</td><td>None</td><td style="color:#ff9800;">Machine curl INVERT (closest)</td></tr>
+<tr style="border-bottom:1px solid #222;"><td style="padding:6px;">Donkey Kicks</td><td>None</td><td style="color:#00e676;">Band Kickback PHOTO ✓</td></tr>
+</table>
+</div>
+</div>
+
+</body>
+</html>
