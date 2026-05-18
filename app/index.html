@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="icon" href="icons/icon-192.png">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=10">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
 </head>
@@ -97,6 +97,9 @@
         <!-- Tab Navigation -->
         <nav class="tab-nav">
             <button class="tab-btn active" data-tab="timer">Timer</button>
+            <button class="tab-btn" data-tab="routine">Routine</button>
+            <button class="tab-btn" data-tab="workout">Workout</button>
+            <button class="tab-btn" data-tab="log">Log</button>
             <button class="tab-btn" data-tab="progress">Progress</button>
             <button class="tab-btn" data-tab="history">History</button>
             <button class="tab-btn" data-tab="profile">Profile</button>
@@ -162,6 +165,108 @@
                     <span class="stat-label">Total Minutes</span>
                 </div>
             </div>
+        </section>
+
+        <!-- TAB: Routine (Exercise Reference) -->
+        <section id="tabRoutine" class="tab-content">
+            <div class="routine-day-pills">
+                <button class="day-pill active" data-rday="push">💪 Push</button>
+                <button class="day-pill" data-rday="pull">🔙 Pull</button>
+                <button class="day-pill" data-rday="legs">🦵 Legs</button>
+                <button class="day-pill" data-rday="arms">🎯 Arms+Abs</button>
+            </div>
+            <div class="routine-today-label" id="routineTodayLabel"></div>
+            <div id="routineContent"></div>
+        </section>
+
+        <!-- TAB: Workout (Logger + Progressive Overload) -->
+        <section id="tabWorkout" class="tab-content">
+            <div class="qlog-day-pills" id="routineDayPills">
+                <button class="qlog-pill" data-qday="push">💪 Push</button>
+                <button class="qlog-pill" data-qday="pull">🔙 Pull</button>
+                <button class="qlog-pill" data-qday="legs">🦵 Legs</button>
+                <button class="qlog-pill" data-qday="arms">🎯 Arms</button>
+            </div>
+            <div id="quickLogExercises"></div>
+            <button class="qlog-save-btn" id="saveQuickLogBtn">💾 Save Workout</button>
+            <div class="qlog-history" id="quickLogHistory"></div>
+            <!-- Volume Tracker -->
+            <div class="volume-section">
+                <h3 class="section-title" style="margin-top:20px;">📈 Progressive Overload</h3>
+                <div class="volume-day-pills" id="volumeDayPills">
+                    <button class="qlog-pill active" data-vday="push">Push</button>
+                    <button class="qlog-pill" data-vday="pull">Pull</button>
+                    <button class="qlog-pill" data-vday="legs">Legs</button>
+                    <button class="qlog-pill" data-vday="arms">Arms</button>
+                </div>
+                <div id="volumeContent"></div>
+            </div>
+        </section>
+
+        <!-- TAB: Log (Daily Habit Check-in) -->
+        <section id="tabLog" class="tab-content">
+            <div class="log-date-header">
+                <button id="logPrevDay" class="icon-btn">&larr;</button>
+                <h3 id="logDateTitle">Today</h3>
+                <button id="logNextDay" class="icon-btn">&rarr;</button>
+            </div>
+
+            <!-- Workout Type -->
+            <div class="log-section">
+                <span class="log-section-label">Workout</span>
+                <div class="log-options" id="logWorkout">
+                    <button class="log-btn" data-value="walked"><span class="log-icon">🚶</span><span class="log-text">Walked</span></button>
+                    <button class="log-btn" data-value="strength"><span class="log-icon">🏋️</span><span class="log-text">Strength</span></button>
+                    <button class="log-btn" data-value="cardio"><span class="log-icon">🏃</span><span class="log-text">Cardio</span></button>
+                    <button class="log-btn" data-value="stretch"><span class="log-icon">🧘</span><span class="log-text">Stretch</span></button>
+                    <button class="log-btn" data-value="rest"><span class="log-icon">😴</span><span class="log-text">Rest</span></button>
+                </div>
+            </div>
+
+            <!-- Food Quality -->
+            <div class="log-section">
+                <span class="log-section-label">Food</span>
+                <div class="log-options" id="logFood">
+                    <button class="log-btn food-good" data-value="good"><span class="log-icon">🟢</span><span class="log-text">Clean</span></button>
+                    <button class="log-btn food-ok" data-value="okay"><span class="log-icon">🟡</span><span class="log-text">Okay</span></button>
+                    <button class="log-btn food-bad" data-value="bad"><span class="log-icon">🔴</span><span class="log-text">Cravings</span></button>
+                </div>
+            </div>
+
+            <!-- Sleep -->
+            <div class="log-section">
+                <span class="log-section-label">Sleep</span>
+                <div class="log-options" id="logSleep">
+                    <button class="log-btn" data-value="good"><span class="log-icon">😴</span><span class="log-text">7h+</span></button>
+                    <button class="log-btn" data-value="okay"><span class="log-icon">😐</span><span class="log-text">5-7h</span></button>
+                    <button class="log-btn" data-value="bad"><span class="log-icon">😵</span><span class="log-text">&lt;5h</span></button>
+                </div>
+            </div>
+
+            <!-- Water -->
+            <div class="log-section">
+                <span class="log-section-label">Water</span>
+                <div class="log-water" id="logWater">
+                    <button class="water-glass" data-glass="1">💧</button>
+                    <button class="water-glass" data-glass="2">💧</button>
+                    <button class="water-glass" data-glass="3">💧</button>
+                    <button class="water-glass" data-glass="4">💧</button>
+                    <button class="water-glass" data-glass="5">💧</button>
+                    <button class="water-glass" data-glass="6">💧</button>
+                    <button class="water-glass" data-glass="7">💧</button>
+                    <button class="water-glass" data-glass="8">💧</button>
+                </div>
+                <span class="water-count" id="waterCount">0 / 8 glasses</span>
+            </div>
+
+            <!-- Quick Note -->
+            <div class="log-section">
+                <span class="log-section-label">Note</span>
+                <input type="text" class="log-note-input" id="logNote" placeholder="Any observation today..." maxlength="100">
+            </div>
+
+            <!-- Save indicator -->
+            <div class="log-saved hidden" id="logSaved">✓ Saved</div>
         </section>
 
         <!-- TAB: Progress (Gamification) -->
@@ -264,6 +369,55 @@
                 <button id="editProfileBtn" class="control-btn pause-btn">Edit Profile</button>
                 <button id="exportDataBtn" class="control-btn reset-btn" style="margin-top:8px;">Export Data (JSON)</button>
             </div>
+
+            <!-- Body Measurements -->
+            <div class="measurements-section">
+                <div class="log-section-header">
+                    <h3 class="section-title">Body Measurements</h3>
+                    <button class="expand-btn" id="toggleMeasurements">+</button>
+                </div>
+                <div class="measurements-form hidden" id="measurementsForm">
+                    <p class="form-hint">Log periodically to track progress</p>
+                    <div class="measure-grid">
+                        <div class="measure-field"><label>Weight (kg)</label><input type="number" id="mWeight" step="0.1" placeholder="66.2"></div>
+                        <div class="measure-field"><label>Shoulders (in)</label><input type="number" id="mShoulders" step="0.1" placeholder="40.9"></div>
+                        <div class="measure-field"><label>Chest (in)</label><input type="number" id="mChest" step="0.1" placeholder="35.5"></div>
+                        <div class="measure-field"><label>Waist (in)</label><input type="number" id="mWaist" step="0.1" placeholder="34.7"></div>
+                        <div class="measure-field"><label>Hips (in)</label><input type="number" id="mHips" step="0.1" placeholder="37.6"></div>
+                        <div class="measure-field"><label>Bicep L (in)</label><input type="number" id="mBicepL" step="0.1" placeholder="12.3"></div>
+                        <div class="measure-field"><label>Bicep R (in)</label><input type="number" id="mBicepR" step="0.1" placeholder="12.1"></div>
+                        <div class="measure-field"><label>Thigh L (in)</label><input type="number" id="mThighL" step="0.1" placeholder="10.1"></div>
+                        <div class="measure-field"><label>Thigh R (in)</label><input type="number" id="mThighR" step="0.1" placeholder="10.0"></div>
+                        <div class="measure-field"><label>Calf L (in)</label><input type="number" id="mCalfL" step="0.1" placeholder="14.3"></div>
+                        <div class="measure-field"><label>Calf R (in)</label><input type="number" id="mCalfR" step="0.1" placeholder="14.1"></div>
+                    </div>
+                    <button id="saveMeasurementsBtn" class="control-btn start-btn" style="margin-top:12px;">Save Measurements</button>
+                    <div class="measure-history" id="measureHistory"></div>
+                </div>
+            </div>
+
+            <!-- Body Composition (DrTrust) -->
+            <div class="measurements-section">
+                <div class="log-section-header">
+                    <h3 class="section-title">Body Composition</h3>
+                    <button class="expand-btn" id="toggleComposition">+</button>
+                </div>
+                <div class="measurements-form hidden" id="compositionForm">
+                    <p class="form-hint">Input from DrTrust 360 or similar scale</p>
+                    <div class="measure-grid">
+                        <div class="measure-field"><label>Body Fat %</label><input type="number" id="cBodyFat" step="0.01" placeholder="17.11"></div>
+                        <div class="measure-field"><label>Muscle Rate %</label><input type="number" id="cMuscleRate" step="0.01" placeholder="78.75"></div>
+                        <div class="measure-field"><label>Visceral Fat %</label><input type="number" id="cVisceralFat" step="0.01" placeholder="7.14"></div>
+                        <div class="measure-field"><label>BMI</label><input type="number" id="cBMI" step="0.01" placeholder="24.20"></div>
+                        <div class="measure-field"><label>BMR (kcal)</label><input type="number" id="cBMR" step="1" placeholder="1550"></div>
+                        <div class="measure-field"><label>Body Water %</label><input type="number" id="cBodyWater" step="0.01" placeholder="59.85"></div>
+                        <div class="measure-field"><label>Bone Mass (kg)</label><input type="number" id="cBoneMass" step="0.01" placeholder="2.73"></div>
+                        <div class="measure-field"><label>Metabolic Age</label><input type="number" id="cMetabolicAge" step="1" placeholder="28"></div>
+                    </div>
+                    <button id="saveCompositionBtn" class="control-btn start-btn" style="margin-top:12px;">Save Composition</button>
+                    <div class="composition-history" id="compositionHistory"></div>
+                </div>
+            </div>
         </section>
 
         <footer class="app-footer">
@@ -318,7 +472,7 @@
 
     <script src="db.js"></script>
     <script src="gamification.js"></script>
-    <script src="script.js"></script>
+    <script src="script.js?v=10"></script>
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./service-worker.js');

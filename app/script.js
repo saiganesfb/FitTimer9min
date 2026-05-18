@@ -13,9 +13,13 @@ let currentUserId = null;
 let currentUser = null;
 let sessions = [];
 let viewingMonth = new Date();
+let dailyLogs = [];
+let logViewingDate = new Date();
 let previousXP = 0;
 let previousLevel = 1;
 let previousAchievements = [];
+
+const WORKOUT_ICONS = { walked: '🚶', strength: '🏋️', cardio: '🏃', stretch: '🧘', rest: '😴' };
 
 // --- DOM Elements ---
 const $ = (id) => document.getElementById(id);
@@ -104,6 +108,7 @@ async function loginUser(userId) {
     currentUserId = userId;
     currentUser = await getUser(userId);
     sessions = await getSessionsByUser(userId);
+    dailyLogs = await getDailyLogsByUser(userId);
     localStorage.setItem('fitTimer_lastUser', userId);
 
     selectedDuration = currentUser.goal || 15;
@@ -131,6 +136,10 @@ async function loginUser(userId) {
     renderHistory();
     renderProfile();
     renderProgress();
+    initRoutineTab();
+    initWorkoutLogger();
+    initMeasurements();
+    initComposition();
 }
 
 // --- Event Binding ---
@@ -206,6 +215,7 @@ function bindEvents() {
             if (btn.dataset.tab === 'history') { renderCalendar(); renderHistory(); }
             if (btn.dataset.tab === 'profile') renderProfile();
             if (btn.dataset.tab === 'progress') renderProgress();
+            if (btn.dataset.tab === 'log') renderLogTab();
             playClick();
         });
     });
@@ -245,6 +255,42 @@ function bindEvents() {
     // Profile actions
     $('editProfileBtn').addEventListener('click', editProfile);
     $('exportDataBtn').addEventListener('click', exportData);
+
+    // Log tab interactions
+    $('logPrevDay').addEventListener('click', () => { logViewingDate.setDate(logViewingDate.getDate() - 1); renderLogTab(); });
+    $('logNextDay').addEventListener('click', () => { logViewingDate.setDate(logViewingDate.getDate() + 1); renderLogTab(); });
+
+    // Log buttons (workout, food, sleep)
+    ['logWorkout', 'logFood', 'logSleep'].forEach(groupId => {
+        $(groupId).addEventListener('click', (e) => {
+            const btn = e.target.closest('.log-btn');
+            if (!btn) return;
+            // Toggle selection within group
+            $(groupId).querySelectorAll('.log-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            playClick();
+            vibrateShort();
+            autoSaveLog();
+        });
+    });
+
+    // Water glasses
+    $('logWater').addEventListener('click', (e) => {
+        const glass = e.target.closest('.water-glass');
+        if (!glass) return;
+        const num = parseInt(glass.dataset.glass);
+        // Fill up to this glass, or unfill if already the last filled
+        const glasses = $('logWater').querySelectorAll('.water-glass');
+        const currentFilled = $('logWater').querySelectorAll('.water-glass.filled').length;
+        const newCount = (num === currentFilled) ? num - 1 : num;
+        glasses.forEach((g, i) => g.classList.toggle('filled', i < newCount));
+        $('waterCount').textContent = `${newCount} / 8 glasses`;
+        playClick();
+        autoSaveLog();
+    });
+
+    // Note auto-save on blur
+    $('logNote').addEventListener('blur', () => autoSaveLog());
 
     // Keyboard
     document.addEventListener('keydown', (e) => {
@@ -483,18 +529,34 @@ function renderCalendar() {
             .map(s => new Date(s.date).getDate())
     );
 
+    // Build daily logs lookup for this month
+    const logsByDay = {};
+    dailyLogs.forEach(log => {
+        const d = new Date(log.dateKey + 'T00:00:00');
+        if (d.getFullYear() === year && d.getMonth() === month) {
+            logsByDay[d.getDate()] = log;
+        }
+    });
+
     let html = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
         .map(d => `<div class="cal-header">${d}</div>`).join('');
 
     // Empty slots before first day
     for (let i = 0; i < firstDay; i++) html += '<div class="cal-day empty"></div>';
 
-    // Days
+    // Days with enhanced indicators
     for (let day = 1; day <= daysInMonth; day++) {
         const isToday = (day === today.getDate() && month === today.getMonth() && year === today.getFullYear());
         const hasSession = sessionDates.has(day);
+        const log = logsByDay[day];
         const classes = ['cal-day', isToday ? 'today' : '', hasSession ? 'has-session' : ''].filter(Boolean).join(' ');
-        html += `<div class="${classes}">${day}</div>`;
+
+        // Workout icon from log
+        const workoutIcon = log && log.workout ? (WORKOUT_ICONS[log.workout] || '') : (hasSession ? '💪' : '');
+        // Food dot from log
+        const foodDot = log && log.food ? `<span class="cal-food cal-food-${log.food}"></span>` : '';
+
+        html += `<div class="${classes}"><span class="cal-num">${day}</span><span class="cal-workout">${workoutIcon}</span>${foodDot}</div>`;
     }
 
     calendarGrid.innerHTML = html;
@@ -629,6 +691,106 @@ function showCelebration(minutes, isPartial, xpGained) {
 
 function capitalize(str) { return str.charAt(0).toUpperCase() + str.slice(1); }
 
+function getDateKey(date) {
+    return date.toISOString().slice(0, 10); // "2026-05-17"
+}
+
+// --- Log Tab ---
+
+function renderLogTab() {
+    // Date header
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const viewing = new Date(logViewingDate); viewing.setHours(0, 0, 0, 0);
+    const isToday = viewing.getTime() === today.getTime();
+    const isYesterday = viewing.getTime() === today.getTime() - 86400000;
+
+    let dateLabel;
+    if (isToday) dateLabel = 'Today';
+    else if (isYesterday) dateLabel = 'Yesterday';
+    else dateLabel = viewing.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+    $('logDateTitle').textContent = dateLabel;
+
+    // Load existing log for this date
+    const dateKey = getDateKey(logViewingDate);
+    const log = dailyLogs.find(l => l.dateKey === dateKey);
+
+    // Reset all selections
+    document.querySelectorAll('#tabLog .log-btn').forEach(b => b.classList.remove('active'));
+    $('logWater').querySelectorAll('.water-glass').forEach(g => g.classList.remove('filled'));
+    $('logNote').value = '';
+
+    if (log) {
+        // Restore workout
+        if (log.workout) {
+            const btn = $('logWorkout').querySelector(`[data-value="${log.workout}"]`);
+            if (btn) btn.classList.add('active');
+        }
+        // Restore food
+        if (log.food) {
+            const btn = $('logFood').querySelector(`[data-value="${log.food}"]`);
+            if (btn) btn.classList.add('active');
+        }
+        // Restore sleep
+        if (log.sleep) {
+            const btn = $('logSleep').querySelector(`[data-value="${log.sleep}"]`);
+            if (btn) btn.classList.add('active');
+        }
+        // Restore water
+        if (log.water) {
+            $('logWater').querySelectorAll('.water-glass').forEach((g, i) => {
+                if (i < log.water) g.classList.add('filled');
+            });
+            $('waterCount').textContent = `${log.water} / 8 glasses`;
+        } else {
+            $('waterCount').textContent = '0 / 8 glasses';
+        }
+        // Restore note
+        if (log.note) $('logNote').value = log.note;
+    } else {
+        $('waterCount').textContent = '0 / 8 glasses';
+    }
+
+    $('logSaved').classList.add('hidden');
+}
+
+async function autoSaveLog() {
+    const dateKey = getDateKey(logViewingDate);
+
+    // Gather current selections
+    const workoutBtn = $('logWorkout').querySelector('.log-btn.active');
+    const foodBtn = $('logFood').querySelector('.log-btn.active');
+    const sleepBtn = $('logSleep').querySelector('.log-btn.active');
+    const waterCount = $('logWater').querySelectorAll('.water-glass.filled').length;
+    const note = $('logNote').value.trim();
+
+    // Find existing log or create new
+    let log = dailyLogs.find(l => l.dateKey === dateKey);
+    if (!log) {
+        log = { userId: currentUserId, dateKey: dateKey };
+    }
+
+    log.workout = workoutBtn ? workoutBtn.dataset.value : null;
+    log.food = foodBtn ? foodBtn.dataset.value : null;
+    log.sleep = sleepBtn ? sleepBtn.dataset.value : null;
+    log.water = waterCount;
+    log.note = note || null;
+    log.exercises = getWorkoutLoggerData();
+    log.updatedAt = new Date().toISOString();
+
+    const id = await saveDailyLog(log);
+    if (!log.id) log.id = id;
+
+    // Update local cache
+    const idx = dailyLogs.findIndex(l => l.dateKey === dateKey);
+    if (idx >= 0) dailyLogs[idx] = log;
+    else dailyLogs.push(log);
+
+    // Show saved indicator
+    $('logSaved').classList.remove('hidden');
+    setTimeout(() => $('logSaved').classList.add('hidden'), 1500);
+}
+
 // --- Gamification UI ---
 
 function updateXPBar() {
@@ -720,6 +882,716 @@ function showAchievementPopup(achievement) {
     setTimeout(() => $('achievementPopup').classList.add('hidden'), 2500);
 }
 
+// --- Routine Tab Data & Logic ---
+
+const ROUTINE_DATA = {
+    push: {
+        title: 'PUSH Day',
+        subtitle: 'Chest, Shoulders, Triceps',
+        groups: [
+            { name: '🫁 Chest', badge: 'primary', exercises: [
+                { name: 'Push-ups (Warm-up)', sets: '2×15', equip: 'Push-up Board · Bodyweight', tip: '<strong>Form:</strong> Hands shoulder-width, body in plank. Lower until chest nearly touches floor. Elbows at 45° — not flared. Exhale pushing up.' },
+                { name: 'DB Chest Press (Flat)', sets: '3×12', equip: 'Bench flat · 10–12.5 kg', tip: '<strong>Form:</strong> Lie flat, feet on floor. Press dumbbells straight up from chest. Squeeze chest at top. Shoulder blades pinched together throughout. Lower slowly.' },
+                { name: 'Incline DB Press', sets: '3×10', equip: 'Bench 30-45° · 7.5–10 kg', tip: '<strong>Form:</strong> Bench at 30-45°. Press straight UP (not towards face). Targets upper chest. Don\'t let elbows drop below shoulder line. Control the negative.' },
+                { name: 'Dumbbell Fly', sets: '3×12', equip: 'Bench flat · 5–7.5 kg', tip: '<strong>Form:</strong> Arms above chest, slight elbow bend (locked). Open wide in arc until chest stretch. Squeeze to bring back. Think "hugging a tree." Use lighter weight.' },
+            ]},
+            { name: '🔴 Shoulders', badge: 'secondary', exercises: [
+                { name: 'Overhead DB Press', sets: '3×10', equip: 'Bench 75-80° · 7.5–10 kg', tip: '<strong>Form:</strong> Sit upright. Start at ear level, palms forward. Press straight up. Don\'t arch lower back. Can do standing too.' },
+                { name: 'Lateral Raises', sets: '3×15', equip: 'Standing · 2.5–5 kg', tip: '<strong>Form:</strong> Slight elbow bend. Raise arms to sides until parallel (T-shape). Lead with elbows, not wrists. Light weight — shoulders fatigue fast.' },
+            ]},
+            { name: '🔺 Triceps', badge: 'finisher', exercises: [
+                { name: 'Tricep Pushdown (Band)', sets: '3×15', equip: 'Pull-up Bar + Resistance Band', tip: '<strong>Form:</strong> Band over bar. Elbows tight to body. Push down until arms extended. Squeeze triceps. Only forearms move — upper arms locked.' },
+                { name: 'Overhead Tricep Ext (Band)', sets: '3×12', equip: 'Resistance Band (step on it)', tip: '<strong>Form:</strong> Step on band, hold behind head. Extend arms up, elbows pointing forward near ears. Full range of motion is key.' },
+            ]},
+        ]
+    },
+    pull: {
+        title: 'PULL Day',
+        subtitle: 'Back, Traps, Rear Delts, Biceps',
+        groups: [
+            { name: '🔙 Back', badge: 'primary', exercises: [
+                { name: 'Bent-Over DB Row', sets: '3×10', equip: 'Standing bent · 10–12.5 kg', tip: '<strong>Form:</strong> Bend 45° at hips, knees bent, back FLAT. Pull to lower chest. Squeeze shoulder blades at top. Don\'t round back — critical.' },
+                { name: 'Single-Arm DB Row', sets: '3×10/side', equip: 'Bench + 10–12.5 kg', tip: '<strong>Form:</strong> Knee+hand on bench. Pull dumbbell to hip, elbow past back. Feel lat squeeze. Keep torso parallel, don\'t twist.' },
+                { name: 'Band Lat Pulldown', sets: '3×12', equip: 'Pull-up Bar + Band', tip: '<strong>Form:</strong> Kneel/sit. Pull band to chest, wide grip. Squeeze lats at bottom. Think "elbows into back pockets." Single-arm version is great for isolation.' },
+                { name: 'Face Pulls (Band)', sets: '3×15', equip: 'Band at face height', tip: '<strong>Form:</strong> Pull towards face, elbows high. Externally rotate (hands beside ears). <strong>Critical for posture</strong> — fixes rounded shoulders. NEVER skip this.' },
+                { name: 'Band Seated Rows', sets: '3×12', equip: 'Band around feet · seated', tip: '<strong>Form:</strong> Sit, legs extended, band around feet. Pull to lower chest, squeezing shoulder blades. Back upright, don\'t lean back too much.' },
+            ]},
+            { name: '🔼 Traps', badge: 'secondary', exercises: [
+                { name: 'Dumbbell Shrugs', sets: '3×15', equip: 'Standing · 10–12.5 kg', tip: '<strong>Form:</strong> Shrug shoulders straight UP to ears. Hold 1 sec. Lower slowly. Don\'t roll shoulders — straight up/down only. Arms stay straight.' },
+            ]},
+            { name: '💪 Biceps', badge: 'finisher', exercises: [
+                { name: 'Z-Bar Bicep Curls', sets: '3×12', equip: 'Curl Bar + plates', tip: '<strong>Form:</strong> Grip at angled grips. Curl by bending elbows only — upper arms don\'t move. Squeeze at top. No swinging. Z-bar reduces wrist strain.' },
+                { name: 'Hammer Curls', sets: '3×10', equip: 'Standing · 7.5–10 kg', tip: '<strong>Form:</strong> Palms facing each other (neutral grip). Hits brachialis (outer arm thickness) + forearms. No swinging. Can alternate arms.' },
+            ]},
+        ]
+    },
+    legs: {
+        title: 'LEGS Day',
+        subtitle: 'Quads, Hamstrings, Glutes, Calves + APT Fixes',
+        groups: [
+            { name: '🦵 Quads & Glutes', badge: 'primary', exercises: [
+                { name: 'Barbell Deadlift', sets: '3×8', equip: 'Deadlift Barbell + plates', tip: '<strong>Form:</strong> Feet hip-width, bar over mid-foot. Back FLAT, chest up. Drive through heels. Bar close to body. <strong>Slow and controlled — no ego lifting.</strong>' },
+                { name: 'Goblet Squats', sets: '3×12', equip: '1 heavy DB at chest · 10–12.5 kg', tip: '<strong>Form:</strong> Hold DB at chest. Feet shoulder-width, toes slightly out. Squat until thighs parallel. Knees track over toes. Push through heels.' },
+                { name: 'Lunges', sets: '3×10/leg', equip: 'DBs at sides · 5–7.5 kg', tip: '<strong>Form:</strong> Step forward, both knees 90°. Front knee over ankle — never past toes. Push back through front heel. <strong>VVIP exercise.</strong>' },
+            ]},
+            { name: '🍑 Glutes & Hamstrings', badge: 'apt', exercises: [
+                { name: 'Hip Thrust (Bench)', sets: '3×12', equip: 'Bench + barbell/heavy DB', tip: '<strong>Form:</strong> Upper back on bench. Drive hips UP squeezing glutes. Full extension (straight line shoulders→knees). <strong>Key APT fix.</strong>' },
+                { name: 'Romanian Deadlift (DB)', sets: '3×10', equip: '7.5–10 kg DBs', tip: '<strong>Form:</strong> Slight knee bend (locked). Hinge at hips, lower DBs along legs. Feel hamstring stretch. Drive hips forward to return. <strong>Critical for APT.</strong>' },
+                { name: 'Bulgarian Split Squat', sets: '3×8/leg', equip: 'Bench + 5–7.5 kg DBs', tip: '<strong>Form:</strong> Back foot on bench. Lower until front thigh parallel. Stay upright. Start bodyweight if too hard.' },
+            ]},
+            { name: '🦶 Calves', badge: 'secondary', exercises: [
+                { name: 'Calf Raises (Step)', sets: '3×20', equip: 'Stepping Block + 10 kg DBs', tip: '<strong>Form:</strong> Stand on step edge, heels hanging off. Rise high on toes, squeeze 1 sec. Lower below step for stretch. High reps — calves are stubborn.' },
+            ]},
+            { name: '🔧 Mobility', badge: 'apt', exercises: [
+                { name: 'Hip Flexor Stretch', sets: '2×30s/side', equip: 'Gym Mat', tip: '<strong>Form:</strong> Kneel, push hips forward. Feel deep stretch in front hip of back leg. Hold 30s. <strong>Do every leg day — loosens tight hip flexors.</strong>' },
+                { name: 'Pelvic Tilt Practice', sets: '2×15', equip: 'Gym Mat', tip: '<strong>Form:</strong> Lie on back, knees bent. Flatten lower back to floor by tilting pelvis up. Hold 3s. <strong>Mind-muscle APT correction.</strong>' },
+            ]},
+        ]
+    },
+    arms: {
+        title: 'ARMS + ABS Day',
+        subtitle: 'Biceps, Triceps, Core + Catchup',
+        groups: [
+            { name: '💪 Biceps', badge: 'primary', exercises: [
+                { name: 'Incline DB Curl', sets: '3×10', equip: 'Bench 45° · 5–7.5 kg', tip: '<strong>Form:</strong> Lie on incline, arms hanging. Curl without moving upper arms. Incline pre-stretches bicep for more activation. Slow 3-sec negatives.' },
+                { name: 'Preacher Curl (Bench)', sets: '3×10', equip: 'Bench as arm pad · 5–7.5 kg', tip: '<strong>Form:</strong> Use incline bench as preacher pad. Arm rests, curl up. Complete isolation — no cheating. Full range.' },
+                { name: 'Hammer Curls', sets: '3×12', equip: 'Standing · 7.5 kg', tip: '<strong>Form:</strong> Neutral grip (palms facing). Builds arm thickness. Try cross-body hammers for extra squeeze.' },
+            ]},
+            { name: '🔺 Triceps', badge: 'secondary', exercises: [
+                { name: 'Tricep Pushdown (Band)', sets: '3×15', equip: 'Pull-up Bar + Band', tip: '<strong>Form:</strong> Band over bar. Push down, elbows pinned. Squeeze at full extension. Bread-and-butter tricep move.' },
+                { name: 'Overhead Tricep Ext (DB)', sets: '3×10', equip: 'Seated · 1×10 kg DB both hands', tip: '<strong>Form:</strong> One DB, both hands behind head. Extend straight up. Elbows forward, don\'t flare. If wrist pain, use band version.' },
+                { name: 'Diamond Push-ups', sets: '2×12', equip: 'Bodyweight · Gym Mat', tip: '<strong>Form:</strong> Hands together (diamond shape) under chest. Lower to hands. Shifts all load to triceps. From knees if too hard.' },
+            ]},
+            { name: '🔥 Abs & Core', badge: 'apt', exercises: [
+                { name: 'Crunches', sets: '3×20', equip: 'Gym Mat', tip: '<strong>Form:</strong> Knees bent, hands behind head (don\'t pull neck). Curl upper body — lift shoulder blades off mat. Feel it in abs, not neck.' },
+                { name: 'Leg Raises', sets: '3×12', equip: 'Gym Mat', tip: '<strong>Form:</strong> Lie flat, hands under hips. Raise straight legs to 90°, lower slowly without touching floor. Lower back pressed to mat.' },
+                { name: 'Plank', sets: '3×30-60s', equip: 'Gym Mat', tip: '<strong>Form:</strong> Forearms on mat, body straight. Squeeze abs+glutes. Don\'t sag or pike. Start 30s, build to 60s.' },
+                { name: 'Dead Bug', sets: '3×10/side', equip: 'Gym Mat', tip: '<strong>Form:</strong> On back, arms up, knees 90°. Extend opposite arm+leg. Keep lower back flat. <strong>Excellent for APT correction.</strong>' },
+            ]},
+            { name: '🦵 Ankle Weight Finishers', badge: 'finisher', exercises: [
+                { name: 'Lying Hamstring Curls', sets: '3×15', equip: 'Mat + 2 kg Ankle Weights', tip: '<strong>Form:</strong> Face down, ankle weights on. Curl heels to glutes. Squeeze hamstrings at top. Great isolation without machines.' },
+                { name: 'Donkey Kicks', sets: '3×12/side', equip: 'Mat + 2 kg Ankle Weights', tip: '<strong>Form:</strong> All fours, kick leg up+back at 90° knee. Squeeze glute at top. Don\'t arch back. Targets glutes specifically.' },
+            ]},
+        ]
+    }
+};
+
+const DAY_SCHEDULE = ['rest', 'push', 'pull', 'rest', 'legs', 'arms', 'rest'];
+
+function initRoutineTab() {
+    const todayDay = new Date().getDay();
+    const todayRoutine = DAY_SCHEDULE[todayDay];
+    const label = $('routineTodayLabel');
+
+    function updateLabel(viewingDay) {
+        const viewing = ROUTINE_DATA[viewingDay];
+        if (viewingDay === todayRoutine && todayRoutine !== 'rest') {
+            label.textContent = '📅 Today\'s plan: ' + viewing.title;
+        } else if (todayRoutine === 'rest') {
+            label.textContent = '🚶 Today is rest day — Viewing: ' + (viewing ? viewing.title : 'Push Day');
+        } else {
+            label.textContent = '👀 Viewing: ' + (viewing ? viewing.title : '') + ' (Today: ' + ROUTINE_DATA[todayRoutine].title + ')';
+        }
+    }
+
+    document.querySelectorAll('.day-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+            document.querySelectorAll('.day-pill').forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            renderRoutine(pill.dataset.rday);
+            updateLabel(pill.dataset.rday);
+        });
+    });
+
+    const startDay = todayRoutine === 'rest' ? 'push' : todayRoutine;
+    document.querySelectorAll('.day-pill').forEach(p => {
+        p.classList.toggle('active', p.dataset.rday === startDay);
+    });
+    updateLabel(startDay);
+    renderRoutine(startDay);
+}
+
+function renderRoutine(day) {
+    const data = ROUTINE_DATA[day];
+    const container = $('routineContent');
+    if (!data) { container.innerHTML = ''; return; }
+
+    let html = '';
+    data.groups.forEach(group => {
+        html += `<div class="routine-muscle-group">`;
+        html += `<div class="routine-muscle-header">${group.name} <span class="r-badge ${group.badge}">${group.badge}</span></div>`;
+        group.exercises.forEach(ex => {
+            html += `<div class="r-ex-card" onclick="this.classList.toggle('open')">
+                <div class="r-ex-summary">
+                    <span class="r-ex-name">${ex.name}</span>
+                    <div class="r-ex-meta">
+                        <span class="r-ex-sets">${ex.sets}</span>
+                        <span class="r-ex-chevron">▶</span>
+                    </div>
+                </div>
+                <div class="r-ex-details">
+                    <div class="r-ex-equip">🔧 ${ex.equip}</div>
+                    <div class="r-ex-tip">${ex.tip}</div>
+                </div>
+            </div>`;
+        });
+        html += `</div>`;
+    });
+    container.innerHTML = html;
+}
+
+// --- Workout Logger ---
+
+let workoutExercises = [];
+
+function initWorkoutLogger() {
+    // Day pill selection (in Routine tab)
+    document.querySelectorAll('#routineDayPills .qlog-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+            document.querySelectorAll('#routineDayPills .qlog-pill').forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            renderQuickLogExercises(pill.dataset.qday);
+        });
+    });
+
+    // Save button
+    const saveBtn = $('saveQuickLogBtn');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', () => {
+            autoSaveLog();
+            showQuickLogSaved();
+        });
+    }
+
+    // Auto-select today's routine day
+    const todayDay = new Date().getDay();
+    const todayRoutine = DAY_SCHEDULE[todayDay];
+    if (todayRoutine !== 'rest') {
+        const pill = document.querySelector(`#routineDayPills .qlog-pill[data-qday="${todayRoutine}"]`);
+        if (pill) { pill.classList.add('active'); renderQuickLogExercises(todayRoutine); }
+    } else {
+        const pill = document.querySelector('#routineDayPills .qlog-pill[data-qday="push"]');
+        if (pill) { pill.classList.add('active'); renderQuickLogExercises('push'); }
+    }
+
+    loadQuickLogHistory();
+    initVolumeTracker();
+}
+
+function renderQuickLogExercises(day) {
+    const container = $('quickLogExercises');
+    const data = ROUTINE_DATA[day];
+    if (!data || !container) return;
+
+    const DB_WEIGHTS = [0,2.5,5,7.5,10,12.5,15,17.5,20,22.5,25];
+    const BAR_WEIGHTS = [0,5,7.5,10,12.5,15,17.5,20,22.5,25,27.5,30,35,40,45,50];
+    const REPS = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,20,25,30];
+
+    function getWeights(equip) {
+        const e = (equip || '').toLowerCase();
+        if (e.includes('barbell') || e.includes('bar + plate') || e.includes('curl bar')) return BAR_WEIGHTS;
+        if (e.includes('band')) return ['BW','Light','Med','Heavy','X-Heavy'];
+        if ((e.includes('bodyweight') || e.includes('mat')) && !e.includes('kg')) return ['BW'];
+        return DB_WEIGHTS;
+    }
+
+    function buildSetCell(weights, targetReps, setNum) {
+        const weightOpts = weights.map(w => `<option value="${w}">${typeof w === 'number' ? w : w}</option>`).join('');
+        const repOpts = REPS.map(r => `<option value="${r}" ${r === targetReps ? 'selected' : ''}>${r}</option>`).join('');
+        return `<td class="qlog-td-set"><select class="qlog-reps" data-set="${setNum}">${repOpts}</select><select class="qlog-weight" data-set="${setNum}">${weightOpts}</select></td>`;
+    }
+
+    let html = '<div class="qlog-table-wrap"><table class="qlog-table"><thead><tr><th class="qlog-th-ex">Exercise</th><th>Set 1</th><th>Set 2</th><th>Set 3</th><th></th></tr></thead><tbody>';
+
+    data.groups.forEach(group => {
+        group.exercises.forEach(ex => {
+            const weights = getWeights(ex.equip);
+            const repsMatch = ex.sets.match(/[×x](\d+)/i);
+            const targetReps = repsMatch ? parseInt(repsMatch[1]) : 0;
+            const setsMatch = ex.sets.match(/(\d+)/);
+            const numSets = setsMatch ? parseInt(setsMatch[1]) : 3;
+
+            html += `<tr class="qlog-row" data-exname="${ex.name}" data-equip="${ex.equip || ''}" data-reps="${targetReps}"><td class="qlog-td-name">${ex.name}</td>`;
+            for (let s = 1; s <= Math.min(numSets, 3); s++) {
+                html += buildSetCell(weights, targetReps, s);
+            }
+            for (let s = numSets + 1; s <= 3; s++) {
+                html += '<td class="qlog-td-set qlog-empty">—</td>';
+            }
+            html += `<td class="qlog-td-add"><button class="qlog-add-set" title="Add set">+Set</button></td></tr>`;
+        });
+    });
+
+    html += '</tbody></table></div>';
+
+    // Add exercise from other routines
+    const otherDays = Object.keys(ROUTINE_DATA).filter(d => d !== day);
+    let addOpts = '<option value="">+ Add exercise from another routine...</option>';
+    otherDays.forEach(d => {
+        ROUTINE_DATA[d].groups.forEach(g => {
+            g.exercises.forEach(ex => {
+                addOpts += `<option value="${d}|${ex.name}" data-equip="${ex.equip || ''}" data-sets="${ex.sets}">${ex.name} (${ROUTINE_DATA[d].title})</option>`;
+            });
+        });
+    });
+    html += `<div class="qlog-add-exercise"><select class="qlog-add-ex-select">${addOpts}</select><button class="qlog-add-ex-btn">Add</button></div>`;
+
+    container.innerHTML = html;
+
+    // +Set click handler
+    container.querySelectorAll('.qlog-add-set').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const row = this.closest('.qlog-row');
+            const equip = row.dataset.equip;
+            const targetReps = parseInt(row.dataset.reps) || 12;
+            const weights = getWeights(equip);
+            // Find last empty cell or add after last set cell
+            const emptyCells = row.querySelectorAll('.qlog-empty');
+            if (emptyCells.length > 0) {
+                const cell = emptyCells[0];
+                const setNum = [...row.querySelectorAll('.qlog-td-set')].indexOf(cell) + 1;
+                const weightOpts = weights.map(w => `<option value="${w}">${typeof w === 'number' ? w : w}</option>`).join('');
+                const repOpts = REPS.map(r => `<option value="${r}" ${r === targetReps ? 'selected' : ''}>${r}</option>`).join('');
+                cell.classList.remove('qlog-empty');
+                cell.innerHTML = `<select class="qlog-reps" data-set="${setNum}">${repOpts}</select><select class="qlog-weight" data-set="${setNum}">${weightOpts}</select>`;
+            } else {
+                // Already 3 sets filled — add a 4th column
+                const setNum = row.querySelectorAll('.qlog-reps').length + 1;
+                const weightOpts = weights.map(w => `<option value="${w}">${typeof w === 'number' ? w : w}</option>`).join('');
+                const repOpts = REPS.map(r => `<option value="${r}" ${r === targetReps ? 'selected' : ''}>${r}</option>`).join('');
+                const newCell = document.createElement('td');
+                newCell.className = 'qlog-td-set';
+                newCell.innerHTML = `<select class="qlog-reps" data-set="${setNum}">${repOpts}</select><select class="qlog-weight" data-set="${setNum}">${weightOpts}</select>`;
+                row.insertBefore(newCell, this.closest('.qlog-td-add'));
+            }
+        });
+    });
+
+    // Add exercise button handler
+    const addExBtn = container.querySelector('.qlog-add-ex-btn');
+    if (addExBtn) {
+        addExBtn.addEventListener('click', function() {
+            const sel = container.querySelector('.qlog-add-ex-select');
+            if (!sel.value) return;
+            const [srcDay, exName] = sel.value.split('|');
+            let foundEx = null;
+            ROUTINE_DATA[srcDay].groups.forEach(g => {
+                g.exercises.forEach(ex => { if (ex.name === exName) foundEx = ex; });
+            });
+            if (!foundEx) return;
+
+            const weights = getWeights(foundEx.equip);
+            const repsMatch = foundEx.sets.match(/[×x](\d+)/i);
+            const targetReps = repsMatch ? parseInt(repsMatch[1]) : 12;
+            const setsMatch = foundEx.sets.match(/(\d+)/);
+            const numSets = setsMatch ? parseInt(setsMatch[1]) : 3;
+
+            const tbody = container.querySelector('tbody');
+            const newRow = document.createElement('tr');
+            newRow.className = 'qlog-row';
+            newRow.dataset.exname = foundEx.name;
+            newRow.dataset.equip = foundEx.equip || '';
+            newRow.dataset.reps = targetReps;
+
+            let cells = `<td class="qlog-td-name">${foundEx.name}</td>`;
+            for (let s = 1; s <= Math.min(numSets, 3); s++) {
+                cells += buildSetCell(weights, targetReps, s);
+            }
+            for (let s = numSets + 1; s <= 3; s++) {
+                cells += '<td class="qlog-td-set qlog-empty">—</td>';
+            }
+            cells += `<td class="qlog-td-add"><button class="qlog-add-set" title="Add set">+Set</button></td>`;
+            newRow.innerHTML = cells;
+            tbody.appendChild(newRow);
+
+            // Attach +Set handler to new row
+            newRow.querySelector('.qlog-add-set').addEventListener('click', function() {
+                const row = this.closest('.qlog-row');
+                const equip = row.dataset.equip;
+                const tReps = parseInt(row.dataset.reps) || 12;
+                const w = getWeights(equip);
+                const emptyCells = row.querySelectorAll('.qlog-empty');
+                if (emptyCells.length > 0) {
+                    const cell = emptyCells[0];
+                    const setNum = [...row.querySelectorAll('.qlog-td-set')].indexOf(cell) + 1;
+                    const wOpts = w.map(v => `<option value="${v}">${typeof v === 'number' ? v : v}</option>`).join('');
+                    const rOpts = REPS.map(r => `<option value="${r}" ${r === tReps ? 'selected' : ''}>${r}</option>`).join('');
+                    cell.classList.remove('qlog-empty');
+                    cell.innerHTML = `<select class="qlog-reps" data-set="${setNum}">${rOpts}</select><select class="qlog-weight" data-set="${setNum}">${wOpts}</select>`;
+                }
+            });
+
+            sel.value = '';
+        });
+    }
+}
+
+function showQuickLogSaved() {
+    const btn = $('saveQuickLogBtn');
+    const orig = btn.textContent;
+    btn.textContent = '✓ Saved!';
+    btn.style.background = '#22c55e';
+    setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 1500);
+}
+
+function getWorkoutLoggerData() {
+    const activePill = document.querySelector('.qlog-pill.active');
+    const routineDay = activePill ? activePill.dataset.qday : null;
+    const rows = document.querySelectorAll('.qlog-row');
+    const exercises = [...rows].map(row => {
+        const name = row.dataset.exname;
+        const sets = [...row.querySelectorAll('.qlog-td-set')].map(td => {
+            const repsEl = td.querySelector('.qlog-reps');
+            const weightEl = td.querySelector('.qlog-weight');
+            if (!repsEl) return null;
+            return {
+                reps: parseInt(repsEl.value) || 0,
+                weight: weightEl ? weightEl.value : 'BW'
+            };
+        }).filter(Boolean);
+        return { name, sets };
+    }).filter(ex => ex.sets.some(s => s.reps > 0));
+    return { routineDay, exercises };
+}
+
+function loadQuickLogHistory() {
+    const container = $('quickLogHistory');
+    if (!container) return;
+    const logs = dailyLogs
+        .filter(l => l.exercises && l.exercises.exercises && l.exercises.exercises.length > 0)
+        .sort((a, b) => b.dateKey.localeCompare(a.dateKey))
+        .slice(0, 5);
+
+    if (logs.length === 0) {
+        container.innerHTML = '<p style="font-size:0.75rem;color:var(--text-muted);margin-top:12px;">No workout logs yet. Complete a workout and save!</p>';
+        return;
+    }
+
+    container.innerHTML = logs.map(log => {
+        const d = log.dateKey; // YYYY-MM-DD
+        const dayLabel = log.exercises.routineDay ? log.exercises.routineDay.toUpperCase() : '';
+        const exList = log.exercises.exercises.map(ex => {
+            const setsStr = ex.sets.map(s => `${s.reps}×${s.weight}`).join(', ');
+            return `<div class="qlog-history-ex"><strong>${ex.name}</strong>: ${setsStr}</div>`;
+        }).join('');
+        return `<div class="qlog-history-entry"><div class="qlog-history-date">${d} ${dayLabel ? '— ' + dayLabel : ''}</div>${exList}</div>`;
+    }).join('');
+}
+
+// --- Progressive Overload Volume Tracker ---
+
+function initVolumeTracker() {
+    document.querySelectorAll('#volumeDayPills .qlog-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+            document.querySelectorAll('#volumeDayPills .qlog-pill').forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            renderVolumeTable(pill.dataset.vday);
+        });
+    });
+    // Default render
+    renderVolumeTable('push');
+}
+
+function renderVolumeTable(day) {
+    const container = $('volumeContent');
+    if (!container) return;
+
+    const routineExercises = [];
+    ROUTINE_DATA[day].groups.forEach(g => {
+        g.exercises.forEach(ex => routineExercises.push(ex.name));
+    });
+
+    // Get all logs for this routine day (last 4 weeks)
+    const now = new Date();
+    const fourWeeksAgo = new Date(now);
+    fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 28);
+    const cutoff = fourWeeksAgo.toISOString().slice(0, 10);
+
+    const relevantLogs = dailyLogs
+        .filter(l => l.exercises && l.exercises.routineDay === day && l.dateKey >= cutoff)
+        .sort((a, b) => a.dateKey.localeCompare(b.dateKey));
+
+    if (relevantLogs.length === 0) {
+        container.innerHTML = '<p style="font-size:0.75rem;color:var(--text-muted);margin-top:8px;">No workout data yet for ' + day.toUpperCase() + '. Save a workout to start tracking!</p>';
+        return;
+    }
+
+    // Build volume + max weight per exercise per date
+    const volumeByDate = {}; // { date: { exName: { vol, maxWt } } }
+    relevantLogs.forEach(log => {
+        const dateKey = log.dateKey;
+        if (!volumeByDate[dateKey]) volumeByDate[dateKey] = {};
+        log.exercises.exercises.forEach(ex => {
+            let vol = 0;
+            let maxWt = 0;
+            ex.sets.forEach(s => {
+                const reps = parseInt(s.reps) || 0;
+                const w = parseFloat(s.weight) || 0;
+                vol += reps * (w > 0 ? w : 1);
+                if (w > maxWt) maxWt = w;
+            });
+            if (!volumeByDate[dateKey][ex.name]) volumeByDate[dateKey][ex.name] = { vol: 0, maxWt: 0 };
+            volumeByDate[dateKey][ex.name].vol += vol;
+            if (maxWt > volumeByDate[dateKey][ex.name].maxWt) volumeByDate[dateKey][ex.name].maxWt = maxWt;
+        });
+    });
+
+    const dates = Object.keys(volumeByDate).sort();
+
+    // Weekly totals
+    function getWeekKey(dateStr) {
+        const d = new Date(dateStr + 'T00:00:00');
+        const dayOfWk = d.getDay();
+        const mon = new Date(d);
+        mon.setDate(d.getDate() - (dayOfWk === 0 ? 6 : dayOfWk - 1));
+        return mon.toISOString().slice(0, 10);
+    }
+    const weeks = {};
+    dates.forEach(d => {
+        const wk = getWeekKey(d);
+        if (!weeks[wk]) weeks[wk] = {};
+        routineExercises.forEach(exName => {
+            if (!weeks[wk][exName]) weeks[wk][exName] = { vol: 0, maxWt: 0 };
+            const entry = volumeByDate[d][exName];
+            if (entry) {
+                weeks[wk][exName].vol += entry.vol;
+                if (entry.maxWt > weeks[wk][exName].maxWt) weeks[wk][exName].maxWt = entry.maxWt;
+            }
+        });
+    });
+    const weekKeys = Object.keys(weeks).sort();
+
+    // Build table
+    let html = '<div class="volume-table-wrap"><table class="volume-table"><thead><tr><th>Exercise</th>';
+    dates.forEach(d => {
+        html += `<th class="vol-date" colspan="2">${d.slice(5)}</th>`;
+    });
+    weekKeys.forEach(wk => {
+        html += `<th class="vol-week" colspan="2">Wk ${wk.slice(5)}</th>`;
+    });
+    html += '</tr><tr><th></th>';
+    dates.forEach(() => { html += '<th class="vol-sub">Vol</th><th class="vol-sub">Max</th>'; });
+    weekKeys.forEach(() => { html += '<th class="vol-sub vol-week">Vol</th><th class="vol-sub vol-week">Max</th>'; });
+    html += '</tr></thead><tbody>';
+
+    // Total row data
+    const totalByDate = {};
+    dates.forEach(d => { totalByDate[d] = 0; });
+    const totalByWeek = {};
+    weekKeys.forEach(wk => { totalByWeek[wk] = 0; });
+
+    routineExercises.forEach(exName => {
+        html += `<tr><td class="vol-ex-name">${exName}</td>`;
+        let prevVol = null;
+        dates.forEach(d => {
+            const entry = volumeByDate[d][exName];
+            const vol = entry ? entry.vol : 0;
+            const maxWt = entry ? entry.maxWt : 0;
+            let cls = '';
+            if (prevVol !== null && vol > 0) {
+                cls = vol > prevVol ? ' vol-up' : vol < prevVol ? ' vol-down' : '';
+            }
+            html += `<td class="vol-cell${cls}">${vol > 0 ? vol : '—'}</td>`;
+            html += `<td class="vol-cell vol-max">${maxWt > 0 ? maxWt + 'kg' : '—'}</td>`;
+            totalByDate[d] += vol;
+            if (vol > 0) prevVol = vol;
+        });
+        weekKeys.forEach(wk => {
+            const wkData = weeks[wk][exName];
+            html += `<td class="vol-cell vol-wk-cell">${wkData && wkData.vol > 0 ? wkData.vol : '—'}</td>`;
+            html += `<td class="vol-cell vol-wk-cell vol-max">${wkData && wkData.maxWt > 0 ? wkData.maxWt + 'kg' : '—'}</td>`;
+            if (wkData) totalByWeek[wk] += wkData.vol;
+        });
+        html += '</tr>';
+    });
+
+    // Total volume row
+    html += '<tr class="vol-total-row"><td class="vol-ex-name"><strong>TOTAL</strong></td>';
+    dates.forEach(d => {
+        html += `<td class="vol-cell vol-total">${totalByDate[d] || '—'}</td><td class="vol-cell"></td>`;
+    });
+    weekKeys.forEach(wk => {
+        html += `<td class="vol-cell vol-wk-cell vol-total">${totalByWeek[wk] || '—'}</td><td class="vol-cell"></td>`;
+    });
+    html += '</tr>';
+
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+}
+
+// --- Body Measurements ---
+
+function initMeasurements() {
+    const toggleBtn = $('toggleMeasurements');
+    const form = $('measurementsForm');
+    if (!toggleBtn || !form) return;
+
+    toggleBtn.addEventListener('click', () => {
+        form.classList.toggle('hidden');
+        toggleBtn.classList.toggle('open');
+    });
+
+    $('saveMeasurementsBtn').addEventListener('click', saveMeasurements);
+    loadMeasurementHistory();
+}
+
+async function saveMeasurements() {
+    const fields = ['Weight', 'Shoulders', 'Chest', 'Waist', 'Hips', 'BicepL', 'BicepR', 'ThighL', 'ThighR', 'CalfL', 'CalfR'];
+    const data = {};
+    let hasValue = false;
+    fields.forEach(f => {
+        const val = parseFloat($('m' + f).value);
+        if (!isNaN(val)) { data[f.toLowerCase()] = val; hasValue = true; }
+    });
+    if (!hasValue) return;
+
+    const entry = {
+        userId: currentUserId,
+        date: new Date().toISOString(),
+        ...data
+    };
+
+    await addMeasurement(entry);
+    // Clear inputs
+    fields.forEach(f => $('m' + f).value = '');
+    loadMeasurementHistory();
+}
+
+async function loadMeasurementHistory() {
+    const container = $('measureHistory');
+    if (!container) return;
+    const records = await getMeasurementsByUser(currentUserId);
+    records.sort((a, b) => new Date(b.date) - new Date(a.date));
+    const recent = records.slice(0, 12);
+
+    if (recent.length === 0) {
+        container.innerHTML = '<p style="font-size:0.75rem;color:var(--text-muted);margin-top:8px;">No measurements yet. Log weekly to track progress!</p>';
+        return;
+    }
+
+    const fields = [
+        {key:'weight',label:'Wt(kg)',down:true},
+        {key:'shoulders',label:'Shldr'},
+        {key:'chest',label:'Chest'},
+        {key:'waist',label:'Waist',down:true},
+        {key:'hips',label:'Hips',down:true},
+        {key:'bicepl',label:'Bi-L'},
+        {key:'bicepr',label:'Bi-R'},
+        {key:'thighl',label:'Th-L'},
+        {key:'thighr',label:'Th-R'},
+        {key:'calfl',label:'Cf-L'},
+        {key:'calfr',label:'Cf-R'}
+    ];
+
+    let html = '<div class="measure-history-scroll"><table class="measure-table"><thead><tr><th>Date</th>';
+    fields.forEach(f => { html += `<th>${f.label}</th>`; });
+    html += '</tr></thead><tbody>';
+
+    recent.forEach((row, i) => {
+        const d = new Date(row.date).toLocaleDateString('en-GB', {day:'2-digit',month:'short'});
+        const prev = recent[i + 1]; // older entry
+        html += `<tr><td><strong>${d}</strong></td>`;
+        fields.forEach(f => {
+            const val = row[f.key];
+            if (val === undefined) { html += '<td>-</td>'; return; }
+            let cls = '';
+            if (prev && prev[f.key] !== undefined) {
+                const diff = val - prev[f.key];
+                if (diff > 0) cls = f.down ? 'delta-bad' : 'delta-good';
+                else if (diff < 0) cls = f.down ? 'delta-good' : 'delta-bad';
+            }
+            html += `<td class="${cls}">${val}</td>`;
+        });
+        html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+}
+
+// --- Body Composition ---
+
+function initComposition() {
+    const toggleBtn = $('toggleComposition');
+    const form = $('compositionForm');
+    if (!toggleBtn || !form) return;
+
+    toggleBtn.addEventListener('click', () => {
+        form.classList.toggle('hidden');
+        toggleBtn.classList.toggle('open');
+    });
+
+    $('saveCompositionBtn').addEventListener('click', saveComposition);
+    loadCompositionHistory();
+}
+
+async function saveComposition() {
+    const fields = ['BodyFat', 'MuscleRate', 'VisceralFat', 'BMI', 'BMR', 'BodyWater', 'BoneMass', 'MetabolicAge'];
+    const data = {};
+    let hasValue = false;
+    fields.forEach(f => {
+        const val = parseFloat($('c' + f).value);
+        if (!isNaN(val)) { data[f] = val; hasValue = true; }
+    });
+    if (!hasValue) return;
+
+    const entry = {
+        userId: currentUserId,
+        date: new Date().toISOString(),
+        ...data
+    };
+
+    await addComposition(entry);
+    fields.forEach(f => $('c' + f).value = '');
+    loadCompositionHistory();
+}
+
+async function loadCompositionHistory() {
+    const container = $('compositionHistory');
+    if (!container) return;
+    const records = await getCompositionsByUser(currentUserId);
+    records.sort((a, b) => new Date(b.date) - new Date(a.date));
+    const recent = records.slice(0, 12);
+
+    if (recent.length === 0) {
+        container.innerHTML = '<p style="font-size:0.75rem;color:var(--text-muted);margin-top:8px;">No composition data yet</p>';
+        return;
+    }
+
+    const fields = [
+        {key:'BodyFat',label:'BF%',down:true},
+        {key:'MuscleRate',label:'Musc%',down:false},
+        {key:'VisceralFat',label:'Visc%',down:true},
+        {key:'BMI',label:'BMI',down:true},
+        {key:'BMR',label:'BMR'},
+        {key:'BodyWater',label:'Water%'},
+        {key:'BoneMass',label:'Bone'},
+        {key:'MetabolicAge',label:'MetAge',down:true}
+    ];
+
+    let html = '<div class="measure-history-scroll"><table class="measure-table"><thead><tr><th>Date</th>';
+    fields.forEach(f => { html += `<th>${f.label}</th>`; });
+    html += '</tr></thead><tbody>';
+
+    recent.forEach((row, i) => {
+        const d = new Date(row.date).toLocaleDateString('en-GB', {day:'2-digit',month:'short'});
+        const prev = recent[i + 1];
+        html += `<tr><td><strong>${d}</strong></td>`;
+        fields.forEach(f => {
+            const val = row[f.key];
+            if (val === undefined) { html += '<td>-</td>'; return; }
+            let cls = '';
+            if (prev && prev[f.key] !== undefined) {
+                const diff = val - prev[f.key];
+                if (diff > 0) cls = f.down ? 'delta-bad' : 'delta-good';
+                else if (diff < 0) cls = f.down ? 'delta-good' : 'delta-bad';
+            }
+            html += `<td class="${cls}">${val}</td>`;
+        });
+        html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+}
+
 // --- Start ---
-init();
 init();

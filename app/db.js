@@ -5,7 +5,7 @@
 // It stores structured data (like SQL tables) with zero setup.
 
 const DB_NAME = 'FitTimerDB';
-const DB_VERSION = 2;
+const DB_VERSION = 4;
 
 let db = null;
 
@@ -36,6 +36,28 @@ function openDB() {
                 sessionStore.createIndex('userId', 'userId', { unique: false });
                 sessionStore.createIndex('date', 'date', { unique: false });
                 sessionStore.createIndex('userId_date', ['userId', 'date'], { unique: false });
+            }
+
+            // Daily Logs table (habits + food + sleep tracking)
+            if (!database.objectStoreNames.contains('dailyLogs')) {
+                const logStore = database.createObjectStore('dailyLogs', { keyPath: 'id', autoIncrement: true });
+                logStore.createIndex('userId', 'userId', { unique: false });
+                logStore.createIndex('dateKey', 'dateKey', { unique: false });
+                logStore.createIndex('userId_dateKey', ['userId', 'dateKey'], { unique: true });
+            }
+
+            // Body Measurements table
+            if (!database.objectStoreNames.contains('measurements')) {
+                const measStore = database.createObjectStore('measurements', { keyPath: 'id', autoIncrement: true });
+                measStore.createIndex('userId', 'userId', { unique: false });
+                measStore.createIndex('date', 'date', { unique: false });
+            }
+
+            // Body Composition table
+            if (!database.objectStoreNames.contains('compositions')) {
+                const compStore = database.createObjectStore('compositions', { keyPath: 'id', autoIncrement: true });
+                compStore.createIndex('userId', 'userId', { unique: false });
+                compStore.createIndex('date', 'date', { unique: false });
             }
         };
 
@@ -140,5 +162,87 @@ function getSessionsByUser(userId) {
 async function exportUserData(userId) {
     const user = await getUser(userId);
     const sessions = await getSessionsByUser(userId);
-    return { user, sessions, exportedAt: new Date().toISOString() };
+    const dailyLogs = await getDailyLogsByUser(userId);
+    return { user, sessions, dailyLogs, exportedAt: new Date().toISOString() };
+}
+
+// --- Daily Log Operations ---
+
+function saveDailyLog(log) {
+    // Uses put (upsert) — same userId+dateKey overwrites
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction('dailyLogs', 'readwrite');
+        const store = tx.objectStore('dailyLogs');
+        const request = store.put(log);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+function getDailyLog(userId, dateKey) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction('dailyLogs', 'readonly');
+        const store = tx.objectStore('dailyLogs');
+        const index = store.index('userId_dateKey');
+        const request = index.get([userId, dateKey]);
+        request.onsuccess = () => resolve(request.result || null);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+function getDailyLogsByUser(userId) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction('dailyLogs', 'readonly');
+        const store = tx.objectStore('dailyLogs');
+        const index = store.index('userId');
+        const request = index.getAll(userId);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+// --- Measurements Operations ---
+
+function addMeasurement(measurement) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction('measurements', 'readwrite');
+        const store = tx.objectStore('measurements');
+        const request = store.add(measurement);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+function getMeasurementsByUser(userId) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction('measurements', 'readonly');
+        const store = tx.objectStore('measurements');
+        const index = store.index('userId');
+        const request = index.getAll(userId);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+// --- Composition Operations ---
+
+function addComposition(comp) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction('compositions', 'readwrite');
+        const store = tx.objectStore('compositions');
+        const request = store.add(comp);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+function getCompositionsByUser(userId) {
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction('compositions', 'readonly');
+        const store = tx.objectStore('compositions');
+        const index = store.index('userId');
+        const request = index.getAll(userId);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
 }

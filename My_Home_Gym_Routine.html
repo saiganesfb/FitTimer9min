@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Home Gym Routine &mdash; PPL + Arms/Abs Split</title>
+<style>
+    :root{--navy:#1e293b;--blue:#2563eb;--purple:#7c3aed;--green:#059669;--orange:#d97706;--red:#dc2626;--steel:#475569;--border:#e2e8f0;--bg:#f8fafc;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Segoe UI',Inter,system-ui,sans-serif;background:#f1f5f9;color:#334155;line-height:1.7;}
+    .topbar{background:var(--navy);color:#94a3b8;padding:10px 48px;font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+    .hero{background:linear-gradient(135deg,#059669,#0891b2);color:#fff;padding:48px 24px;text-align:center;}
+    .hero h1{font-size:2.2em;margin-bottom:8px;}
+    .hero p{font-size:1.1em;opacity:0.85;}
+    .hero .badge{display:inline-block;background:rgba(255,255,255,0.15);padding:4px 14px;border-radius:20px;font-size:0.8em;margin-top:12px;}
+    .container{max-width:1050px;margin:0 auto;padding:32px 24px;}
+    h2{color:var(--navy);font-size:1.5em;margin:36px 0 16px;padding-bottom:8px;border-bottom:2px solid var(--green);}
+    h3{color:var(--green);margin:20px 0 10px;font-size:1.15em;}
+    .card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:24px;margin:16px 0;box-shadow:0 2px 8px rgba(0,0,0,.04);}
+    .hl{padding:14px 18px;border-left:4px solid;border-radius:6px;margin:12px 0;font-size:0.92em;}
+    .hl.blue{background:#eff6ff;border-left-color:var(--blue);}
+    .hl.green{background:#ecfdf5;border-left-color:var(--green);}
+    .hl.orange{background:#fffbeb;border-left-color:var(--orange);}
+    .hl.red{background:#fef2f2;border-left-color:var(--red);}
+    .hl.purple{background:#faf5ff;border-left-color:var(--purple);}
+    table{width:100%;border-collapse:collapse;margin:12px 0;font-size:0.9em;}
+    th{background:var(--navy);color:#fff;padding:10px 14px;text-align:left;font-size:0.85em;text-transform:uppercase;letter-spacing:0.3px;}
+    td{padding:10px 14px;border-bottom:1px solid var(--border);}
+    tr:hover td{background:#f8fafc;}
+    footer{background:var(--navy);color:#94a3b8;padding:24px 48px;margin-top:48px;font-size:0.82em;text-align:center;}
+    .equip-grid{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0;}
+    .equip-chip{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-size:0.82em;display:flex;align-items:center;gap:8px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+    .equip-chip .eq-icon{font-size:1.3em;}.equip-chip .eq-detail{font-size:0.78em;color:var(--steel);}
+    .week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin:16px 0;}
+    .week-cell{background:#fff;border:2px solid var(--border);border-radius:10px;padding:12px 8px;text-align:center;}
+    .week-cell.push{border-color:#fda4af;background:#fff1f2;}.week-cell.pull{border-color:#67e8f9;background:#ecfeff;}
+    .week-cell.legs{border-color:#fde047;background:#fefce8;}.week-cell.arms{border-color:#c4b5fd;background:#f5f3ff;}
+    .week-cell.rest{border-color:#d1d5db;background:#f9fafb;opacity:0.7;}
+    .week-cell .wc-day{font-weight:800;font-size:0.75em;color:var(--steel);text-transform:uppercase;letter-spacing:1px;}
+    .week-cell .wc-emoji{font-size:1.6em;margin:6px 0;}.week-cell .wc-type{font-size:0.72em;font-weight:700;color:var(--navy);}
+    .walk-banner{background:linear-gradient(135deg,#ecfdf5,#f0fdf4);border:2px solid #86efac;border-radius:12px;padding:20px 24px;display:flex;align-items:center;gap:16px;margin:20px 0;}
+    .walk-banner .walk-icon{font-size:2.5em;}.walk-banner h4{color:#166534;font-size:1em;}.walk-banner p{color:var(--steel);font-size:0.85em;}
+    .rules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:16px 0;}
+    .form-rule-card{background:#fff;border:2px solid;border-radius:10px;padding:18px;text-align:center;}
+    .form-rule-card .fr-icon{font-size:2em;margin-bottom:6px;}.form-rule-card h4{font-size:0.9em;color:var(--navy);margin-bottom:4px;}.form-rule-card p{font-size:0.78em;color:var(--steel);}
+    .form-rule-card.green{border-color:#86efac;}.form-rule-card.blue{border-color:#93c5fd;}.form-rule-card.orange{border-color:#fde68a;}.form-rule-card.red{border-color:#fca5a5;}.form-rule-card.purple{border-color:#c4b5fd;}
+
+    /* Main Page Tabs */
+    .page-tabs{display:flex;gap:0;margin:0;border-bottom:3px solid var(--border);position:sticky;top:0;background:#f1f5f9;z-index:100;padding:8px 0 0;}
+    .page-tab{flex:1;padding:14px 8px;text-align:center;cursor:pointer;font-weight:700;font-size:0.85em;border-bottom:3px solid transparent;margin-bottom:-3px;transition:all 0.2s;border-radius:8px 8px 0 0;background:transparent;border-left:none;border-right:none;border-top:none;color:var(--steel);font-family:inherit;}
+    .page-tab:hover{background:#fff;color:var(--navy);}
+    .page-tab.active{background:#fff;border-bottom-color:var(--green);color:var(--green);}
+    .page-tab .pt-emoji{font-size:1.2em;display:block;margin-bottom:2px;}
+    .page-content{display:none;}.page-content.active{display:block;}
+
+    /* Routine Day Tabs */
+    .day-tabs{display:flex;gap:4px;margin:16px 0 0;flex-wrap:wrap;}
+    .day-tab{padding:10px 20px;cursor:pointer;font-weight:700;font-size:0.82em;border:2px solid var(--border);border-radius:8px;background:#fff;color:var(--steel);font-family:inherit;transition:all 0.2s;}
+    .day-tab:hover{border-color:var(--green);color:var(--navy);}
+    .day-tab.active{background:var(--green);border-color:var(--green);color:#fff;}
+    .day-content{display:none;}.day-content.active{display:block;}
+
+    /* Exercise Cards */
+    .muscle-header{display:flex;align-items:center;gap:10px;margin:24px 0 12px;padding-bottom:6px;border-bottom:2px solid var(--border);}
+    .muscle-header h3{margin:0;font-size:1.1em;color:var(--navy);}
+    .muscle-tag{font-size:0.7em;padding:3px 10px;border-radius:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;}
+    .mt-primary{background:#dcfce7;color:#166534;}.mt-secondary{background:#dbeafe;color:#1e40af;}.mt-finisher{background:#fef3c7;color:#92400e;}.mt-apt{background:#fee2e2;color:#991b1b;}
+    .ex-card{background:#fff;border:1px solid var(--border);border-radius:10px;margin:8px 0;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04);transition:box-shadow 0.2s;}
+    .ex-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.08);}
+    .ex-summary{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;user-select:none;}
+    .ex-num{width:28px;height:28px;border-radius:50%;background:var(--green);color:#fff;font-weight:800;font-size:0.8em;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .ex-info{flex:1;}.ex-name{font-weight:700;font-size:0.92em;color:var(--navy);}
+    .ex-quick{font-size:0.75em;color:var(--steel);margin-top:2px;}
+    .ex-sets-badge{background:#ecfdf5;border:1px solid #a7f3d0;color:#166534;padding:4px 12px;border-radius:8px;font-size:0.78em;font-weight:700;white-space:nowrap;}
+    .ex-chevron{color:#cbd5e1;font-size:0.8em;transition:transform 0.2s;margin-left:8px;}
+    .ex-card.open .ex-chevron{transform:rotate(90deg);color:var(--green);}
+    .ex-details{display:none;border-top:1px solid var(--border);padding:0;}
+    .ex-card.open .ex-details{display:block;}
+    .ex-detail-inner{padding:18px 20px;}
+    .detail-section{margin-bottom:14px;}
+    .detail-label{font-size:0.72em;font-weight:700;color:var(--steel);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;}
+    .form-points{list-style:none;padding:0;margin:6px 0;}
+    .form-points li{padding:6px 0 6px 24px;position:relative;font-size:0.88em;line-height:1.6;border-bottom:1px solid #f8fafc;}
+    .form-points li::before{content:'';position:absolute;left:0;top:12px;width:14px;height:14px;border-radius:50%;}
+    .form-points li.do::before{background:#dcfce7;border:2px solid #22c55e;}
+    .form-points li.dont::before{background:#fee2e2;border:2px solid #ef4444;}
+    .form-points li.key::before{background:#fef3c7;border:2px solid #f59e0b;}
+    .form-points li strong{color:var(--navy);}
+    .form-points li em{color:var(--red);font-style:normal;font-weight:600;}
+
+    /* Track Tab */
+    .track-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin:16px 0;}
+    .track-field label{font-size:0.75em;font-weight:700;color:var(--steel);text-transform:uppercase;display:block;margin-bottom:4px;}
+    .track-field input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:0.9em;font-family:inherit;background:#fff;}
+    .track-field input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(5,150,105,0.1);}
+    .btn{padding:12px 24px;border:none;border-radius:8px;font-weight:700;font-size:0.9em;cursor:pointer;font-family:inherit;transition:all 0.2s;}
+    .btn-green{background:var(--green);color:#fff;}.btn-green:hover{background:#047857;}
+    .btn-blue{background:var(--blue);color:#fff;}.btn-blue:hover{background:#1d4ed8;}
+    .btn-red{background:var(--red);color:#fff;}.btn-red:hover{background:#b91c1c;}
+    .btn-sm{padding:8px 14px;font-size:0.8em;}
+    .history-table{max-height:300px;overflow-y:auto;margin-top:12px;}
+    .history-table table{font-size:0.8em;}
+    .history-table th{position:sticky;top:0;}
+
+    /* Log Tab */
+    .log-day-pills{display:flex;gap:6px;margin:12px 0;flex-wrap:wrap;}
+    .log-day-pill{padding:8px 18px;border:2px solid var(--border);border-radius:20px;cursor:pointer;font-weight:700;font-size:0.8em;background:#fff;color:var(--steel);transition:all 0.2s;}
+    .log-day-pill:hover{border-color:var(--green);}.log-day-pill.active{background:var(--green);border-color:var(--green);color:#fff;}
+    .log-exercise-row{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin:8px 0;display:grid;grid-template-columns:1.8fr repeat(3,1fr) auto;gap:8px;align-items:center;}
+    .log-exercise-row.header{background:var(--navy);color:#fff;font-weight:700;font-size:0.78em;text-transform:uppercase;border:none;border-radius:8px;}
+    .log-ex-name{font-weight:700;font-size:0.88em;color:var(--navy);}
+    .log-set-cell{display:flex;gap:4px;align-items:center;}
+    .log-set-cell select,.log-set-cell input{padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:0.82em;font-family:inherit;background:#fff;width:100%;}
+    .log-set-cell select:focus,.log-set-cell input:focus{outline:none;border-color:var(--green);}
+    .log-set-group{display:flex;flex-direction:column;gap:4px;}
+    .log-set-label{font-size:0.65em;color:var(--steel);font-weight:700;text-align:center;}
+    .log-set-inputs{display:flex;gap:4px;}
+    .log-set-inputs select{width:50%;}
+    .add-set-btn{font-size:0.7em;color:var(--green);cursor:pointer;border:1px dashed var(--green);border-radius:6px;padding:4px 8px;background:transparent;font-weight:700;}
+    .add-set-btn:hover{background:#ecfdf5;}
+    .save-day-btn{margin:20px 0;padding:16px 32px;font-size:1em;}
+    .log-date-picker{padding:8px 14px;border:2px solid var(--green);border-radius:8px;font-size:0.9em;font-family:inherit;background:#fff;}
+    .log-history-entry{background:#fff;border:1px solid var(--border);border-radius:8px;padding:14px;margin:8px 0;}
+    .log-history-date{font-weight:800;color:var(--navy);font-size:0.9em;margin-bottom:8px;}
+    .log-history-ex{font-size:0.8em;margin:4px 0;color:var(--steel);}
+    .log-history-ex strong{color:var(--navy);}
+    .add-exercise-select{padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:0.85em;font-family:inherit;background:#fff;margin-right:8px;}
+
+    @media(max-width:700px){
+        .week-grid{grid-template-columns:repeat(7,1fr);gap:4px;}.week-cell{padding:8px 2px;}.week-cell .wc-emoji{font-size:1.2em;}
+        .log-exercise-row{grid-template-columns:1fr;gap:6px;}
+        .log-exercise-row.header{display:none;}
+        .track-grid{grid-template-columns:1fr 1fr;}
+    }
+    .ex-img{width:100%;border-radius:8px;margin:10px 0;overflow:hidden;background:#f1f5f9;border:1px solid var(--border);}
+    .ex-img img{width:100%;height:200px;object-fit:cover;display:block;}
+    .ex-img .img-credit{font-size:0.65em;color:#94a3b8;text-align:right;padding:4px 8px;}
+    .detail-equip{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
+    .detail-equip span{background:#f1f5f9;border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-size:0.8em;color:var(--steel);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+    <span>PERSONAL FITNESS PLAN &mdash; Home Gym PPL Routine</span>
+    <span>Created: May 2026</span>
+</div>
+
+<div class="hero">
+    <div style="font-size:2.5em;margin-bottom:8px;">&#x1F3CB;&#xFE0F;</div>
+    <h1>My Home Gym Routine</h1>
+    <p>Push &bull; Pull &bull; Legs &bull; Arms+Abs &mdash; 4 Days/Week + Daily Walk</p>
+    <div class="badge">Form Over Weight &bull; Consistency Over Intensity &bull; No Ego Lifting</div>
+</div>
+
+<!-- PAGE LEVEL TABS -->
+<div class="page-tabs">
+    <button class="page-tab active" onclick="switchPage('routine',this)"><span class="pt-emoji">&#x1F4CB;</span>Routine</button>
+    <button class="page-tab" onclick="switchPage('log',this)"><span class="pt-emoji">&#x1F4DD;</span>Log Workout</button>
+    <button class="page-tab" onclick="switchPage('track',this)"><span class="pt-emoji">&#x1F4CF;</span>Track Body</button>
+    <button class="page-tab" onclick="switchPage('info',this)"><span class="pt-emoji">&#x2139;&#xFE0F;</span>Info</button>
+</div>
+
+<!-- ==================== ROUTINE PAGE ==================== -->
+<div class="page-content active" id="page-routine">
+<div class="container">
+
+<h2>&#x1F4C5; Weekly Schedule</h2>
+<div class="card">
+    <div class="week-grid">
+        <div class="week-cell push"><div class="wc-day">Mon</div><div class="wc-emoji">&#x1F4AA;</div><div class="wc-type">PUSH</div></div>
+        <div class="week-cell pull"><div class="wc-day">Tue</div><div class="wc-emoji">&#x1F4AB;</div><div class="wc-type">PULL</div></div>
+        <div class="week-cell rest"><div class="wc-day">Wed</div><div class="wc-emoji">&#x1F6B6;</div><div class="wc-type">Rest</div></div>
+        <div class="week-cell legs"><div class="wc-day">Thu</div><div class="wc-emoji">&#x1F9B5;</div><div class="wc-type">LEGS</div></div>
+        <div class="week-cell arms"><div class="wc-day">Fri</div><div class="wc-emoji">&#x1F4A5;</div><div class="wc-type">Arms</div></div>
+        <div class="week-cell rest"><div class="wc-day">Sat</div><div class="wc-emoji">&#x1F6B6;</div><div class="wc-type">Rest</div></div>
+        <div class="week-cell rest"><div class="wc-day">Sun</div><div class="wc-emoji">&#x1F634;</div><div class="wc-type">Rest</div></div>
+    </div>
+    <div class="walk-banner"><span class="walk-icon">&#x1F6B6;</span><div><h4>Daily Walk &mdash; 30 min (Non-Negotiable)</h4><p>WalkPad or outdoor. Every day including rest days.</p></div></div>
+</div>
+
+<h2>&#x1F4CB; Exercises (Click to Expand)</h2>
+<div class="day-tabs">
+    <button class="day-tab active" onclick="switchDay('push',this)">&#x1F4AA; PUSH</button>
+    <button class="day-tab" onclick="switchDay('pull',this)">&#x1F4AB; PULL</button>
+    <button class="day-tab" onclick="switchDay('legs',this)">&#x1F9B5; LEGS</button>
+    <button class="day-tab" onclick="switchDay('arms',this)">&#x1F4A5; ARMS+ABS</button>
+</div>
+
+<!-- PUSH -->
+<!-- PUSH DAY -->
+<div class="day-content active" id="day-push">
+<div class="hl red" style="margin-top:16px;"><strong>PUSH = Chest + Shoulders + Triceps</strong> &mdash; All exercises where you PUSH weight away from your body. ~45-55 min total.</div>
+<div class="muscle-header"><h3>Chest</h3><span class="muscle-tag mt-primary">Primary</span></div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">1</span><div class="ex-info"><div class="ex-name">Push-ups (Warm-up)</div><div class="ex-quick">Bodyweight &bull; Push-up Board</div></div><span class="ex-sets-badge">2&times;15</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="ex-img"><img src="https://images.unsplash.com/photo-1598971639058-fab3c3109a00?w=600&h=220&fit=crop" alt="Push-up form" loading="lazy"><div class="img-credit">Warm-up: activate chest &amp; triceps</div></div>
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Push-up Board</span><span>Gym Mat</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Hands shoulder-width apart</strong> on push-up board grips</li>
+            <li class="do"><strong>Body in a straight plank</strong> from head to heels &mdash; engage core</li>
+            <li class="do"><strong>Elbows at 45&deg;</strong> (not flared 90&deg;, not tucked 0&deg;)</li>
+            <li class="do"><strong>Lower until chest nearly touches floor</strong>, push up explosively</li>
+            <li class="key"><strong>Exhale pushing up</strong>, inhale going down</li>
+            <li class="dont"><em>DON'T</em> let hips sag or pike up &mdash; core tight</li>
+            <li class="dont"><em>DON'T</em> half-rep &mdash; full range only</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">2</span><div class="ex-info"><div class="ex-name">DB Chest Press (Flat)</div><div class="ex-quick">Bench flat &bull; 10&ndash;12.5 kg dumbbells</div></div><span class="ex-sets-badge">3&times;12</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="ex-img"><img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&h=220&fit=crop" alt="Chest press" loading="lazy"><div class="img-credit">Flat bench dumbbell press &mdash; foundation chest exercise</div></div>
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Bench (flat, level 4)</span><span>10&ndash;12.5 kg dumbbells</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Lie flat</strong>, feet firmly on floor, natural back arch</li>
+            <li class="key"><strong>Pinch shoulder blades together</strong> &mdash; keep pinched ENTIRE set. #1 chest press rule!</li>
+            <li class="do"><strong>Press dumbbells straight up</strong> from chest until arms fully extended</li>
+            <li class="do"><strong>Lower slowly (3 sec)</strong> until dumbbells at chest level, elbows 45&deg;</li>
+            <li class="do"><strong>Squeeze chest at top</strong> for 1 second</li>
+            <li class="dont"><em>DON'T</em> bounce weights off chest</li>
+            <li class="dont"><em>DON'T</em> flare elbows to 90&deg; &mdash; keeps shoulders safe</li>
+            <li class="dont"><em>DON'T</em> lift feet off floor or arch excessively</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">3</span><div class="ex-info"><div class="ex-name">Incline DB Press</div><div class="ex-quick">Bench 30-45&deg; &bull; 7.5&ndash;10 kg</div></div><span class="ex-sets-badge">3&times;10</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="ex-img"><img src="https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=600&h=220&fit=crop" alt="Incline press" loading="lazy"><div class="img-credit">Incline press targets the upper chest</div></div>
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Bench (level 3-4, 30-45&deg;)</span><span>7.5&ndash;10 kg dumbbells</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="key"><strong>Set bench to 30-45&deg;</strong> &mdash; too steep (60&deg;+) shifts to shoulders</li>
+            <li class="do"><strong>Press straight UP</strong> towards ceiling, NOT towards face</li>
+            <li class="do"><strong>Shoulder blades pinched</strong> against bench, chest pushed out</li>
+            <li class="do"><strong>Lower to upper chest level</strong>, feel the stretch</li>
+            <li class="dont"><em>DON'T</em> let elbows drop below shoulder line</li>
+            <li class="dont"><em>DON'T</em> use momentum &mdash; control every inch</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">4</span><div class="ex-info"><div class="ex-name">Dumbbell Fly</div><div class="ex-quick">Bench flat &bull; 5&ndash;7.5 kg (lighter!)</div></div><span class="ex-sets-badge">3&times;12</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Bench (flat)</span><span>5&ndash;7.5 kg dumbbells (lighter!)</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Arms extended above chest</strong> with SLIGHT bend in elbows (15-20&deg;)</li>
+            <li class="key"><strong>Lock the elbow angle</strong> &mdash; stays same throughout. NOT a press!</li>
+            <li class="do"><strong>Open arms wide arc</strong> until chest stretch, don't go too deep</li>
+            <li class="do"><strong>Squeeze chest to close</strong> &mdash; "hugging a tree"</li>
+            <li class="key"><strong>Use LIGHTER weight</strong> &mdash; isolation, not strength. Ego lifting = shoulder injury</li>
+            <li class="dont"><em>DON'T</em> go too deep &mdash; stop at stretch, not pain</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="muscle-header"><h3>Shoulders</h3><span class="muscle-tag mt-secondary">Secondary</span></div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">5</span><div class="ex-info"><div class="ex-name">Overhead DB Press</div><div class="ex-quick">Bench 75-80&deg; or standing &bull; 7.5&ndash;10 kg</div></div><span class="ex-sets-badge">3&times;10</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="ex-img"><img src="https://images.unsplash.com/photo-1532029837206-abbe2b7620e3?w=600&h=220&fit=crop" alt="Overhead press" loading="lazy"><div class="img-credit">Overhead press &mdash; king of shoulder exercises</div></div>
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Bench (near-vertical, 75-80&deg;)</span><span>7.5&ndash;10 kg dumbbells</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Start at ear level</strong>, palms facing forward</li>
+            <li class="do"><strong>Press straight up</strong> until arms locked overhead</li>
+            <li class="do"><strong>Lower with control</strong> back to ear level</li>
+            <li class="dont"><em>DON'T</em> arch lower back &mdash; use bench back for support</li>
+            <li class="key"><strong>Seated (safer) or standing (more core engagement)</strong></li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">6</span><div class="ex-info"><div class="ex-name">Lateral Raises</div><div class="ex-quick">Standing &bull; 2.5&ndash;5 kg</div></div><span class="ex-sets-badge">3&times;15</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>2.5&ndash;5 kg dumbbells (LIGHT is fine!)</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Slight bend in elbows</strong> (locked throughout)</li>
+            <li class="do"><strong>Raise to sides until parallel</strong> (T-shape)</li>
+            <li class="key"><strong>Lead with ELBOWS, not wrists</strong> &mdash; imagine pouring water from jugs</li>
+            <li class="do"><strong>Lower slowly (3 sec)</strong> &mdash; don't drop</li>
+            <li class="key"><strong>LIGHT weight is correct</strong> &mdash; 2.5 kg is fine! Side delts are tiny muscles</li>
+            <li class="dont"><em>DON'T</em> swing or use momentum to get them up</li>
+            <li class="dont"><em>DON'T</em> shrug shoulders up &mdash; keep DOWN and back</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="muscle-header"><h3>Triceps</h3><span class="muscle-tag mt-finisher">Finisher</span></div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">7</span><div class="ex-info"><div class="ex-name">Tricep Pushdown (Band)</div><div class="ex-quick">Pull-up Bar + Resistance Band</div></div><span class="ex-sets-badge">3&times;15</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Pull-up Bar (door)</span><span>Resistance Band (Medium/Heavy)</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Hook band over pull-up bar</strong>, grip both hands shoulder-width</li>
+            <li class="key"><strong>Pin elbows TIGHT to body</strong> &mdash; they don't move AT ALL. Only forearms move.</li>
+            <li class="do"><strong>Push down until fully extended</strong>, squeeze triceps 1 sec</li>
+            <li class="do"><strong>Let band pull back slowly</strong> to chest level</li>
+            <li class="dont"><em>DON'T</em> let elbows drift forward or flare out</li>
+            <li class="dont"><em>DON'T</em> lean over &mdash; stand upright, slight forward lean only</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">8</span><div class="ex-info"><div class="ex-name">Overhead Tricep Extension (Band)</div><div class="ex-quick">Step on band &bull; Arms overhead</div></div><span class="ex-sets-badge">3&times;12</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Resistance Band</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Step on band center</strong>, hold ends behind head with both hands</li>
+            <li class="do"><strong>Extend arms straight up</strong> overhead</li>
+            <li class="key"><strong>Elbows point FORWARD near ears</strong> &mdash; don't let them flare wide</li>
+            <li class="do"><strong>Lower behind head with control</strong>, feel tricep stretch at bottom</li>
+            <li class="do"><strong>Full range</strong> &mdash; all the way down, all the way up</li>
+            <li class="dont"><em>DON'T</em> arch back &mdash; keep core tight</li>
+        </ul></div>
+    </div></div>
+</div>
+</div>
+
+<!-- PULL DAY -->
+<div class="day-content" id="day-pull">
+<div class="hl blue" style="margin-top:16px;"><strong>PULL = Back + Traps + Rear Delts + Biceps</strong> &mdash; All exercises where you PULL weight toward your body. ~45-55 min total.</div>
+<div class="muscle-header"><h3>Back</h3><span class="muscle-tag mt-primary">Primary</span></div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">1</span><div class="ex-info"><div class="ex-name">Bent-Over DB Row</div><div class="ex-quick">Standing bent 45&deg; &bull; 10&ndash;12.5 kg</div></div><span class="ex-sets-badge">3&times;10</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="ex-img"><img src="https://images.unsplash.com/photo-1603287681836-b174ce5074c2?w=600&h=220&fit=crop" alt="Bent over row" loading="lazy"><div class="img-credit">Bent-over row &mdash; builds back thickness</div></div>
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>10&ndash;12.5 kg dumbbells</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="key"><strong>Bend at hips 45&deg;</strong>, knees slightly bent, back FLAT (neutral spine) &mdash; CRITICAL</li>
+            <li class="do"><strong>Pull dumbbells to lower chest/hip</strong></li>
+            <li class="do"><strong>Squeeze shoulder blades together</strong> at top for 1 sec</li>
+            <li class="do"><strong>Lower slowly</strong> until arms fully extended</li>
+            <li class="dont"><em>DON'T ROUND YOUR BACK</em> &mdash; the most important rule. If back rounds = lighten weight immediately.</li>
+            <li class="dont"><em>DON'T</em> use momentum to swing weights up</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">2</span><div class="ex-info"><div class="ex-name">Single-Arm DB Row</div><div class="ex-quick">Bench support &bull; 10&ndash;12.5 kg</div></div><span class="ex-sets-badge">3&times;10/side</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Flat bench</span><span>10&ndash;12.5 kg dumbbell</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>One knee + hand on bench</strong>, other foot planted wide for stability</li>
+            <li class="do"><strong>Pull dumbbell from full hang to hip</strong> &mdash; elbow PAST your back</li>
+            <li class="key"><strong>Feel the LAT working</strong> &mdash; think "pull from elbow, not hand"</li>
+            <li class="do"><strong>Torso stays parallel to floor</strong>, don't twist at the top</li>
+            <li class="dont"><em>DON'T</em> rotate torso to cheat the weight up</li>
+            <li class="dont"><em>DON'T</em> shrug shoulder &mdash; keep it DOWN and back</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">3</span><div class="ex-info"><div class="ex-name">Band Lat Pulldown</div><div class="ex-quick">Pull-up Bar + Band &bull; Kneel or sit</div></div><span class="ex-sets-badge">3&times;12</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Pull-up Bar (door)</span><span>Heavy Resistance Band</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Loop band over bar</strong>, kneel or sit underneath</li>
+            <li class="do"><strong>Pull band down to upper chest</strong> with wide grip</li>
+            <li class="key"><strong>"Elbows into back pockets"</strong> &mdash; drive DOWN and BACK with elbows, not hands</li>
+            <li class="do"><strong>Lean slightly back</strong> (10-15&deg;) for better lat engagement</li>
+            <li class="key"><strong>Single-arm version</strong> excellent for isolating each lat</li>
+            <li class="dont"><em>DON'T</em> pull with biceps &mdash; think lat squeeze</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num" style="background:var(--red);">4</span><div class="ex-info"><div class="ex-name">Face Pulls &#x2B50;</div><div class="ex-quick">Band at face height &bull; NEVER SKIP THIS</div></div><span class="ex-sets-badge">3&times;15</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="hl red"><strong>&#x2B50; THE most important exercise for posture.</strong> Fixes rounded shoulders from desk work. Do EVERY pull day and optionally push day too.</div>
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Resistance Band</span><span>Door anchor or Pull-up Bar</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Band at face height</strong> (hook on bar/door)</li>
+            <li class="do"><strong>Pull towards face</strong>, elbows HIGH and WIDE (not down)</li>
+            <li class="key"><strong>Externally rotate at end</strong> &mdash; hands beside ears, "hands up" position</li>
+            <li class="do"><strong>Squeeze between shoulder blades</strong> for 2 seconds</li>
+            <li class="key"><strong>Light resistance, high reps</strong> &mdash; this is posture work, not strength</li>
+            <li class="dont"><em>DON'T</em> pull to chin/chest &mdash; pull to FACE level</li>
+            <li class="dont"><em>DON'T</em> use heavy band &mdash; defeats the purpose</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">5</span><div class="ex-info"><div class="ex-name">Band Seated Rows</div><div class="ex-quick">Band around feet &bull; Seated on floor</div></div><span class="ex-sets-badge">3&times;12</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Heavy Resistance Band</span><span>Gym Mat</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Sit on floor</strong>, legs extended, band looped around feet</li>
+            <li class="do"><strong>Pull band to lower chest/stomach</strong>, squeeze shoulder blades together</li>
+            <li class="do"><strong>Back upright</strong> &mdash; don't lean back excessively to cheat</li>
+            <li class="do"><strong>Tempo: 2 sec pull, 1 sec hold, 3 sec release</strong></li>
+            <li class="dont"><em>DON'T</em> round forward on the release</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="muscle-header"><h3>Traps</h3><span class="muscle-tag mt-secondary">Secondary</span></div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">6</span><div class="ex-info"><div class="ex-name">DB Shrugs</div><div class="ex-quick">Standing &bull; 10&ndash;12.5 kg</div></div><span class="ex-sets-badge">3&times;15</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>10&ndash;12.5 kg dumbbells</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Stand straight</strong>, dumbbells hanging at sides</li>
+            <li class="do"><strong>Shrug straight UP</strong> towards ears, hold squeeze 1 sec at top</li>
+            <li class="do"><strong>Lower with control</strong></li>
+            <li class="dont"><em>DON'T</em> roll in circles &mdash; straight up and down ONLY</li>
+            <li class="dont"><em>DON'T</em> bend arms or use momentum</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="muscle-header"><h3>Biceps</h3><span class="muscle-tag mt-finisher">Finisher</span></div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">7</span><div class="ex-info"><div class="ex-name">Z-Bar Curls</div><div class="ex-quick">Curl Bar + plates &bull; 7.5&ndash;12.5 kg total</div></div><span class="ex-sets-badge">3&times;12</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="ex-img"><img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=600&h=220&fit=crop" alt="Bicep curl" loading="lazy"><div class="img-credit">Strict form &gt; heavy weight for biceps</div></div>
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Z-Bar (EZ curl bar)</span><span>Weight plates</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Grip at angled sections</strong> &mdash; less wrist strain than straight bar</li>
+            <li class="key"><strong>Upper arms DON'T MOVE</strong> &mdash; pin to sides. Only forearms curl up.</li>
+            <li class="do"><strong>Squeeze biceps hard at top</strong> for 1 sec</li>
+            <li class="do"><strong>Lower with control (3 sec)</strong> &mdash; the negative = where growth happens</li>
+            <li class="dont"><em>DON'T</em> swing body or use back to curl up</li>
+            <li class="dont"><em>DON'T</em> half-rep &mdash; full extension at bottom</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">8</span><div class="ex-info"><div class="ex-name">Hammer Curls</div><div class="ex-quick">Standing &bull; 7.5&ndash;10 kg</div></div><span class="ex-sets-badge">3&times;10</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>7.5&ndash;10 kg dumbbells</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="key"><strong>Palms face each other</strong> (neutral/hammer grip) throughout</li>
+            <li class="do"><strong>Curl keeping neutral grip</strong> entire movement</li>
+            <li class="do">Targets <strong>brachialis</strong> (outer arm thickness) + <strong>forearms</strong></li>
+            <li class="do"><strong>Can alternate arms</strong> or do both simultaneously</li>
+            <li class="do">Try <strong>cross-body hammers</strong> (curl towards opposite shoulder) for variety</li>
+            <li class="dont"><em>DON'T</em> let wrists rotate &mdash; hammer grip locked the whole set</li>
+        </ul></div>
+    </div></div>
+</div>
+</div>
+
+<!-- LEGS DAY -->
+<div class="day-content" id="day-legs">
+<div class="hl orange" style="margin-top:16px;"><strong>LEGS = Quads + Hamstrings + Glutes + Calves + APT Fixes</strong> &mdash; Compound movements + mobility. ~50-60 min total.</div>
+<div class="muscle-header"><h3>Quads &amp; Glutes</h3><span class="muscle-tag mt-primary">Compound</span></div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">1</span><div class="ex-info"><div class="ex-name">Barbell Deadlift</div><div class="ex-quick">Deadlift barbell + plates &bull; KING exercise</div></div><span class="ex-sets-badge">3&times;8</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="ex-img"><img src="https://images.unsplash.com/photo-1517963879433-6ad2b056d712?w=600&h=220&fit=crop" alt="Deadlift" loading="lazy"><div class="img-credit">The deadlift &mdash; king of all exercises. Respect it.</div></div>
+        <div class="hl red"><strong>&#x26A0;&#xFE0F; Perfect form required. No ego lifting. This exercise demands respect.</strong></div>
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Deadlift Barbell</span><span>Weight Plates</span><span>Gym Mat</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Feet hip-width</strong>, bar over mid-foot (bar touches shins)</li>
+            <li class="key"><strong>Back FLAT, chest UP, shoulders directly over bar</strong></li>
+            <li class="do"><strong>Drive through heels</strong> &mdash; hips and shoulders rise together</li>
+            <li class="do"><strong>Bar stays close to body</strong> (should scrape shins/thighs)</li>
+            <li class="do"><strong>Lock out</strong> by squeezing glutes at top, NOT by leaning back</li>
+            <li class="dont"><em>DON'T ROUND YOUR BACK</em> &mdash; #1 injury risk in the gym</li>
+            <li class="dont"><em>DON'T</em> jerk off the floor &mdash; smooth, controlled pull</li>
+            <li class="dont"><em>DON'T</em> look up (hyperextend neck) &mdash; neutral neck throughout</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">2</span><div class="ex-info"><div class="ex-name">Goblet Squats</div><div class="ex-quick">1 heavy dumbbell at chest &bull; 10&ndash;12.5 kg</div></div><span class="ex-sets-badge">3&times;12</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>10&ndash;12.5 kg dumbbell (held vertically)</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Hold dumbbell vertically at chest</strong> ("goblet" position)</li>
+            <li class="do"><strong>Feet shoulder-width apart</strong>, toes slightly out (15-30&deg;)</li>
+            <li class="do"><strong>Squat to parallel or below</strong> &mdash; "sit back" into your heels</li>
+            <li class="key"><strong>Knees track over toes</strong> &mdash; push knees OUT, never let them cave inward</li>
+            <li class="do"><strong>Chest up, core tight</strong>, push through heels to stand</li>
+            <li class="dont"><em>DON'T</em> let knees cave inward (valgus)</li>
+            <li class="dont"><em>DON'T</em> round lower back at the bottom</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num" style="background:var(--orange);">3</span><div class="ex-info"><div class="ex-name">Lunges &#x2B50;</div><div class="ex-quick">DBs at sides &bull; 5&ndash;7.5 kg &bull; VVIP exercise</div></div><span class="ex-sets-badge">3&times;10/leg</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="ex-img"><img src="https://images.unsplash.com/photo-1434608519344-49d77a699e1d?w=600&h=220&fit=crop" alt="Lunges" loading="lazy"><div class="img-credit">Lunges &mdash; VVIP for quads, glutes, and balance</div></div>
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>5&ndash;7.5 kg dumbbells at sides</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Step forward into a lunge</strong>, lower back knee towards floor</li>
+            <li class="key"><strong>Both knees at 90&deg;</strong> at the bottom position</li>
+            <li class="key"><strong>Front knee stays over ankle</strong> &mdash; NEVER drifts past toes</li>
+            <li class="do"><strong>Push back through front heel</strong> to return to standing</li>
+            <li class="do"><strong>Alternate legs</strong>, keep torso upright throughout</li>
+            <li class="dont"><em>DON'T</em> let front knee shoot past toes</li>
+            <li class="dont"><em>DON'T</em> lean forward &mdash; upright torso</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="muscle-header"><h3>Glutes &amp; Hamstrings</h3><span class="muscle-tag mt-apt">APT Fix</span></div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num" style="background:var(--red);">4</span><div class="ex-info"><div class="ex-name">Hip Thrust</div><div class="ex-quick">Back on bench &bull; Heavy DB/barbell on hips</div></div><span class="ex-sets-badge">3&times;12</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="hl red"><strong>Key APT Fix</strong> &mdash; Strengthens weak glutes which is the #1 cause of anterior pelvic tilt. Can significantly improve posture alone.</div>
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Bench</span><span>Heavy dumbbell or barbell on hips</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Upper back resting on bench edge</strong>, feet flat on floor hip-width apart</li>
+            <li class="do"><strong>Drive hips UP</strong> by squeezing glutes HARD</li>
+            <li class="key"><strong>Full hip extension at top</strong> &mdash; straight line from shoulders to knees</li>
+            <li class="do"><strong>Chin tucked</strong>, look forward not at ceiling (prevents neck strain)</li>
+            <li class="do"><strong>Hold top position for 2 seconds</strong></li>
+            <li class="dont"><em>DON'T</em> hyperextend past straight &mdash; lower back risk</li>
+            <li class="dont"><em>DON'T</em> push through toes &mdash; drive through heels</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num" style="background:var(--red);">5</span><div class="ex-info"><div class="ex-name">Romanian Deadlift (DB)</div><div class="ex-quick">7.5&ndash;10 kg &bull; Hamstring specific</div></div><span class="ex-sets-badge">3&times;10</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="hl red"><strong>Hamstring specific &mdash; critical for APT.</strong> Weak hamstrings allow pelvis to tilt forward.</div>
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>7.5&ndash;10 kg dumbbells</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Stand straight</strong>, slight knee bend (knees stay at this angle)</li>
+            <li class="key"><strong>HINGE at hips</strong> &mdash; push butt BACK, lower dumbbells along legs</li>
+            <li class="do"><strong>Feel deep hamstring stretch</strong> &mdash; stop when you feel max stretch</li>
+            <li class="do"><strong>Drive hips forward</strong> to return to standing, squeeze glutes at top</li>
+            <li class="do"><strong>Back stays FLAT</strong> entire movement &mdash; natural arch maintained</li>
+            <li class="dont"><em>DON'T</em> round your back &mdash; stop before form breaks</li>
+            <li class="dont"><em>DON'T</em> bend knees more during descent &mdash; this is a HINGE, not a squat</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">6</span><div class="ex-info"><div class="ex-name">Bulgarian Split Squat</div><div class="ex-quick">Back foot on bench &bull; 5&ndash;7.5 kg or bodyweight</div></div><span class="ex-sets-badge">3&times;8/leg</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Bench</span><span>5&ndash;7.5 kg dumbbells (or bodyweight)</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Back foot on bench</strong> (laces down), front foot ~2 feet ahead</li>
+            <li class="do"><strong>Lower straight down</strong> until front thigh is parallel</li>
+            <li class="do"><strong>Torso stays upright</strong></li>
+            <li class="key"><strong>Start bodyweight only if balance is hard</strong> &mdash; this exercise is brutal, no shame in BW</li>
+            <li class="do"><strong>Push through front heel</strong> to rise</li>
+            <li class="dont"><em>DON'T</em> lean forward excessively</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="muscle-header"><h3>Calves</h3><span class="muscle-tag mt-secondary">Secondary</span></div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">7</span><div class="ex-info"><div class="ex-name">Calf Raises</div><div class="ex-quick">Stepping Block &bull; 10 kg DBs</div></div><span class="ex-sets-badge">3&times;20</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Stepping Block / Stair edge</span><span>10 kg dumbbells</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Stand on step edge</strong>, heels hanging off into space</li>
+            <li class="do"><strong>Rise as HIGH as possible</strong>, squeeze calf hard 1 sec at top</li>
+            <li class="key"><strong>Lower BELOW the step level</strong> for full stretch &mdash; growth happens in the stretch</li>
+            <li class="key"><strong>High reps (20)</strong> &mdash; calves are stubborn endurance muscles, need volume</li>
+            <li class="dont"><em>DON'T</em> bounce &mdash; slow and controlled</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="muscle-header"><h3>Mobility</h3><span class="muscle-tag mt-apt">APT Rehab</span></div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num" style="background:var(--red);">8</span><div class="ex-info"><div class="ex-name">Hip Flexor Stretch</div><div class="ex-quick">Kneeling &bull; Do EVERY leg day minimum</div></div><span class="ex-sets-badge">2&times;30s/side</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="hl red"><strong>Every leg day minimum. Do daily if possible.</strong> Tight hip flexors are the #1 cause of APT (anterior pelvic tilt).</div>
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Gym Mat</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Kneel on one knee</strong> (lunge position on mat)</li>
+            <li class="do"><strong>Push hips forward</strong> &mdash; feel deep stretch in front of back hip</li>
+            <li class="do"><strong>Torso upright</strong> &mdash; don't lean forward</li>
+            <li class="do"><strong>Hold 30 seconds</strong>, breathe deeply, switch sides</li>
+            <li class="key"><strong>Squeeze glute of back leg</strong> &mdash; intensifies the stretch</li>
+            <li class="do">For deeper stretch: raise same-side arm overhead</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num" style="background:var(--red);">9</span><div class="ex-info"><div class="ex-name">Pelvic Tilt (Lying)</div><div class="ex-quick">Mat &bull; Mind-muscle APT correction</div></div><span class="ex-sets-badge">2&times;15</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Gym Mat</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Lie on back</strong>, knees bent, feet flat on floor</li>
+            <li class="key"><strong>Flatten your lower back completely against the floor</strong> (think: belly button to spine)</li>
+            <li class="do"><strong>Hold 3 seconds</strong>, release, repeat</li>
+            <li class="key"><strong>Mind-muscle connection</strong> &mdash; teaches your body what correct pelvis position feels like</li>
+            <li class="do">Progress: do while standing against wall</li>
+        </ul></div>
+    </div></div>
+</div>
+</div>
+
+<!-- ARMS + ABS DAY -->
+<div class="day-content" id="day-arms">
+<div class="hl purple" style="margin-top:16px;"><strong>ARMS + ABS = Biceps + Triceps + Core</strong> &mdash; Isolation day for arms, plus core/abs for APT correction. ~45-55 min.</div>
+<div class="muscle-header"><h3>Biceps</h3><span class="muscle-tag mt-primary">Primary</span></div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">1</span><div class="ex-info"><div class="ex-name">Incline DB Curl</div><div class="ex-quick">Bench 45&deg; &bull; 5&ndash;7.5 kg</div></div><span class="ex-sets-badge">3&times;10</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Bench (incline 45&deg;)</span><span>5&ndash;7.5 kg dumbbells</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Lie back on incline bench (45&deg;)</strong>, arms hanging straight down</li>
+            <li class="key"><strong>The incline PRE-STRETCHES the bicep</strong> &mdash; more activation than standing curls</li>
+            <li class="do"><strong>Curl up without moving upper arms</strong></li>
+            <li class="key"><strong>Slow 3-second negatives</strong> &mdash; this is where the magic happens for bicep growth</li>
+            <li class="dont"><em>DON'T</em> swing or use momentum &mdash; strict form only</li>
+            <li class="dont"><em>DON'T</em> let upper arms drift forward</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">2</span><div class="ex-info"><div class="ex-name">Preacher Curl</div><div class="ex-quick">Bench back as arm pad &bull; 5&ndash;7.5 kg</div></div><span class="ex-sets-badge">3&times;10</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Incline bench (use backrest as arm pad)</span><span>5&ndash;7.5 kg dumbbell</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Use incline bench backrest as a preacher pad</strong></li>
+            <li class="key"><strong>Complete bicep isolation</strong> &mdash; physically impossible to cheat when arm is pinned</li>
+            <li class="do"><strong>Full ROM</strong> &mdash; all the way down (feel stretch) and all the way up</li>
+            <li class="do"><strong>Control the negative</strong> &mdash; don't let arm fall</li>
+            <li class="dont"><em>DON'T</em> let arm come off the pad</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">3</span><div class="ex-info"><div class="ex-name">Hammer Curls</div><div class="ex-quick">Standing &bull; 7.5 kg</div></div><span class="ex-sets-badge">3&times;12</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>7.5 kg dumbbells</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="key"><strong>Neutral/hammer grip</strong> (palms facing each other) &mdash; targets arm thickness + forearms</li>
+            <li class="do"><strong>Curl with strict form</strong></li>
+            <li class="do">Try <strong>cross-body hammers</strong> (curl towards opposite shoulder) for brachialis</li>
+            <li class="dont"><em>DON'T</em> swing</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="muscle-header"><h3>Triceps</h3><span class="muscle-tag mt-secondary">Secondary</span></div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">4</span><div class="ex-info"><div class="ex-name">Tricep Pushdown (Band)</div><div class="ex-quick">Pull-up Bar + Band</div></div><span class="ex-sets-badge">3&times;15</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Pull-up Bar</span><span>Resistance Band</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="key"><strong>Elbows pinned tight to body</strong> &mdash; only forearms move</li>
+            <li class="do"><strong>Push down to full extension</strong>, squeeze triceps hard</li>
+            <li class="do"><strong>Control the return</strong> &mdash; slow eccentric</li>
+            <li class="do"><strong>Bread-and-butter tricep isolation</strong></li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">5</span><div class="ex-info"><div class="ex-name">Overhead Tricep Extension (DB)</div><div class="ex-quick">Seated &bull; 10 kg both hands</div></div><span class="ex-sets-badge">3&times;10</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>10 kg dumbbell (held with both hands)</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Sit on bench, hold 1 DB with both hands behind head</strong></li>
+            <li class="do"><strong>Extend arms straight overhead</strong></li>
+            <li class="do"><strong>Elbows point forward</strong> (not flared wide)</li>
+            <li class="key"><strong>If wrist/elbow pain</strong> &mdash; switch to band version from push day</li>
+            <li class="dont"><em>DON'T</em> flare elbows wide &mdash; defeats the purpose</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">6</span><div class="ex-info"><div class="ex-name">Diamond Push-ups</div><div class="ex-quick">Bodyweight &bull; Tricep burnout</div></div><span class="ex-sets-badge">2&times;12</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Hands together in diamond shape</strong> directly under chest</li>
+            <li class="do"><strong>Lower chest to hands</strong> &mdash; all load goes to triceps</li>
+            <li class="key"><strong>From knees if too hard</strong> &mdash; still very effective tricep finisher</li>
+            <li class="do"><strong>Keep elbows tight to body</strong></li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="muscle-header"><h3>Abs &amp; Core</h3><span class="muscle-tag mt-apt">APT Fix</span></div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">7</span><div class="ex-info"><div class="ex-name">Crunches</div><div class="ex-quick">Mat &bull; Upper abs</div></div><span class="ex-sets-badge">3&times;20</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Gym Mat</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Knees bent</strong>, feet flat, hands behind head (light support)</li>
+            <li class="do"><strong>Curl upper body up</strong> &mdash; lift shoulder blades off mat</li>
+            <li class="key"><strong>Feel it in ABS not neck</strong> &mdash; tongue on roof of mouth, look at ceiling</li>
+            <li class="dont"><em>DON'T</em> pull on your neck with hands &mdash; just light touch</li>
+            <li class="dont"><em>DON'T</em> sit all the way up &mdash; just crunch (shoulder blades off)</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">8</span><div class="ex-info"><div class="ex-name">Leg Raises</div><div class="ex-quick">Mat &bull; Lower abs</div></div><span class="ex-sets-badge">3&times;12</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Gym Mat</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Lie flat on back</strong>, hands under hips for support</li>
+            <li class="do"><strong>Raise straight legs to 90&deg;</strong></li>
+            <li class="do"><strong>Lower slowly</strong> &mdash; stop just before touching floor, repeat</li>
+            <li class="key"><strong>Lower back PRESSED against mat entire time</strong> &mdash; if it arches, bend knees slightly</li>
+            <li class="dont"><em>DON'T</em> let lower back arch off mat &mdash; defeats the purpose</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">9</span><div class="ex-info"><div class="ex-name">Plank</div><div class="ex-quick">Mat &bull; Core stability</div></div><span class="ex-sets-badge">3&times;30-60s</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Gym Mat</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Forearms flat on mat</strong>, body in perfectly straight line from head to heels</li>
+            <li class="do"><strong>Squeeze abs + glutes simultaneously</strong></li>
+            <li class="do"><strong>Breathe normally</strong> &mdash; don't hold breath</li>
+            <li class="dont"><em>DON'T</em> let hips sag (most common) or pike up</li>
+            <li class="key"><strong>Start 30 seconds, build to 60</strong> &mdash; quality over duration</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num" style="background:var(--red);">10</span><div class="ex-info"><div class="ex-name">Dead Bug &#x2B50;</div><div class="ex-quick">Mat &bull; Best deep core/APT exercise</div></div><span class="ex-sets-badge">3&times;10/side</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="hl red"><strong>&#x2B50; Excellent APT correction exercise.</strong> Trains deep core stability without hip flexor involvement. If your back arches during this &mdash; your core isn't engaging properly.</div>
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Gym Mat</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Lie on back</strong>, arms pointing to ceiling, knees at 90&deg;</li>
+            <li class="do"><strong>Extend opposite arm + leg slowly</strong> (right arm back, left leg out)</li>
+            <li class="key"><strong>Lower back stays COMPLETELY FLAT on floor</strong> the entire time</li>
+            <li class="do"><strong>Alternate sides slowly</strong> &mdash; this is NOT a speed exercise</li>
+            <li class="dont"><em>DON'T</em> let back arch &mdash; if it does, don't extend as far</li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="muscle-header"><h3>Finishers</h3><span class="muscle-tag mt-finisher">Ankle Weights</span></div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">11</span><div class="ex-info"><div class="ex-name">Hamstring Curls</div><div class="ex-quick">Lying face down &bull; 2 kg ankle weights</div></div><span class="ex-sets-badge">3&times;15</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Gym Mat</span><span>2 kg ankle weights</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>Lie face down on mat</strong>, ankle weights secured</li>
+            <li class="do"><strong>Curl heels towards glutes</strong></li>
+            <li class="do"><strong>Squeeze hamstrings at top</strong> for 1 sec</li>
+            <li class="do"><strong>Lower with control</strong></li>
+        </ul></div>
+    </div></div>
+</div>
+
+<div class="ex-card" onclick="this.classList.toggle('open')">
+    <div class="ex-summary"><span class="ex-num">12</span><div class="ex-info"><div class="ex-name">Donkey Kicks</div><div class="ex-quick">All fours &bull; 2 kg ankle weights</div></div><span class="ex-sets-badge">3&times;12/side</span><span class="ex-chevron">&#x25B6;</span></div>
+    <div class="ex-details"><div class="ex-detail-inner">
+        <div class="detail-section"><div class="detail-label">Equipment</div><div class="detail-equip"><span>Gym Mat</span><span>2 kg ankle weights</span></div></div>
+        <div class="detail-section"><div class="detail-label">&#x2705; Form &mdash; Key Points</div>
+        <ul class="form-points">
+            <li class="do"><strong>On all fours</strong>, keep knee bent at 90&deg;</li>
+            <li class="do"><strong>Kick leg back and UP</strong> towards ceiling</li>
+            <li class="key"><strong>Movement comes from HIP only</strong> &mdash; not lower back. Squeeze glute at top.</li>
+            <li class="dont"><em>DON'T</em> arch lower back to get leg higher</li>
+        </ul></div>
+    </div></div>
+</div>
+</div>
+
+
+</div><!-- container routine -->
+</div><!-- end page-routine -->
+
+<!-- ==================== LOG WORKOUT PAGE ==================== -->
+<div class="page-content" id="page-log">
+<div class="container">
+<h2>&#x1F4DD; Log Today's Workout</h2>
+<div class="card">
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:16px;">
+        <div><label style="font-size:0.75em;font-weight:700;color:var(--steel);">DATE</label><br>
+        <input type="date" id="logDate" class="log-date-picker"></div>
+        <div><label style="font-size:0.75em;font-weight:700;color:var(--steel);">ROUTINE</label><br>
+        <div class="log-day-pills">
+            <span class="log-day-pill active" onclick="selectLogDay('push',this)">&#x1F4AA; Push</span>
+            <span class="log-day-pill" onclick="selectLogDay('pull',this)">&#x1F4AB; Pull</span>
+            <span class="log-day-pill" onclick="selectLogDay('legs',this)">&#x1F9B5; Legs</span>
+            <span class="log-day-pill" onclick="selectLogDay('arms',this)">&#x1F4A5; Arms+Abs</span>
+        </div></div>
+    </div>
+</div>
+
+<div class="log-exercise-row header">
+    <span>Exercise</span><span>Set 1 (reps &times; kg)</span><span>Set 2</span><span>Set 3</span><span></span>
+</div>
+<div id="logExerciseList"></div>
+
+<div style="margin:16px 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+    <select id="addExerciseSelect" class="add-exercise-select"><option value="">+ Add exercise from another routine...</option></select>
+    <button class="btn btn-sm btn-blue" onclick="addCustomExercise()">Add</button>
+</div>
+
+<button class="btn btn-green save-day-btn" onclick="saveDayLog()">&#x1F4BE; Save This Workout</button>
+
+<h3 style="margin-top:32px;">&#x1F4C6; Workout History</h3>
+<div id="logHistory"></div>
+</div>
+</div><!-- end page-log -->
+
+<!-- ==================== TRACK BODY PAGE ==================== -->
+<div class="page-content" id="page-track">
+<div class="container">
+<h2>&#x1F4CF; Body Measurements</h2>
+<div class="hl green"><strong>Log weekly</strong> to track progress. Measure same time (morning, before eating).</div>
+
+<div class="card">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+        <label style="font-size:0.75em;font-weight:700;color:var(--steel);">DATE</label>
+        <input type="date" id="trackDate" class="log-date-picker">
+    </div>
+
+    <h3 style="font-size:0.95em;">Body Measurements</h3>
+    <div class="track-grid">
+        <div class="track-field"><label>Weight (kg)</label><input type="number" step="0.1" id="t_weight" placeholder="66.2"></div>
+        <div class="track-field"><label>Shoulders (in)</label><input type="number" step="0.1" id="t_shoulders" placeholder="40.9"></div>
+        <div class="track-field"><label>Chest (in)</label><input type="number" step="0.1" id="t_chest" placeholder="35.5"></div>
+        <div class="track-field"><label>Waist (in)</label><input type="number" step="0.1" id="t_waist" placeholder="34.7"></div>
+        <div class="track-field"><label>Hips (in)</label><input type="number" step="0.1" id="t_hips" placeholder="37.6"></div>
+        <div class="track-field"><label>Bicep L (in)</label><input type="number" step="0.1" id="t_bicepL" placeholder="12.3"></div>
+        <div class="track-field"><label>Bicep R (in)</label><input type="number" step="0.1" id="t_bicepR" placeholder="12.1"></div>
+        <div class="track-field"><label>Thigh L (in)</label><input type="number" step="0.1" id="t_thighL" placeholder="10.1"></div>
+        <div class="track-field"><label>Thigh R (in)</label><input type="number" step="0.1" id="t_thighR" placeholder="10.0"></div>
+        <div class="track-field"><label>Calf L (in)</label><input type="number" step="0.1" id="t_calfL" placeholder="14.3"></div>
+        <div class="track-field"><label>Calf R (in)</label><input type="number" step="0.1" id="t_calfR" placeholder="14.1"></div>
+    </div>
+
+    <h3 style="font-size:0.95em;margin-top:20px;">Body Composition (from scale)</h3>
+    <div class="track-grid">
+        <div class="track-field"><label>Body Fat %</label><input type="number" step="0.01" id="t_bodyFat" placeholder="17.11"></div>
+        <div class="track-field"><label>Muscle Rate %</label><input type="number" step="0.01" id="t_muscleRate" placeholder="78.75"></div>
+        <div class="track-field"><label>Visceral Fat %</label><input type="number" step="0.01" id="t_visceralFat" placeholder="7.14"></div>
+    </div>
+
+    <button class="btn btn-green" style="margin-top:20px;" onclick="saveTrackData()">&#x1F4BE; Save Measurements</button>
+</div>
+
+<h3 style="margin-top:24px;">&#x1F4C8; History</h3>
+<div id="trackHistory" class="history-table"></div>
+</div>
+</div><!-- end page-track -->
+
+<!-- ==================== INFO PAGE ==================== -->
+<div class="page-content" id="page-info">
+<div class="container">
+<h2>&#x1F3CB;&#xFE0F; Equipment</h2>
+<div class="equip-grid">
+    <div class="equip-chip"><span class="eq-icon">&#x1F4AA;</span><div><strong>Dumbbells</strong><div class="eq-detail">2.5, 5, 7.5, 10, 12.5 kg pairs</div></div></div>
+    <div class="equip-chip"><span class="eq-icon">&#x1F3CB;&#xFE0F;</span><div><strong>Deadlift Barbell</strong><div class="eq-detail">Standard bar</div></div></div>
+    <div class="equip-chip"><span class="eq-icon">&#x27B0;</span><div><strong>Curl Bar (Z-bar)</strong><div class="eq-detail">+ 2.5, 5, 10 kg plates</div></div></div>
+    <div class="equip-chip"><span class="eq-icon">&#x1FA91;</span><div><strong>Adjustable Bench</strong><div class="eq-detail">Lifeline LB-311, 8 levels</div></div></div>
+    <div class="equip-chip"><span class="eq-icon">&#x1F6B6;</span><div><strong>WalkPad</strong><div class="eq-detail">Under-desk treadmill</div></div></div>
+    <div class="equip-chip"><span class="eq-icon">&#x1FA9C;</span><div><strong>Resistance Bands</strong><div class="eq-detail">Multiple levels</div></div></div>
+    <div class="equip-chip"><span class="eq-icon">&#x1F6AA;</span><div><strong>Pull-up Bar</strong><div class="eq-detail">Door mount, no screws</div></div></div>
+    <div class="equip-chip"><span class="eq-icon">&#x1F9CA;</span><div><strong>Stepping Block</strong></div></div>
+    <div class="equip-chip"><span class="eq-icon">&#x1F9D8;</span><div><strong>Gym Mat</strong></div></div>
+    <div class="equip-chip"><span class="eq-icon">&#x26D3;&#xFE0F;</span><div><strong>Ankle Weights</strong><div class="eq-detail">1 kg &amp; 2 kg pairs</div></div></div>
+    <div class="equip-chip"><span class="eq-icon">&#x1F4E4;</span><div><strong>Push-up Board</strong></div></div>
+</div>
+
+<h2>&#x1F3AF; 10 Golden Form Rules</h2>
+<div class="rules-grid">
+    <div class="form-rule-card green"><div class="fr-icon">&#x1F9E0;</div><h4>Mind-Muscle</h4><p>Feel the target muscle. If not, weight too heavy or form wrong.</p></div>
+    <div class="form-rule-card blue"><div class="fr-icon">&#x1F4A8;</div><h4>Breathe</h4><p>Exhale on effort. Inhale on lowering. Never hold breath.</p></div>
+    <div class="form-rule-card orange"><div class="fr-icon">&#x1F422;</div><h4>Control Negative</h4><p>2-3 seconds going down. That's where growth happens.</p></div>
+    <div class="form-rule-card red"><div class="fr-icon">&#x26A0;&#xFE0F;</div><h4>No Ego Lifting</h4><p>Can't do 8 clean reps? Weight too heavy. Drop it.</p></div>
+    <div class="form-rule-card purple"><div class="fr-icon">&#x1F50A;</div><h4>Full ROM</h4><p>Full range of motion. Half reps = half results.</p></div>
+    <div class="form-rule-card green"><div class="fr-icon">&#x1F3D7;&#xFE0F;</div><h4>Neutral Spine</h4><p>Never round back on rows/deadlifts.</p></div>
+    <div class="form-rule-card blue"><div class="fr-icon">&#x23F1;&#xFE0F;</div><h4>Rest 60-90s</h4><p>60s isolation, 90s compound. Timer, not phone.</p></div>
+    <div class="form-rule-card orange"><div class="fr-icon">&#x1F4C8;</div><h4>Overload</h4><p>Add reps first (10-12-15), then +2.5 kg weight.</p></div>
+    <div class="form-rule-card red"><div class="fr-icon">&#x1F525;</div><h4>Warm Up</h4><p>5 min walk + light set before heavy work.</p></div>
+    <div class="form-rule-card purple"><div class="fr-icon">&#x1F4CA;</div><h4>Track It</h4><p>Log weight, reps, sets. Can't measure = can't improve.</p></div>
+</div>
+
+<h2>&#x1F4DD; Quick Reference</h2>
+<div class="card">
+<table>
+    <thead><tr><th>Rule</th><th>Details</th></tr></thead>
+    <tbody>
+        <tr><td><strong>Warm Up</strong></td><td>5 min WalkPad + arm circles + 1 light set</td></tr>
+        <tr><td><strong>Rest</strong></td><td>60-90s compound, 45-60s isolation</td></tr>
+        <tr><td><strong>Overload</strong></td><td>Reps first (10&rarr;12&rarr;15), then +2.5 kg</td></tr>
+        <tr><td><strong>APT</strong></td><td>Hip flexor stretch + pelvic tilt + dead bug 3-4x/week</td></tr>
+        <tr><td><strong>Face Pulls</strong></td><td>EVERY pull day. Best posture exercise.</td></tr>
+        <tr><td><strong>Walk</strong></td><td>30 min daily. #1 health habit.</td></tr>
+        <tr><td><strong>Water</strong></td><td>8+ glasses/day</td></tr>
+    </tbody>
+</table>
+</div>
+</div>
+</div><!-- end page-info -->
+
+<footer>My Home Gym Routine &mdash; PPL + Arms/Abs &mdash; May 2026</footer>
+
+<script>
+// === Exercise Database ===
+const EXERCISES = {
+    push: [
+        {name:'Push-ups (Warm-up)',sets:2,reps:15,equip:'bodyweight'},
+        {name:'DB Chest Press (Flat)',sets:3,reps:12,equip:'dumbbell'},
+        {name:'Incline DB Press',sets:3,reps:10,equip:'dumbbell'},
+        {name:'Dumbbell Fly',sets:3,reps:12,equip:'dumbbell'},
+        {name:'Overhead DB Press',sets:3,reps:10,equip:'dumbbell'},
+        {name:'Lateral Raises',sets:3,reps:15,equip:'dumbbell'},
+        {name:'Tricep Pushdown (Band)',sets:3,reps:15,equip:'band'},
+        {name:'Overhead Tricep Ext (Band)',sets:3,reps:12,equip:'band'}
+    ],
+    pull: [
+        {name:'Bent-Over DB Row',sets:3,reps:10,equip:'dumbbell'},
+        {name:'Single-Arm DB Row',sets:3,reps:10,equip:'dumbbell'},
+        {name:'Band Lat Pulldown',sets:3,reps:12,equip:'band'},
+        {name:'Face Pulls',sets:3,reps:15,equip:'band'},
+        {name:'Band Seated Rows',sets:3,reps:12,equip:'band'},
+        {name:'DB Shrugs',sets:3,reps:15,equip:'dumbbell'},
+        {name:'Z-Bar Curls',sets:3,reps:12,equip:'barbell'},
+        {name:'Hammer Curls',sets:3,reps:10,equip:'dumbbell'}
+    ],
+    legs: [
+        {name:'Barbell Deadlift',sets:3,reps:8,equip:'barbell'},
+        {name:'Goblet Squats',sets:3,reps:12,equip:'dumbbell'},
+        {name:'Lunges',sets:3,reps:10,equip:'dumbbell'},
+        {name:'Hip Thrust',sets:3,reps:12,equip:'barbell'},
+        {name:'Romanian Deadlift (DB)',sets:3,reps:10,equip:'dumbbell'},
+        {name:'Bulgarian Split Squat',sets:3,reps:8,equip:'dumbbell'},
+        {name:'Calf Raises',sets:3,reps:20,equip:'dumbbell'},
+        {name:'Hip Flexor Stretch',sets:2,reps:30,equip:'bodyweight'},
+        {name:'Pelvic Tilt',sets:2,reps:15,equip:'bodyweight'}
+    ],
+    arms: [
+        {name:'Incline DB Curl',sets:3,reps:10,equip:'dumbbell'},
+        {name:'Preacher Curl',sets:3,reps:10,equip:'dumbbell'},
+        {name:'Hammer Curls',sets:3,reps:12,equip:'dumbbell'},
+        {name:'Tricep Pushdown (Band)',sets:3,reps:15,equip:'band'},
+        {name:'Overhead Tricep Ext (DB)',sets:3,reps:10,equip:'dumbbell'},
+        {name:'Diamond Push-ups',sets:2,reps:12,equip:'bodyweight'},
+        {name:'Crunches',sets:3,reps:20,equip:'bodyweight'},
+        {name:'Leg Raises',sets:3,reps:12,equip:'bodyweight'},
+        {name:'Plank',sets:3,reps:45,equip:'bodyweight'},
+        {name:'Dead Bug',sets:3,reps:10,equip:'bodyweight'},
+        {name:'Hamstring Curls',sets:3,reps:15,equip:'bodyweight'},
+        {name:'Donkey Kicks',sets:3,reps:12,equip:'bodyweight'}
+    ]
+};
+
+// Weight options for dropdowns
+const DB_WEIGHTS = [0,2.5,5,7.5,10,12.5,15,17.5,20,22.5,25];
+const BAR_WEIGHTS = [0,5,7.5,10,12.5,15,17.5,20,22.5,25,27.5,30,32.5,35,40,45,50];
+const BAND_WEIGHTS = ['Light','Medium','Heavy','X-Heavy'];
+const REPS_OPTIONS = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,25,30,45,60];
+
+let currentLogDay = 'push';
+let logExercises = []; // current exercises being logged
+
+// === Page Navigation ===
+function switchPage(page, btn) {
+    document.querySelectorAll('.page-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.page-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('page-' + page).classList.add('active');
+}
+
+// === Routine Day Tabs ===
+function switchDay(day, btn) {
+    document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.day-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('day-' + day).classList.add('active');
+    document.querySelectorAll('.ex-card.open').forEach(c => c.classList.remove('open'));
+}
+
+// === LOG WORKOUT ===
+function selectLogDay(day, el) {
+    currentLogDay = day;
+    document.querySelectorAll('.log-day-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    renderLogExercises();
+}
+
+function getWeightOptions(equip) {
+    if (equip === 'barbell') return BAR_WEIGHTS.map(w => `<option value="${w}">${w} kg</option>`).join('');
+    if (equip === 'band') return BAND_WEIGHTS.map(w => `<option value="${w}">${w}</option>`).join('');
+    if (equip === 'bodyweight') return '<option value="BW">BW</option>';
+    return DB_WEIGHTS.map(w => `<option value="${w}">${w} kg</option>`).join('');
+}
+
+function renderLogExercises() {
+    logExercises = JSON.parse(JSON.stringify(EXERCISES[currentLogDay]));
+    const container = document.getElementById('logExerciseList');
+    container.innerHTML = '';
+    logExercises.forEach((ex, i) => {
+        container.appendChild(createExerciseRow(ex, i));
+    });
+    populateAddExerciseDropdown();
+}
+
+function createExerciseRow(ex, idx) {
+    const row = document.createElement('div');
+    row.className = 'log-exercise-row';
+    row.dataset.idx = idx;
+
+    const numSets = ex.sets || 3;
+    let setsHtml = '';
+    for (let s = 1; s <= numSets; s++) {
+        setsHtml += `<div class="log-set-group">
+            <div class="log-set-label">Set ${s}</div>
+            <div class="log-set-inputs">
+                <select data-ex="${idx}" data-set="${s}" data-field="reps" title="Reps">
+                    ${REPS_OPTIONS.map(r => `<option value="${r}" ${r===ex.reps?'selected':''}>${r}</option>`).join('')}
+                </select>
+                <select data-ex="${idx}" data-set="${s}" data-field="weight" title="Weight">
+                    ${getWeightOptions(ex.equip)}
+                </select>
+            </div>
+        </div>`;
+    }
+
+    row.innerHTML = `
+        <div class="log-ex-name">${ex.name}</div>
+        ${setsHtml}
+        <div><button class="add-set-btn" onclick="addSet(${idx})">+Set</button></div>
+    `;
+    return row;
+}
+
+function addSet(idx) {
+    logExercises[idx].sets = (logExercises[idx].sets || 3) + 1;
+    const container = document.getElementById('logExerciseList');
+    const oldRow = container.children[idx];
+    const newRow = createExerciseRow(logExercises[idx], idx);
+    container.replaceChild(newRow, oldRow);
+}
+
+function populateAddExerciseDropdown() {
+    const sel = document.getElementById('addExerciseSelect');
+    sel.innerHTML = '<option value="">+ Add exercise from another routine...</option>';
+    Object.keys(EXERCISES).forEach(day => {
+        if (day === currentLogDay) return;
+        EXERCISES[day].forEach((ex, i) => {
+            sel.innerHTML += `<option value="${day}:${i}">${ex.name} (${day})</option>`;
+        });
+    });
+}
+
+function addCustomExercise() {
+    const sel = document.getElementById('addExerciseSelect');
+    if (!sel.value) return;
+    const [day, idx] = sel.value.split(':');
+    const ex = JSON.parse(JSON.stringify(EXERCISES[day][parseInt(idx)]));
+    logExercises.push(ex);
+    const container = document.getElementById('logExerciseList');
+    container.appendChild(createExerciseRow(ex, logExercises.length - 1));
+    sel.value = '';
+}
+
+function saveDayLog() {
+    const date = document.getElementById('logDate').value;
+    if (!date) { alert('Please select a date!'); return; }
+
+    const data = { date, day: currentLogDay, exercises: [] };
+    logExercises.forEach((ex, i) => {
+        const sets = [];
+        for (let s = 1; s <= ex.sets; s++) {
+            const repSel = document.querySelector(`[data-ex="${i}"][data-set="${s}"][data-field="reps"]`);
+            const wtSel = document.querySelector(`[data-ex="${i}"][data-set="${s}"][data-field="weight"]`);
+            if (repSel && wtSel) {
+                sets.push({ reps: repSel.value, weight: wtSel.value });
+            }
+        }
+        if (sets.length > 0) data.exercises.push({ name: ex.name, sets });
+    });
+
+    // Save to localStorage
+    let history = JSON.parse(localStorage.getItem('gymLogHistory') || '[]');
+    // Replace if same date exists
+    history = history.filter(h => h.date !== date);
+    history.unshift(data);
+    history.sort((a, b) => b.date.localeCompare(a.date));
+    localStorage.setItem('gymLogHistory', JSON.stringify(history));
+
+    renderLogHistory();
+    alert('Workout saved for ' + date + '!');
+}
+
+function renderLogHistory() {
+    const container = document.getElementById('logHistory');
+    const history = JSON.parse(localStorage.getItem('gymLogHistory') || '[]');
+    if (history.length === 0) { container.innerHTML = '<p style="color:var(--steel);font-size:0.85em;">No workouts logged yet.</p>'; return; }
+
+    container.innerHTML = history.slice(0, 20).map(entry => {
+        const exHtml = entry.exercises.map(ex => {
+            const setsStr = ex.sets.map((s, i) => `Set${i+1}: ${s.reps}r&times;${s.weight}`).join(' | ');
+            return `<div class="log-history-ex"><strong>${ex.name}</strong> &mdash; ${setsStr}</div>`;
+        }).join('');
+        return `<div class="log-history-entry">
+            <div class="log-history-date">${entry.date} &mdash; ${entry.day.toUpperCase()}</div>
+            ${exHtml}
+        </div>`;
+    }).join('');
+}
+
+// === TRACK BODY ===
+function saveTrackData() {
+    const date = document.getElementById('trackDate').value;
+    if (!date) { alert('Please select a date!'); return; }
+
+    const fields = ['weight','shoulders','chest','waist','hips','bicepL','bicepR','thighL','thighR','calfL','calfR','bodyFat','muscleRate','visceralFat'];
+    const data = { date };
+    fields.forEach(f => {
+        const val = document.getElementById('t_' + f).value;
+        if (val) data[f] = parseFloat(val);
+    });
+
+    let history = JSON.parse(localStorage.getItem('bodyTrackHistory') || '[]');
+    history = history.filter(h => h.date !== date);
+    history.unshift(data);
+    history.sort((a, b) => b.date.localeCompare(a.date));
+    localStorage.setItem('bodyTrackHistory', JSON.stringify(history));
+
+    renderTrackHistory();
+    alert('Body measurements saved for ' + date + '!');
+}
+
+function renderTrackHistory() {
+    const container = document.getElementById('trackHistory');
+    const history = JSON.parse(localStorage.getItem('bodyTrackHistory') || '[]');
+    if (history.length === 0) { container.innerHTML = '<p style="color:var(--steel);font-size:0.85em;">No measurements yet.</p>'; return; }
+
+    const labels = {weight:'Wt(kg)',shoulders:'Shldr',chest:'Chest',waist:'Waist',hips:'Hips',bicepL:'Bi-L',bicepR:'Bi-R',thighL:'Th-L',thighR:'Th-R',calfL:'Cf-L',calfR:'Cf-R',bodyFat:'BF%',muscleRate:'Musc%',visceralFat:'Visc%'};
+    const keys = Object.keys(labels);
+
+    let html = '<table><thead><tr><th>Date</th>';
+    keys.forEach(k => { html += `<th>${labels[k]}</th>`; });
+    html += '</tr></thead><tbody>';
+    history.slice(0, 20).forEach(row => {
+        html += `<tr><td><strong>${row.date}</strong></td>`;
+        keys.forEach(k => { html += `<td>${row[k] !== undefined ? row[k] : '-'}</td>`; });
+        html += '</tr>';
+    });
+    html += '</tbody></table>';
+    container.innerHTML = html;
+}
+
+// === INIT ===
+document.addEventListener('DOMContentLoaded', function() {
+    // Set today's date
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('logDate').value = today;
+    document.getElementById('trackDate').value = today;
+
+    // Render log exercises
+    renderLogExercises();
+    renderLogHistory();
+    renderTrackHistory();
+});
+</script>
+
+</body>
+</html>
