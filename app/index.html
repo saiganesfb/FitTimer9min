@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="icon" href="icons/icon-192.png">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
-    <link rel="stylesheet" href="style.css?v=18">
+    <link rel="stylesheet" href="style.css?v=19">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
 </head>
@@ -90,7 +90,7 @@
             </div>
             <div class="header-right">
                 <span id="currentUser" class="user-badge"></span>
-                <button id="switchUserBtn" class="icon-btn" title="Logout">&#128100;</button>
+                <button id="switchUserBtn" class="icon-btn" title="Profile">&#128100;</button>
             </div>
         </header>
 
@@ -185,6 +185,11 @@
 
         <!-- TAB: Workout (Logger + Progressive Overload) -->
         <section id="tabWorkout" class="tab-content">
+            <div class="wlog-date-bar">
+                <label class="wlog-date-label">📅</label>
+                <input type="date" id="wlogDatePicker" class="wlog-date-input">
+            </div>
+            <div id="wlogDaySummary"></div>
             <div class="qlog-day-pills" id="routineDayPills">
                 <button class="qlog-pill" data-qday="push">💪 Push</button>
                 <button class="qlog-pill" data-qday="pull">🔙 Pull</button>
@@ -386,6 +391,7 @@
                 </div>
                 <button id="editProfileBtn" class="control-btn pause-btn">Edit Profile</button>
                 <button id="exportDataBtn" class="control-btn reset-btn" style="margin-top:8px;">Export Data (JSON)</button>
+                <button id="logoutBtn" class="control-btn reset-btn" style="margin-top:16px;background:#c62828;">Logout</button>
             </div>
 
             <!-- Body Measurements -->
@@ -489,8 +495,8 @@
     </div>
 
     <script src="db.js"></script>
-    <script src="gamification.js"></script>
-    <script src="script.js?v=18"></script>
+    <script src="gamification.js?v=19"></script>
+    <script src="script.js?v=19"></script>
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./service-worker.js');

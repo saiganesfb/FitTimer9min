@@ -138,6 +138,7 @@ async function loginUser(userId) {
     renderProgress();
     initRoutineTab();
     initWorkoutLogger();
+    initWlogDatePicker();
     initFullVolumeTab();
     initMeasurements();
     initComposition();
@@ -200,10 +201,21 @@ function bindEvents() {
     $('showRegister').addEventListener('click', (e) => { e.preventDefault(); showRegisterScreen(); });
     $('showLogin').addEventListener('click', (e) => { e.preventDefault(); showLoginScreen(); });
 
-    // Switch user (logout)
+    // Navigate to Profile tab
     switchUserBtn.addEventListener('click', () => {
-        localStorage.removeItem('fitTimer_lastUser');
-        showLoginScreen();
+        tabBtns.forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        const profileBtn = document.querySelector('[data-tab="profile"]');
+        profileBtn.classList.add('active');
+        $('tabProfile').classList.add('active');
+    });
+
+    // Logout button in Profile tab
+    $('logoutBtn').addEventListener('click', () => {
+        if (confirm('Are you sure you want to logout?')) {
+            localStorage.removeItem('fitTimer_lastUser');
+            showLoginScreen();
+        }
     });
 
     // Tabs
@@ -217,7 +229,6 @@ function bindEvents() {
             if (btn.dataset.tab === 'profile') renderProfile();
             if (btn.dataset.tab === 'progress') renderProgress();
             if (btn.dataset.tab === 'log') renderLogTab();
-            playClick();
         });
     });
 
@@ -269,7 +280,6 @@ function bindEvents() {
             // Toggle selection within group
             $(groupId).querySelectorAll('.log-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            playClick();
             vibrateShort();
             autoSaveLog();
         });
@@ -286,7 +296,7 @@ function bindEvents() {
         const newCount = (num === currentFilled) ? num - 1 : num;
         glasses.forEach((g, i) => g.classList.toggle('filled', i < newCount));
         $('waterCount').textContent = `${newCount} / 8 glasses`;
-        playClick();
+        playWaterDrop();
         autoSaveLog();
     });
 
@@ -321,7 +331,7 @@ function startTimer() {
     stopBtn.classList.remove('hidden');
     resetBtn.classList.add('hidden');
 
-    playClick();
+    playStartTimer();
     vibrateShort();
     startQuoteCarousel();
 
@@ -331,6 +341,10 @@ function startTimer() {
         updateRingProgress();
         // Subtle tick every 30 seconds
         if (remainingSeconds > 0 && remainingSeconds % 30 === 0) playTick();
+        // Countdown beeps for final 3 seconds
+        if (remainingSeconds > 0 && remainingSeconds <= 3) playCountdown();
+        // Halfway encouragement
+        if (remainingSeconds === Math.floor(totalSeconds / 2)) playHalfway();
         if (remainingSeconds <= 0) completeSession(false);
     }, 1000);
 }
@@ -348,7 +362,6 @@ function pauseTimer() {
     stopBtn.classList.remove('hidden');
     resetBtn.classList.remove('hidden');
 
-    playClick();
     stopQuoteCarousel();
 }
 
@@ -896,28 +909,34 @@ const EXERCISE_IMAGES = {
     'Overhead Tricep Ext (Band)': 'https://wger.de/media/exercise-images/1519/fab7f641-27d4-40b5-8edd-1a0a137bfd94.gif',
     'Overhead Tricep Ext (DB)': 'https://wger.de/media/exercise-images/1519/fab7f641-27d4-40b5-8edd-1a0a137bfd94.gif',
     'Bent-Over DB Row': 'https://wger.de/media/exercise-images/110/Reverse-grip-bent-over-rows-1.png',
-    'Single-Arm DB Row': 'https://wger.de/media/exercise-images/1637/a1fbe83a-a3e5-49f6-a2c2-5d5b533c2be8.png',
-    'Face Pulls (Band)': 'https://wger.de/media/exercise-images/1732/d13b9adb-968e-4f73-95e6-b16690bcf616.jpg',
+    'Single-Arm DB Row': 'https://wger.de/media/exercise-images/1283/e7262f70-7512-408a-8d00-4c499ef632fc.jpg',
+    'Band Lat Pulldown': 'https://wger.de/media/exercise-images/158/02e8a7c3-dc67-434e-a4bc-77fdecf84b49.webp',
+    'Face Pulls (Band)': 'https://wger.de/media/exercise-images/1639/8927346e-f5ca-4795-bdf1-5ac9309401e7.webp',
     'Band Seated Rows': 'https://wger.de/media/exercise-images/1725/f0ebd44e-b8e1-400c-b598-ca371f3a07af.png',
-    'Dumbbell Shrugs': 'https://wger.de/media/exercise-images/151/Dumbbell-shrugs-2.png',
-    'Z-Bar Bicep Curls': 'https://wger.de/media/exercise-images/1225/39a0b7e7-9780-425d-84f5-56d10d1690ac.gif',
+    'Dumbbell Shrugs': 'https://wger.de/media/exercise-images/1645/9e730259-1dcd-4b5e-b4cc-9ebc0cfda75c.webp',
+    'Z-Bar Bicep Curls': 'https://wger.de/media/exercise-images/94/6dee2f60-aea2-4f2d-9bf6-aef50c4f9483.png',
     'Hammer Curls': 'https://wger.de/media/exercise-images/1567/0a8c155c-a48e-47e8-9df3-e39f025c6cad.png',
-    'Barbell Deadlift': 'https://wger.de/media/exercise-images/161/Dead-lifts-2.png',
-    'Goblet Squats': 'https://wger.de/media/exercise-images/977/3124c091-6395-4377-96c5-56048b627ceb.png',
+    'Barbell Deadlift': 'https://wger.de/media/exercise-images/630/b0f0c7d8-5878-4d9e-b820-21acc013741d.webp',
+    'Goblet Squats': 'https://wger.de/media/exercise-images/203/300a44ac-4368-48e2-8b18-beea32ab915d.gif',
     'Lunges': 'https://wger.de/media/exercise-images/1903/6ec66efd-e74f-4142-bed1-0a0ac74e3294.png',
     'Hip Thrust (Bench)': 'https://wger.de/media/exercise-images/1642/a81ad922-caf5-47f8-99b4-640cb0717436.webp',
-    'Romanian Deadlift (DB)': 'https://wger.de/media/exercise-images/161/Dead-lifts-2.png',
+    'Romanian Deadlift (DB)': 'https://wger.de/media/exercise-images/1652/0306c8c0-70cc-45d4-92de-6fa72ceaa834.webp',
     'Bulgarian Split Squat': 'https://wger.de/media/exercise-images/1593/9815fcd6-cf40-4ddd-9b38-2eac25973de1.gif',
-    'Calf Raises (Step)': 'https://wger.de/media/exercise-images/1243/53d4fabe-c994-4907-873f-8d82813a9832.png',
+    'Calf Raises (Step)': 'https://wger.de/media/exercise-images/622/9a429bd0-afd3-4ad0-8043-e9beec901c81.jpeg',
     'Incline DB Curl': 'https://wger.de/media/exercise-images/1225/39a0b7e7-9780-425d-84f5-56d10d1690ac.gif',
-    'Preacher Curl (Bench)': 'https://wger.de/media/exercise-images/193/Preacher-curl-3-2.png',
+    'Preacher Curl (Bench)': 'https://wger.de/media/exercise-images/1109/00b0a0bf-c14a-4f13-bb14-62c09030a1aa.png',
     'Diamond Push-ups': 'https://wger.de/media/exercise-images/1551/a6a9e561-3965-45c6-9f2b-ee671e1a3a45.png',
-    'Crunches': 'https://wger.de/media/exercise-images/176/Cross-body-crunch-1.png',
-    'Leg Raises': 'https://wger.de/media/exercise-images/125/Leg-raises-2.png',
+    'Crunches': ['https://wger.de/media/exercise-images/1648/63ae02d6-6dd9-4e9e-84da-d4905e78a33c.jpg', 'https://wger.de/media/exercise-images/1479/0305d98e-0887-4c0c-8992-7c220814efc2.webp'],
+    'Leg Raises': 'https://wger.de/media/exercise-images/851/4d621b17-f6cb-4107-97c0-9f44e9a2dbc6.webp',
     'Plank': 'https://wger.de/media/exercise-images/1091/50c8912d-54ef-46c9-99d1-633b6196aa1e.jpg',
     'Hip Flexor Stretch': 'https://wger.de/media/exercise-images/1867/767631e5-10d2-46b8-b03f-cc298f96963b.png',
     'Pelvic Tilt Practice': 'https://wger.de/media/exercise-images/1871/85a6b9de-4eec-445b-8ebb-f1950b076aba.png',
+    'Donkey Kicks': 'https://wger.de/media/exercise-images/1613/a851fe9d-771f-44da-82f0-799e02ae3fd1.jpg',
+    'Lying Hamstring Curls': 'https://wger.de/media/exercise-images/154/lying-leg-curl-machine-large-1.png',
+    'Dead Bug': 'https://wger.de/media/exercise-images/1105/36776818-799a-40bf-9eca-aebb3aa5008f.png',
 };
+
+const DARK_IMAGES = new Set(['Preacher Curl (Bench)', 'Lying Hamstring Curls', 'Dead Bug', 'Leg Raises']);
 
 const ROUTINE_DATA = {
     push: {
@@ -1062,14 +1081,38 @@ function renderRoutine(day) {
     const container = $('routineContent');
     if (!data) { container.innerHTML = ''; return; }
 
+    const DB_WEIGHTS = [2.5,5,7.5,10,12.5,15,17.5,20,22.5,25];
+    const BAR_WEIGHTS = [5,7.5,10,12.5,15,17.5,20,22.5,25,27.5,30,35,40,45,50];
+
+    function getExWeights(equip) {
+        const e = (equip || '').toLowerCase();
+        if (e.includes('barbell') || e.includes('bar + plate') || e.includes('curl bar')) return BAR_WEIGHTS;
+        if (e.includes('band')) return ['Yellow','Red','Black'];
+        if ((e.includes('bodyweight') || e.includes('mat')) && !e.includes('kg')) return ['BW'];
+        return DB_WEIGHTS;
+    }
+
     let html = '';
     data.groups.forEach(group => {
         html += `<div class="routine-muscle-group">`;
         html += `<div class="routine-muscle-header">${group.name} <span class="r-badge ${group.badge}">${group.badge}</span></div>`;
         group.exercises.forEach(ex => {
-            const imgUrl = EXERCISE_IMAGES[ex.name] || '';
-            const imgHtml = imgUrl ? `<img class="r-ex-img" src="${imgUrl}" alt="${ex.name}" onerror="this.style.display='none'">` : '';
-            html += `<div class="r-ex-card" onclick="this.classList.toggle('open')">
+            const imgEntry = EXERCISE_IMAGES[ex.name] || '';
+            const darkClass = DARK_IMAGES.has(ex.name) ? ' r-ex-img-dark' : '';
+            let imgHtml = '';
+            if (Array.isArray(imgEntry)) {
+                imgHtml = imgEntry.map(u => `<img class="r-ex-img${darkClass}" src="${u}" alt="${ex.name}" onerror="this.style.display='none'">`).join('');
+            } else if (imgEntry) {
+                imgHtml = `<img class="r-ex-img${darkClass}" src="${imgEntry}" alt="${ex.name}" onerror="this.style.display='none'">`;
+            }
+            const totalSets = parseInt(ex.sets) || 3;
+            const exWeights = getExWeights(ex.equip);
+            const weightOpts = exWeights.map(w => {
+                const val = w;
+                const label = w;
+                return `<option value="${val}">${label}</option>`;
+            }).join('');
+            html += `<div class="r-ex-card" onclick="handleExCardClick(event, this)">
                 <div class="r-ex-summary">
                     <span class="r-ex-name">${ex.name}</span>
                     <div class="r-ex-meta">
@@ -1081,12 +1124,157 @@ function renderRoutine(day) {
                     ${imgHtml}
                     <div class="r-ex-equip">🔧 ${ex.equip}</div>
                     <div class="r-ex-tip">${ex.tip.replace(/\.\s+/g, '.<br>')}</div>
+                    <div class="r-set-logger" data-exname="${ex.name}">
+                        <div class="r-set-row">
+                            <span class="r-set-label">Set <span class="r-set-num">1</span></span>
+                            <div class="r-set-inputs">
+                                <input type="number" class="r-set-reps" placeholder="Reps" min="1" max="99">
+                                <select class="r-set-weight">${weightOpts}</select>
+                                <button class="r-set-save-btn">✓</button>
+                            </div>
+                        </div>
+                        <div class="r-set-history"></div>
+                    </div>
                 </div>
             </div>`;
         });
         html += `</div>`;
     });
     container.innerHTML = html;
+}
+
+// Handle card click — toggle open but ignore clicks on logger inputs
+function handleExCardClick(e, card) {
+    if (e.target.closest('.r-set-logger')) return; // don't toggle when interacting with logger
+    card.classList.toggle('open');
+}
+
+// Inline Set Logger — save sets directly from Routine tab
+const routineSetLog = {}; // { exerciseName: [{reps, weight}, ...] }
+
+function formatSetLabel(setNum, reps, weight) {
+    if (weight === 'BW' || weight === 0 || weight === '0') return `S${setNum}: ${reps}r`;
+    if (typeof weight === 'string' && isNaN(weight)) return `S${setNum}: ${reps}r×${weight}`;
+    return `S${setNum}: ${reps}r×${weight}kg`;
+}
+
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.r-set-save-btn');
+    if (!btn) return;
+
+    const logger = btn.closest('.r-set-logger');
+    const exName = logger.dataset.exname;
+    const repsInput = logger.querySelector('.r-set-reps');
+    const weightSelect = logger.querySelector('.r-set-weight');
+    const reps = parseInt(repsInput.value);
+    const rawWeight = weightSelect.value;
+    const weight = isNaN(rawWeight) ? rawWeight : parseFloat(rawWeight) || 0;
+
+    if (!reps || reps < 1) { repsInput.focus(); return; }
+
+    // Store the set
+    if (!routineSetLog[exName]) routineSetLog[exName] = [];
+    routineSetLog[exName].push({ reps, weight });
+
+    const currentSet = routineSetLog[exName].length;
+    const historyEl = logger.querySelector('.r-set-history');
+    const numEl = logger.querySelector('.r-set-num');
+
+    // Show saved set in history
+    const tag = document.createElement('span');
+    tag.className = 'r-set-tag';
+    tag.dataset.setIndex = currentSet - 1;
+    tag.innerHTML = formatSetLabel(currentSet, reps, weight) + `<span class="r-set-x" data-exname="${exName}" data-idx="${currentSet - 1}">×</span>`;
+    historyEl.appendChild(tag);
+
+    // Clear reps, advance set number
+    repsInput.value = '';
+    numEl.textContent = currentSet + 1;
+    repsInput.focus();
+
+    // Save after each set
+    saveRoutineSetLog();
+    playLogSaved();
+});
+
+// Remove a set via X button (with undo)
+let undoTimeout = null;
+document.addEventListener('click', (e) => {
+    const x = e.target.closest('.r-set-x');
+    if (!x) return;
+    const exName = x.dataset.exname;
+    const idx = parseInt(x.dataset.idx);
+    if (!routineSetLog[exName]) return;
+
+    const removed = routineSetLog[exName].splice(idx, 1)[0];
+    const logger = document.querySelector(`.r-set-logger[data-exname="${exName}"]`);
+    if (!logger) return;
+
+    rerenderSetTags(exName, logger);
+    showSetUndo(exName, idx, removed, logger);
+    saveRoutineSetLog();
+});
+
+function showSetUndo(exName, idx, removed, logger) {
+    // Remove any existing undo bar
+    const existing = logger.querySelector('.r-set-undo');
+    if (existing) existing.remove();
+    if (undoTimeout) clearTimeout(undoTimeout);
+
+    const bar = document.createElement('div');
+    bar.className = 'r-set-undo';
+    const label = formatSetLabel(idx + 1, removed.reps, removed.weight);
+    bar.innerHTML = `Removed ${label} <button class="r-set-undo-btn">Undo</button>`;
+    logger.appendChild(bar);
+
+    bar.querySelector('.r-set-undo-btn').addEventListener('click', () => {
+        routineSetLog[exName].splice(idx, 0, removed);
+        rerenderSetTags(exName, logger);
+        bar.remove();
+        if (undoTimeout) clearTimeout(undoTimeout);
+        saveRoutineSetLog();
+    });
+
+    undoTimeout = setTimeout(() => bar.remove(), 4000);
+}
+
+function rerenderSetTags(exName, logger) {
+    const historyEl = logger.querySelector('.r-set-history');
+    const numEl = logger.querySelector('.r-set-num');
+    historyEl.innerHTML = '';
+    (routineSetLog[exName] || []).forEach((s, i) => {
+        const t = document.createElement('span');
+        t.className = 'r-set-tag';
+        t.dataset.setIndex = i;
+        const label = formatSetLabel(i + 1, s.reps, s.weight);
+        t.innerHTML = `${label}<span class="r-set-x" data-exname="${exName}" data-idx="${i}">×</span>`;
+        historyEl.appendChild(t);
+    });
+    numEl.textContent = (routineSetLog[exName] || []).length + 1;
+}
+
+async function saveRoutineSetLog() {
+    const dateKey = getDateKey(new Date());
+    let log = dailyLogs.find(l => l.dateKey === dateKey);
+    if (!log) {
+        log = { userId: currentUserId, dateKey: dateKey };
+    }
+
+    // Merge into exercises data
+    const exercises = Object.entries(routineSetLog).map(([name, sets]) => ({ name, sets }));
+    const currentDay = document.querySelector('.day-pill.active')?.dataset.rday || 'unknown';
+    log.exercises = { routineDay: currentDay, exercises };
+    log.updatedAt = new Date().toISOString();
+
+    const id = await saveDailyLog(log);
+    if (!log.id) log.id = id;
+    const idx = dailyLogs.findIndex(l => l.dateKey === dateKey);
+    if (idx >= 0) dailyLogs[idx] = log;
+    else dailyLogs.push(log);
+
+    // Refresh workout tab summary if viewing today
+    const picker = $('wlogDatePicker');
+    if (picker && picker.value === dateKey) renderWlogDaySummary(dateKey);
 }
 
 // --- Workout Logger ---
@@ -1139,7 +1327,7 @@ function renderQuickLogExercises(day) {
     function getWeights(equip) {
         const e = (equip || '').toLowerCase();
         if (e.includes('barbell') || e.includes('bar + plate') || e.includes('curl bar')) return BAR_WEIGHTS;
-        if (e.includes('band')) return ['BW','Light','Med','Heavy','X-Heavy'];
+        if (e.includes('band')) return ['Yellow','Red','Black'];
         if ((e.includes('bodyweight') || e.includes('mat')) && !e.includes('kg')) return ['BW'];
         return DB_WEIGHTS;
     }
@@ -1186,6 +1374,32 @@ function renderQuickLogExercises(day) {
     html += `<div class="qlog-add-exercise"><select class="qlog-add-ex-select">${addOpts}</select><button class="qlog-add-ex-btn">Add</button></div>`;
 
     container.innerHTML = html;
+
+    // Pre-fill from today's log (data logged from Routine tab)
+    const todayKey = getDateKey(new Date());
+    const todayLog = dailyLogs.find(l => l.dateKey === todayKey);
+    if (todayLog && todayLog.exercises && todayLog.exercises.exercises) {
+        todayLog.exercises.exercises.forEach(loggedEx => {
+            const row = container.querySelector(`.qlog-row[data-exname="${loggedEx.name}"]`);
+            if (!row) return;
+            loggedEx.sets.forEach((s, i) => {
+                const setNum = i + 1;
+                const repsSelect = row.querySelector(`.qlog-reps[data-set="${setNum}"]`);
+                const weightSelect = row.querySelector(`.qlog-weight[data-set="${setNum}"]`);
+                if (repsSelect && s.reps) {
+                    repsSelect.value = s.reps;
+                    const cell = repsSelect.closest('.qlog-td-set');
+                    if (cell) cell.classList.add('qlog-td-logged');
+                }
+                if (weightSelect && s.weight !== undefined) {
+                    const wVal = (s.weight === 0 || s.weight === '0') ? 'BW' : String(s.weight);
+                    weightSelect.value = wVal;
+                    // If no exact match, try numeric
+                    if (weightSelect.value !== wVal) weightSelect.value = s.weight;
+                }
+            });
+        });
+    }
 
     // +Set click handler
     container.querySelectorAll('.qlog-add-set').forEach(btn => {
@@ -1276,6 +1490,7 @@ function renderQuickLogExercises(day) {
 }
 
 function showQuickLogSaved() {
+    playLogSaved();
     const btn = $('saveQuickLogBtn');
     const orig = btn.textContent;
     btn.textContent = '✓ Saved!';
@@ -1325,6 +1540,60 @@ function loadQuickLogHistory() {
         }).join('');
         return `<div class="qlog-history-entry"><div class="qlog-history-date">${d} ${dayLabel ? '— ' + dayLabel : ''}</div>${exList}</div>`;
     }).join('');
+}
+
+// --- Workout Day Summary (date picker) ---
+function initWlogDatePicker() {
+    const picker = $('wlogDatePicker');
+    if (!picker) return;
+    picker.value = getDateKey(new Date());
+    picker.addEventListener('change', () => renderWlogDaySummary(picker.value));
+    renderWlogDaySummary(picker.value);
+    highlightWorkedPills(picker.value);
+}
+
+function highlightWorkedPills(dateKey) {
+    const pills = document.querySelectorAll('#routineDayPills .qlog-pill');
+    pills.forEach(p => { p.classList.remove('qlog-pill-done'); p.style.removeProperty('--fill'); });
+    const log = dailyLogs.find(l => l.dateKey === dateKey);
+    if (log && log.exercises && log.exercises.routineDay && log.exercises.exercises) {
+        const day = log.exercises.routineDay;
+        const pill = document.querySelector(`#routineDayPills .qlog-pill[data-qday="${day}"]`);
+        if (pill) {
+            // Calculate progress: exercises logged / total exercises in routine
+            const loggedCount = log.exercises.exercises.length;
+            const routineData = ROUTINE_DATA[day];
+            let totalEx = 0;
+            if (routineData) routineData.groups.forEach(g => { totalEx += g.exercises.length; });
+            const pct = totalEx > 0 ? Math.min(100, Math.round((loggedCount / totalEx) * 100)) : 100;
+            pill.classList.add('qlog-pill-done');
+            pill.style.setProperty('--fill', pct + '%');
+        }
+    }
+}
+
+function renderWlogDaySummary(dateKey) {
+    const container = $('wlogDaySummary');
+    if (!container) return;
+    highlightWorkedPills(dateKey);
+    const log = dailyLogs.find(l => l.dateKey === dateKey);
+
+    if (!log || !log.exercises || !log.exercises.exercises || log.exercises.exercises.length === 0) {
+        container.innerHTML = `<div class="wlog-empty">No workout logged for ${dateKey}</div>`;
+        return;
+    }
+
+    const dayLabel = log.exercises.routineDay ? log.exercises.routineDay.toUpperCase() + ' Day' : '';
+    let html = `<div class="wlog-summary"><div class="wlog-summary-header">${dayLabel}</div>`;
+    log.exercises.exercises.forEach(ex => {
+        const setsHtml = ex.sets.map((s, i) => {
+            const w = s.weight === 'BW' || s.weight === 0 || s.weight === '0' ? 'BW' : s.weight + 'kg';
+            return `<span class="wlog-set-chip">S${i + 1}: ${s.reps}r × ${w}</span>`;
+        }).join('');
+        html += `<div class="wlog-ex-row"><div class="wlog-ex-name">${ex.name}</div><div class="wlog-ex-sets">${setsHtml}</div></div>`;
+    });
+    html += '</div>';
+    container.innerHTML = html;
 }
 
 // --- Progressive Overload Volume Tracker ---

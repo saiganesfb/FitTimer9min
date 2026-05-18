@@ -1,11 +1,11 @@
-const CACHE_NAME = 'fittimer-v18';
+const CACHE_NAME = 'fittimer-v19';
 const ASSETS = [
   './',
   './index.html',
-  './style.css',
+  './style.css?v=19',
   './db.js',
-  './gamification.js',
-  './script.js',
+  './gamification.js?v=19',
+  './script.js?v=19',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png'

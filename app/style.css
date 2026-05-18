@@ -336,6 +336,10 @@ body {
     float: right;
     margin-left: 10px;
 }
+.r-ex-img-dark {
+    filter: invert(1);
+    background: #1e1e2e;
+}
 .r-ex-equip {
     font-size: 0.7rem;
     color: var(--text-muted);
@@ -351,6 +355,120 @@ body {
     line-height: 1.6;
 }
 .r-ex-tip strong { color: #ffd93d; }
+
+/* Inline Set Logger */
+.r-set-logger {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+}
+.r-set-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+.r-set-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--primary);
+    white-space: nowrap;
+}
+.r-set-inputs {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+.r-set-inputs input {
+    width: 50px;
+    padding: 6px 4px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--text);
+    font-size: 0.8rem;
+    text-align: center;
+}
+.r-set-inputs select {
+    width: 58px;
+    padding: 6px 2px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--text);
+    font-size: 0.8rem;
+    text-align: center;
+    appearance: none;
+    -webkit-appearance: none;
+}
+.r-set-inputs input:focus,
+.r-set-inputs select:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+.r-set-save-btn {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: none;
+    background: var(--primary);
+    color: #000;
+    font-weight: 700;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+.r-set-save-btn:active {
+    transform: scale(0.95);
+}
+.r-set-history {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+}
+.r-set-tag {
+    font-size: 0.65rem;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: rgba(0, 230, 118, 0.15);
+    color: #22c55e;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.r-set-x {
+    cursor: pointer;
+    font-size: 0.7rem;
+    opacity: 0.6;
+    margin-left: 2px;
+}
+.r-set-x:hover {
+    opacity: 1;
+    color: #ef4444;
+}
+.r-set-undo {
+    margin-top: 6px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 6px;
+    animation: fadeIn 0.2s;
+}
+.r-set-undo-btn {
+    padding: 2px 8px;
+    border: none;
+    border-radius: 4px;
+    background: var(--primary);
+    color: #000;
+    font-size: 0.65rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 .expand-all-btn {
     font-size: 0.65rem;
@@ -958,6 +1076,65 @@ body {
 }
 .add-exercise-btn:hover { border-color: var(--primary); }
 
+/* ---- Workout Day Summary ---- */
+.wlog-date-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+.wlog-date-label { font-size: 1rem; }
+.wlog-date-input {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--text);
+    font-size: 0.8rem;
+}
+.wlog-empty {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    padding: 10px 0;
+}
+.wlog-summary {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 16px;
+}
+.wlog-summary-header {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.wlog-ex-row {
+    margin-bottom: 8px;
+}
+.wlog-ex-name {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 3px;
+}
+.wlog-ex-sets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+.wlog-set-chip {
+    font-size: 0.65rem;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: rgba(124, 58, 237, 0.15);
+    color: var(--primary);
+    font-weight: 500;
+}
+
 /* ---- Quick Routine Log ---- */
 .quick-log { margin-top: 10px; }
 .qlog-day-pills {
@@ -980,6 +1157,18 @@ body {
 }
 .qlog-pill:hover { border-color: var(--primary); color: var(--text); }
 .qlog-pill.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+.qlog-pill.qlog-pill-done {
+    position: relative;
+    overflow: hidden;
+    border-color: #22c55e;
+    background: linear-gradient(90deg, #22c55e 0%, #22c55e var(--fill, 0%), var(--bg-elevated) var(--fill, 0%), var(--bg-elevated) 100%) !important;
+    color: var(--text) !important;
+}
+.qlog-pill.qlog-pill-done.active {
+    background: linear-gradient(90deg, #22c55e 0%, #22c55e var(--fill, 0%), var(--primary) var(--fill, 0%), var(--primary) 100%) !important;
+    color: #fff !important;
+    border-color: #22c55e;
+}
 
 .qlog-table-wrap {
     overflow-x: auto;
@@ -1033,6 +1222,13 @@ body {
     text-align: center;
 }
 .qlog-td-set select:focus { outline: none; border-color: var(--primary); }
+.qlog-td-set.qlog-td-logged {
+    background: rgba(34, 197, 94, 0.12);
+}
+.qlog-td-set.qlog-td-logged select {
+    border-color: #22c55e;
+    color: #22c55e;
+}
 .qlog-row:hover { background: var(--bg); }
 
 .qlog-td-add { padding: 4px 2px; border-bottom: 1px solid var(--border); }
