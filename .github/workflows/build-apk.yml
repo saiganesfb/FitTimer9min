@@ -25,16 +25,15 @@ jobs:
 
       - name: Initialize Capacitor project
         run: |
-          cd app
           npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android
-          npx cap init FitTimer com.fittimer.app --web-dir .
+          npx cap init FitTimer com.fittimer.app --web-dir app
           npx cap add android
           npx cap sync
 
       - name: Build APK
         run: |
-          cd app/android
+          cd android
           chmod +x gradlew
           ./gradlew assembleDebug
 
@@ -42,4 +41,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: FitTimer-debug
-          path: app/android/app/build/outputs/apk/debug/app-debug.apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
