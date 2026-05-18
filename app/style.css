@@ -1220,7 +1220,10 @@ body {
     font-size: 0.78rem;
     color: var(--text);
     padding: 8px 6px 8px 12px;
-    white-space: nowrap;
+    white-space: normal;
+    word-break: break-word;
+    min-width: 90px;
+    max-width: 120px;
     border-bottom: 1px solid var(--border);
 }
 .qlog-td-set {
