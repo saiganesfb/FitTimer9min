@@ -31,6 +31,19 @@ jobs:
           npx cap add android
           npx cap sync
 
+      - name: Fix Kotlin stdlib conflicts
+        run: |
+          cat >> android/app/build.gradle << 'EOF'
+
+          configurations.all {
+              resolutionStrategy {
+                  force 'org.jetbrains.kotlin:kotlin-stdlib:1.9.24'
+                  force 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.24'
+                  force 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.24'
+              }
+          }
+          EOF
+
       - name: Build APK
         run: |
           cd android
