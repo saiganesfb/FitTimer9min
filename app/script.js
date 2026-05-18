@@ -1010,6 +1010,17 @@ function initRoutineTab() {
     });
     updateLabel(startDay);
     renderRoutine(startDay);
+
+    // Expand All toggle
+    const expandBtn = $('expandAllRoutine');
+    if (expandBtn) {
+        expandBtn.addEventListener('click', () => {
+            const cards = document.querySelectorAll('#routineContent .r-ex-card');
+            const allOpen = [...cards].every(c => c.classList.contains('open'));
+            cards.forEach(c => c.classList.toggle('open', !allOpen));
+            expandBtn.textContent = allOpen ? 'Expand All' : 'Collapse All';
+        });
+    }
 }
 
 function renderRoutine(day) {
@@ -1032,7 +1043,7 @@ function renderRoutine(day) {
                 </div>
                 <div class="r-ex-details">
                     <div class="r-ex-equip">🔧 ${ex.equip}</div>
-                    <div class="r-ex-tip">${ex.tip}</div>
+                    <div class="r-ex-tip">${ex.tip.replace(/\.\s+/g, '.<br>')}</div>
                 </div>
             </div>`;
         });

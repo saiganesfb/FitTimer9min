@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="icon" href="icons/icon-192.png">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
-    <link rel="stylesheet" href="style.css?v=16">
+    <link rel="stylesheet" href="style.css?v=17">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
 </head>
@@ -176,7 +176,10 @@
                 <button class="day-pill" data-rday="legs">🦵 Legs</button>
                 <button class="day-pill" data-rday="arms">🎯 Arms+Abs</button>
             </div>
-            <div class="routine-today-label" id="routineTodayLabel"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div class="routine-today-label" id="routineTodayLabel"></div>
+                <button class="expand-all-btn" id="expandAllRoutine">Expand All</button>
+            </div>
             <div id="routineContent"></div>
         </section>
 
@@ -487,7 +490,7 @@
 
     <script src="db.js"></script>
     <script src="gamification.js"></script>
-    <script src="script.js?v=16"></script>
+    <script src="script.js?v=17"></script>
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./service-worker.js');

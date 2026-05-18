@@ -342,6 +342,18 @@ body {
 }
 .r-ex-tip strong { color: #ffd93d; }
 
+.expand-all-btn {
+    font-size: 0.65rem;
+    padding: 4px 10px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--primary);
+    font-weight: 600;
+    cursor: pointer;
+}
+.expand-all-btn:hover { background: var(--primary); color: #fff; }
+
 /* ---- Animations ---- */
 @keyframes pulse { 0%,100%{box-shadow:0 0 20px rgba(78,205,196,.2);} 50%{box-shadow:0 0 40px rgba(78,205,196,.4);} }
 @keyframes scaleIn { from{transform:scale(.8);opacity:0;} to{transform:scale(1);opacity:1;} }
