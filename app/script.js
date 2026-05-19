@@ -1124,7 +1124,7 @@ const ROUTINE_DATA = {
         title: 'PUSH Day',
         subtitle: 'Chest, Shoulders, Triceps',
         groups: [
-            { name: '� Chest', badge: 'primary', exercises: [
+            { name: '🧱 Chest', badge: 'primary', exercises: [
                 { name: 'Push-ups (Warm-up)', sets: '2×15', equip: 'Push-up Board · Bodyweight', tip: '<strong>Form:</strong> Hands shoulder-width, body in plank. Lower until chest nearly touches floor. Elbows at 45° — not flared. Exhale pushing up.' },
                 { name: 'DB Chest Press (Flat)', sets: '3×12', equip: 'Bench flat · 10–12.5 kg', tip: '<strong>Form:</strong> Lie flat, feet on floor. Press dumbbells straight up from chest. Squeeze chest at top. Shoulder blades pinched together throughout. Lower slowly.' },
                 { name: 'Incline DB Press', sets: '3×10', equip: 'Bench 30-45° · 7.5–10 kg', tip: '<strong>Form:</strong> Bench at 30-45°. Press straight UP (not towards face). Targets upper chest. Don\'t let elbows drop below shoulder line. Control the negative.' },
@@ -1134,7 +1134,7 @@ const ROUTINE_DATA = {
                 { name: 'Overhead DB Press', sets: '3×10', equip: 'Bench 75-80° · 7.5–10 kg', tip: '<strong>Form:</strong> Sit upright. Start at ear level, palms forward. Press straight up. Don\'t arch lower back. Can do standing too.' },
                 { name: 'Lateral Raises', sets: '3×15', equip: 'Standing · 2.5–5 kg', tip: '<strong>Form:</strong> Slight elbow bend. Raise arms to sides until parallel (T-shape). Lead with elbows, not wrists. Light weight — shoulders fatigue fast.' },
             ]},
-            { name: '� Triceps', badge: 'finisher', exercises: [
+            { name: '💎 Triceps', badge: 'finisher', exercises: [
                 { name: 'Tricep Pushdown (Band)', sets: '3×15', equip: 'Pull-up Bar + Resistance Band', tip: '<strong>Form:</strong> Band over bar. Elbows tight to body. Push down until arms extended. Squeeze triceps. Only forearms move — upper arms locked.' },
                 { name: 'Overhead Tricep Ext (Band)', sets: '3×12', equip: 'Resistance Band (step on it)', tip: '<strong>Form:</strong> Step on band, hold behind head. Extend arms up, elbows pointing forward near ears. Full range of motion is key.' },
             ]},
@@ -1174,10 +1174,10 @@ const ROUTINE_DATA = {
                 { name: 'Romanian Deadlift (DB)', sets: '3×10', equip: '7.5–10 kg DBs', tip: '<strong>Form:</strong> Slight knee bend (locked). Hinge at hips, lower DBs along legs. Feel hamstring stretch. Drive hips forward to return. <strong>Critical for APT.</strong>' },
                 { name: 'Bulgarian Split Squat', sets: '3×8/leg', equip: 'Bench + 5–7.5 kg DBs', tip: '<strong>Form:</strong> Back foot on bench. Lower until front thigh parallel. Stay upright. Start bodyweight if too hard.' },
             ]},
-            { name: '� Calves', badge: 'secondary', exercises: [
+            { name: '🦘 Calves', badge: 'secondary', exercises: [
                 { name: 'Calf Raises (Step)', sets: '3×20', equip: 'Stepping Block + 10 kg DBs', tip: '<strong>Form:</strong> Stand on step edge, heels hanging off. Rise high on toes, squeeze 1 sec. Lower below step for stretch. High reps — calves are stubborn.' },
             ]},
-            { name: '� Mobility', badge: 'apt', exercises: [
+            { name: '🔓 Mobility', badge: 'apt', exercises: [
                 { name: 'Hip Flexor Stretch', sets: '2×30s/side', equip: 'Gym Mat', tip: '<strong>Form:</strong> Kneel, push hips forward. Feel deep stretch in front hip of back leg. Hold 30s. <strong>Do every leg day — loosens tight hip flexors.</strong>' },
                 { name: 'Pelvic Tilt Practice', sets: '2×15', equip: 'Gym Mat', tip: '<strong>Form:</strong> Lie on back, knees bent. Flatten lower back to floor by tilting pelvis up. Hold 3s. <strong>Mind-muscle APT correction.</strong>' },
             ]},
@@ -1192,7 +1192,7 @@ const ROUTINE_DATA = {
                 { name: 'Preacher Curl (Bench)', sets: '3×10', equip: 'Bench as arm pad · 5–7.5 kg', tip: '<strong>Form:</strong> Use incline bench as preacher pad. Arm rests, curl up. Complete isolation — no cheating. Full range.' },
                 { name: 'Hammer Curls', sets: '3×12', equip: 'Standing · 7.5 kg', tip: '<strong>Form:</strong> Neutral grip (palms facing). Builds arm thickness. Try cross-body hammers for extra squeeze.' },
             ]},
-            { name: '� Triceps', badge: 'secondary', exercises: [
+            { name: '💎 Triceps', badge: 'secondary', exercises: [
                 { name: 'Tricep Pushdown (Band)', sets: '3×15', equip: 'Pull-up Bar + Band', tip: '<strong>Form:</strong> Band over bar. Push down, elbows pinned. Squeeze at full extension. Bread-and-butter tricep move.' },
                 { name: 'Overhead Tricep Ext (DB)', sets: '3×10', equip: 'Seated · 1×10 kg DB both hands', tip: '<strong>Form:</strong> One DB, both hands behind head. Extend straight up. Elbows forward, don\'t flare. If wrist pain, use band version.' },
                 { name: 'Diamond Push-ups', sets: '2×12', equip: 'Bodyweight · Gym Mat', tip: '<strong>Form:</strong> Hands together (diamond shape) under chest. Lower to hands. Shifts all load to triceps. From knees if too hard.' },
