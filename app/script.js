@@ -499,7 +499,7 @@ async function completeSession(isPartial) {
         completed: !isPartial
     };
 
-    await addSession(session);
+    try { await addSession(session); } catch (e) { console.error('addSession failed:', e); }
     sessions.push(session);
 
     // Calculate XP gained
