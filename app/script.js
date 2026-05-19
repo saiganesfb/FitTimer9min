@@ -311,6 +311,21 @@ function bindEvents() {
     $('importDataBtn').addEventListener('click', () => $('importFileInput').click());
     $('importFileInput').addEventListener('change', importData);
 
+    // Settings toggles
+    const soundToggle = $('soundToggle');
+    const notifToggle = $('notifToggle');
+    soundToggle.checked = localStorage.getItem('fitTimer_soundOff') !== 'true';
+    notifToggle.checked = localStorage.getItem('fitTimer_notifOff') !== 'true';
+    soundToggle.addEventListener('change', () => {
+        localStorage.setItem('fitTimer_soundOff', !soundToggle.checked);
+    });
+    notifToggle.addEventListener('change', () => {
+        localStorage.setItem('fitTimer_notifOff', !notifToggle.checked);
+        if (notifToggle.checked && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+    });
+
     // Log tab interactions
     $('logPrevDay').addEventListener('click', () => { logViewingDate.setDate(logViewingDate.getDate() - 1); renderLogTab(); });
     $('logNextDay').addEventListener('click', () => { logViewingDate.setDate(logViewingDate.getDate() + 1); renderLogTab(); });
@@ -495,6 +510,10 @@ async function completeSession(isPartial) {
     // Play sounds & haptics
     playComplete();
     vibrateDone();
+    // Notification
+    if (localStorage.getItem('fitTimer_notifOff') !== 'true' && Notification.permission === 'granted') {
+        new Notification('FitTimer', { body: `${actualMinutes} min workout done! 🎉`, icon: 'icons/icon-192.png' });
+    }
     // XP sparkle after completion fanfare
     if (xpGained > 0) setTimeout(() => playXPGain(), 1200);
 

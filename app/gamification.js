@@ -256,7 +256,12 @@ function updateQuote() {
 
 let audioCtx = null;
 
+function isSoundEnabled() {
+    return localStorage.getItem('fitTimer_soundOff') !== 'true';
+}
+
 function getAudioContext() {
+    if (!isSoundEnabled()) return null;
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     return audioCtx;
 }
