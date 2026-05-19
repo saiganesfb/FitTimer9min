@@ -214,15 +214,42 @@ User settings:
 
 ---
 
-## 7. Future Enhancement Ideas
+## 7. What We Actually Built (Features Completed ✅)
 
-Once the basic app works, you could add:
-- 🔊 Sound effects (timer tick, completion cheer)
-- 📱 PWA (Progressive Web App) — installable on phone home screen
-- 📊 Weekly/monthly charts (using Chart.js library)
-- 🏋️ Workout type selection (weights, cardio, yoga)
-- 🔄 Data export/import (JSON file) for backup
-- ☁️ Cloud sync (Firebase free tier) for multi-device
+All the "future ideas" from the original plan — we built them:
+
+- ✅ **Sound effects** — 16 unique synthesized sounds (Web Audio API): tick, click, water drop, start, countdown, halfway, log saved, complete, level up, achievement, workout select, food select, sleep select, health tick, XP gain, streak chime
+- ✅ **PWA** — Installable on phone (manifest.json + service-worker.js + icons)
+- ✅ **Workout logger** — Full exercise table with per-set weight/reps tracking, equipment-specific dropdowns, progressive overload charts
+- ✅ **Data export/import** — JSON backup from Profile tab
+- ✅ **8-tab app**: Timer, Routine, Workout, Log, Progress, History, Mindset, Profile
+- ✅ **Gamification** — XP system, levels, achievements, daily challenges, streaks
+- ✅ **Multi-user auth** — Username/password, per-user IndexedDB storage
+- ✅ **Android APK** — Built via GitHub Actions (Capacitor)
+- ✅ **GitHub Pages deployment** — Auto-deploy on push
+- ✅ **Routine planner** — PPL + Arms split with equipment tips, expandable cards
+- ✅ **Mindset tab** — Full Atomic Habits integration (laws, identity, systems)
+- ✅ **Sound/Notification toggles** — In Profile tab, persisted to localStorage
+- ✅ **Daily tips** — 30 exercise tips + 30 habit tips, PPL-aware, rotating daily
+
+### What We Learned Along The Way:
+
+| Concept | Where We Used It |
+|---------|-----------------|
+| `setInterval` / `clearInterval` | Timer countdown |
+| IndexedDB (async storage) | Session persistence |
+| Service Workers | Offline caching (PWA) |
+| Web Audio API (oscillators) | All sound effects |
+| CSS Flexbox | Tab navigation, layouts |
+| CSS Grid | Stats cards, exercise grid |
+| CSS Custom Properties | Theming (dark/light mode) |
+| `async`/`await` | Database operations |
+| GitHub Actions (CI/CD) | Auto-deploy + APK build |
+| Capacitor | Web → Android wrapper |
+| Media queries | Mobile responsiveness |
+| `localStorage` | User settings, toggles |
+| `Notification` API | Timer completion alerts |
+| PWA Manifest | Installable web app |
 
 ---
 
@@ -233,7 +260,27 @@ Once the basic app works, you could add:
 - **localStorage** — Search "MDN Web Storage API"
 - **CSS animations** — Search "MDN CSS Animations"
 - **Flexbox/Grid** — Search "CSS Tricks Flexbox Guide"
+- **Web Audio API** — Search "MDN Web Audio API"
+- **Service Workers** — Search "MDN Service Worker API"
+- **Capacitor** — capacitorjs.com (web → native)
+- **GitHub Actions** — docs.github.com/en/actions
 
 ---
 
-*This document explains the WHY and HOW. See `02_Step_by_Step_Guide.md` for the hands-on recreation guide.*
+## 9. The Learning Method
+
+We built this app using a **"build while learning"** approach:
+1. Start with the simplest possible version (timer + start button)
+2. Each session adds ONE new feature
+3. Concepts are explained AS they're needed (not upfront theory)
+4. Bugs are learning opportunities (see `04_Bug_Fixes_and_Debugging.md`)
+5. Real deployment (not localhost) from day 2
+
+**Key principle**: You don't need to know everything before starting. Build → break → fix → learn. That's the loop.
+
+---
+
+*See also:*
+- *`02_Step_by_Step_Guide.md` — Hands-on recreation guide*
+- *`03_Deployment_and_Distribution.md` — GitHub Pages, APK, caching*
+- *`04_Bug_Fixes_and_Debugging.md` — Every bug and its fix*
