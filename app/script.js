@@ -490,6 +490,19 @@ async function completeSession(isPartial) {
         ? Math.ceil((totalSeconds - remainingSeconds) / 60)
         : selectedDuration;
 
+    // Reset UI FIRST (before any async ops that might fail)
+    timerLabel.textContent = 'DONE!';
+    timerRing.classList.remove('running');
+    startBtn.classList.remove('hidden');
+    startBtn.innerHTML = '&#9654; START';
+    pauseBtn.classList.add('hidden');
+    stopBtn.classList.add('hidden');
+    resetBtn.classList.add('hidden');
+    remainingSeconds = selectedDuration * 60;
+    totalSeconds = selectedDuration * 60;
+    updateTimerDisplay();
+    updateRingProgress();
+
     // Record session
     const session = {
         userId: currentUserId,
@@ -511,8 +524,8 @@ async function completeSession(isPartial) {
     playComplete();
     vibrateDone();
     // Notification
-    if (localStorage.getItem('fitTimer_notifOff') !== 'true' && Notification.permission === 'granted') {
-        new Notification('FitTimer', { body: `${actualMinutes} min workout done! 🎉`, icon: 'icons/icon-192.png' });
+    if (localStorage.getItem('fitTimer_notifOff') !== 'true' && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+        try { new Notification('FitTimer', { body: `${actualMinutes} min workout done! 🎉`, icon: 'icons/icon-192.png' }); } catch(e) {}
     }
     // XP sparkle after completion fanfare
     if (xpGained > 0) setTimeout(() => playXPGain(), 1200);
@@ -539,19 +552,6 @@ async function completeSession(isPartial) {
     previousLevel = newLevel.level;
     previousAchievements = getUnlockedAchievements(sessions).map(a => a.id);
 
-    // Reset UI
-    timerLabel.textContent = 'DONE!';
-    timerRing.classList.remove('running');
-    startBtn.classList.remove('hidden');
-    startBtn.innerHTML = '&#9654; START';
-    pauseBtn.classList.add('hidden');
-    stopBtn.classList.add('hidden');
-    resetBtn.classList.add('hidden');
-
-    remainingSeconds = selectedDuration * 60;
-    totalSeconds = selectedDuration * 60;
-    updateTimerDisplay();
-    updateRingProgress();
     updateStats();
     updateXPBar();
 }
